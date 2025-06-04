@@ -5,7 +5,7 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Label } from "@/components/ui/label";
-import { Mail, Heart, Lock } from "lucide-react";
+import { Mail, Heart, Lock, User } from "lucide-react";
 import { config } from "../config/api";
 
 interface LoginProps {
@@ -49,6 +49,30 @@ const Login = ({ setIsLoggedIn, setUserUID }: LoginProps) => {
     } finally {
       setIsLoading(false);
     }
+  };
+
+  const handleDemoLogin = () => {
+    const tempUserData = {
+      UID: "demo-user-123",
+      name: "Demo User",
+      email: "demo@example.com",
+      city: "San Francisco",
+      country: "USA",
+      age: 25,
+      gender: "Other",
+      hobbies: "Reading, Traveling, Photography",
+      bio: "This is a demo account for testing purposes",
+      profilePicture: "",
+      matches: ["user1", "user2"],
+      recommendations: ["user3", "user4", "user5"],
+      notifications: ["user6"],
+      awaiting: ["user7", "user8"]
+    };
+
+    setUserUID(tempUserData.UID);
+    localStorage.setItem('userUID', tempUserData.UID);
+    localStorage.setItem('userData', JSON.stringify(tempUserData));
+    setIsLoggedIn(true);
   };
 
   return (
@@ -117,6 +141,25 @@ const Login = ({ setIsLoggedIn, setUserUID }: LoginProps) => {
               className="w-full h-12 bg-gradient-to-r from-orange-500 to-yellow-500 hover:from-orange-600 hover:to-yellow-600 text-white font-medium rounded-md transition-all duration-200 shadow-lg hover:shadow-xl"
             >
               {isLoading ? "Signing In..." : "Sign In"}
+            </Button>
+
+            <div className="relative">
+              <div className="absolute inset-0 flex items-center">
+                <span className="w-full border-t" />
+              </div>
+              <div className="relative flex justify-center text-xs uppercase">
+                <span className="bg-white px-2 text-gray-500">Or</span>
+              </div>
+            </div>
+
+            <Button
+              type="button"
+              onClick={handleDemoLogin}
+              variant="outline"
+              className="w-full h-12 border-orange-200 text-orange-600 hover:bg-orange-50 hover:text-orange-700 font-medium rounded-md transition-all duration-200"
+            >
+              <User className="w-4 h-4 mr-2" />
+              Demo Login
             </Button>
 
             <div className="text-center">
