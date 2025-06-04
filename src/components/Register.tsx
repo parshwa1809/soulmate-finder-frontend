@@ -21,6 +21,8 @@ const Register = () => {
     email: "",
     city: "",
     country: "",
+    birthCity: "",
+    birthCountry: "",
     dob: undefined as Date | undefined,
     tob: "",
     gender: "",
@@ -99,6 +101,8 @@ const Register = () => {
         email: formData.email,
         city: formData.city,
         country: formData.country,
+        birthCity: formData.birthCity,
+        birthCountry: formData.birthCountry,
         dob: formData.dob ? format(formData.dob, 'yyyy-MM-dd') : '',
         tob: formData.tob,
         gender: formData.gender,
@@ -203,7 +207,7 @@ const Register = () => {
               </div>
 
               <div className="space-y-2">
-                <Label htmlFor="city">City</Label>
+                <Label htmlFor="city">Current City</Label>
                 <Input
                   id="city"
                   value={formData.city}
@@ -214,11 +218,33 @@ const Register = () => {
               </div>
 
               <div className="space-y-2">
-                <Label htmlFor="country">Country</Label>
+                <Label htmlFor="country">Current Country</Label>
                 <Input
                   id="country"
                   value={formData.country}
                   onChange={(e) => handleInputChange('country', e.target.value)}
+                  className="h-12"
+                  required
+                />
+              </div>
+
+              <div className="space-y-2">
+                <Label htmlFor="birthCity">City of Birth</Label>
+                <Input
+                  id="birthCity"
+                  value={formData.birthCity}
+                  onChange={(e) => handleInputChange('birthCity', e.target.value)}
+                  className="h-12"
+                  required
+                />
+              </div>
+
+              <div className="space-y-2">
+                <Label htmlFor="birthCountry">Country of Birth</Label>
+                <Input
+                  id="birthCountry"
+                  value={formData.birthCountry}
+                  onChange={(e) => handleInputChange('birthCountry', e.target.value)}
                   className="h-12"
                   required
                 />
