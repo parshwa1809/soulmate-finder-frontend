@@ -1,3 +1,4 @@
+
 import { useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { Button } from "@/components/ui/button";
@@ -139,7 +140,7 @@ const Register = () => {
           </div>
           <div>
             <CardTitle className="text-3xl font-bold bg-gradient-to-r from-orange-600 to-yellow-600 bg-clip-text text-transparent">
-              Join LoveMatch
+              Join Love Bhagya
             </CardTitle>
             <CardDescription className="text-gray-600 mt-2">
               Create your profile and find your soulmate
