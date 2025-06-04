@@ -44,14 +44,23 @@ const Dashboard = ({ userUID, setIsLoggedIn }: DashboardProps) => {
       const userData = localStorage.getItem('userData');
       if (userData) {
         const parsedData = JSON.parse(userData);
+        console.log('Loading user data from localStorage:', parsedData);
         
-        // Process each category
-        await Promise.all([
-          loadUsersForCategory(parsedData.matches || [], setMatches),
-          loadUsersForCategory(parsedData.recommendations || [], setRecommendations), 
-          loadUsersForCategory(parsedData.notifications || [], setNotifications),
-          loadUsersForCategory(parsedData.awaiting || [], setAwaiting)
-        ]);
+        // For demo mode, use the data directly from localStorage
+        if (userUID === "demo-user-123") {
+          setMatches(parsedData.matches || []);
+          setRecommendations(parsedData.recommendations || []);
+          setNotifications(parsedData.notifications || []);
+          setAwaiting(parsedData.awaiting || []);
+        } else {
+          // For real users, fetch from API
+          await Promise.all([
+            loadUsersForCategory(parsedData.matches || [], setMatches),
+            loadUsersForCategory(parsedData.recommendations || [], setRecommendations), 
+            loadUsersForCategory(parsedData.notifications || [], setNotifications),
+            loadUsersForCategory(parsedData.awaiting || [], setAwaiting)
+          ]);
+        }
       }
     } catch (error) {
       console.error('Error loading user data:', error);
