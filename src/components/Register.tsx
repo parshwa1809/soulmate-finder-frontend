@@ -25,8 +25,10 @@ const Register = () => {
     name: "",
     phone: "",
     email: "",
-    city: "",
-    country: "",
+    cityOfResidence: "",
+    countryOfResidence: "",
+    cityOfBirth: "",
+    countryOfBirth: "",
     dateOfBirth: null as Date | null,
     gender: "",
     hobbies: [] as string[],
@@ -94,8 +96,10 @@ const Register = () => {
         name: formData.name,
         phone: formData.phone,
         email: formData.email,
-        city: formData.city,
-        country: formData.country,
+        cityOfResidence: formData.cityOfResidence,
+        countryOfResidence: formData.countryOfResidence,
+        cityOfBirth: formData.cityOfBirth,
+        countryOfBirth: formData.countryOfBirth,
         dateOfBirth: formData.dateOfBirth ? format(formData.dateOfBirth, 'MM/dd/yyyy') : '',
         gender: formData.gender,
         hobbies: formData.hobbies,
@@ -201,22 +205,46 @@ const Register = () => {
 
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
               <div className="space-y-2">
-                <Label htmlFor="city">City</Label>
+                <Label htmlFor="cityOfResidence">City of Residence</Label>
                 <Input
-                  id="city"
-                  value={formData.city}
-                  onChange={(e) => handleInputChange('city', e.target.value)}
+                  id="cityOfResidence"
+                  value={formData.cityOfResidence}
+                  onChange={(e) => handleInputChange('cityOfResidence', e.target.value)}
                   className="h-12"
                   required
                 />
               </div>
 
               <div className="space-y-2">
-                <Label htmlFor="country">Country</Label>
+                <Label htmlFor="countryOfResidence">Country of Residence</Label>
                 <Input
-                  id="country"
-                  value={formData.country}
-                  onChange={(e) => handleInputChange('country', e.target.value)}
+                  id="countryOfResidence"
+                  value={formData.countryOfResidence}
+                  onChange={(e) => handleInputChange('countryOfResidence', e.target.value)}
+                  className="h-12"
+                  required
+                />
+              </div>
+            </div>
+
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+              <div className="space-y-2">
+                <Label htmlFor="cityOfBirth">City of Birth</Label>
+                <Input
+                  id="cityOfBirth"
+                  value={formData.cityOfBirth}
+                  onChange={(e) => handleInputChange('cityOfBirth', e.target.value)}
+                  className="h-12"
+                  required
+                />
+              </div>
+
+              <div className="space-y-2">
+                <Label htmlFor="countryOfBirth">Country of Birth</Label>
+                <Input
+                  id="countryOfBirth"
+                  value={formData.countryOfBirth}
+                  onChange={(e) => handleInputChange('countryOfBirth', e.target.value)}
                   className="h-12"
                   required
                 />
