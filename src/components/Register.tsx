@@ -54,12 +54,12 @@ const Register = () => {
     
     setEmailChecking(true);
     try {
-      const formData = new FormData();
-      formData.append('email', email);
-
       const response = await fetch(`${config.URL}/verify:email`, {
         method: 'POST',
-        body: formData,
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({ email }),
       });
 
       const isAvailable = await response.json();
@@ -90,9 +90,7 @@ const Register = () => {
     }
 
     try {
-      const submitFormData = new FormData();
-      
-      const metadata = {
+      const jsonData = {
         name: formData.name,
         phone: formData.phone,
         email: formData.email,
@@ -103,14 +101,18 @@ const Register = () => {
         hobbies: formData.hobbies,
       };
 
-      submitFormData.append('metadata', JSON.stringify(metadata));
+      console.log('Sending registration data:', jsonData);
 
       const response = await fetch(`${config.URL}/account:create`, {
         method: 'POST',
-        body: submitFormData,
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(jsonData),
       });
 
       const data = await response.json();
+      console.log('Backend response:', data);
       
       if (response.ok) {
         navigate('/login');
