@@ -5,7 +5,7 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Label } from "@/components/ui/label";
-import { Mail, Heart } from "lucide-react";
+import { Mail, Heart, Lock } from "lucide-react";
 import { config } from "../config/api";
 
 interface LoginProps {
@@ -15,6 +15,7 @@ interface LoginProps {
 
 const Login = ({ setIsLoggedIn, setUserUID }: LoginProps) => {
   const [email, setEmail] = useState("");
+  const [password, setPassword] = useState("");
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState("");
 
@@ -25,7 +26,7 @@ const Login = ({ setIsLoggedIn, setUserUID }: LoginProps) => {
 
     try {
       const formData = new FormData();
-      formData.append('metadata', JSON.stringify({ email }));
+      formData.append('metadata', JSON.stringify({ email, password }));
 
       const response = await fetch(`${config.URL}/account:login`, {
         method: 'POST',
@@ -80,6 +81,24 @@ const Login = ({ setIsLoggedIn, setUserUID }: LoginProps) => {
                   placeholder="Enter your email"
                   value={email}
                   onChange={(e) => setEmail(e.target.value)}
+                  className="pl-10 h-12 border-gray-200 focus:border-orange-500 focus:ring-orange-500"
+                  required
+                />
+              </div>
+            </div>
+
+            <div className="space-y-2">
+              <Label htmlFor="password" className="text-sm font-medium text-gray-700">
+                Password
+              </Label>
+              <div className="relative">
+                <Lock className="absolute left-3 top-3 h-4 w-4 text-gray-400" />
+                <Input
+                  id="password"
+                  type="password"
+                  placeholder="Enter your password"
+                  value={password}
+                  onChange={(e) => setPassword(e.target.value)}
                   className="pl-10 h-12 border-gray-200 focus:border-orange-500 focus:ring-orange-500"
                   required
                 />
