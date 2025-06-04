@@ -1,12 +1,23 @@
-
 import { useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Label } from "@/components/ui/label";
-import { Heart, Check, X } from "lucide-react";
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
+import { Calendar } from "@/components/ui/calendar";
+import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
+import { Heart, Check, X, Calendar as CalendarIcon } from "lucide-react";
+import { format } from "date-fns";
+import { cn } from "@/lib/utils";
 import { config } from "../config/api";
+
+const hobbiesOptions = [
+  "Reading", "Traveling", "Cooking", "Sports", "Music", "Movies", 
+  "Photography", "Dancing", "Fitness", "Gaming", "Art", "Gardening",
+  "Writing", "Technology", "Fashion", "Yoga", "Swimming", "Hiking"
+];
 
 const Register = () => {
   const navigate = useNavigate();
@@ -14,14 +25,28 @@ const Register = () => {
     name: "",
     phone: "",
     email: "",
+    city: "",
+    country: "",
+    dateOfBirth: null as Date | null,
+    gender: "",
+    hobbies: [] as string[],
   });
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState("");
   const [emailVerified, setEmailVerified] = useState(false);
   const [emailChecking, setEmailChecking] = useState(false);
 
-  const handleInputChange = (field: string, value: string) => {
+  const handleInputChange = (field: string, value: string | Date | null | string[]) => {
     setFormData(prev => ({ ...prev, [field]: value }));
+  };
+
+  const handleHobbyToggle = (hobby: string) => {
+    setFormData(prev => ({
+      ...prev,
+      hobbies: prev.hobbies.includes(hobby)
+        ? prev.hobbies.filter(h => h !== hobby)
+        : [...prev.hobbies, hobby]
+    }));
   };
 
   const handleEmailVerification = async (email: string) => {
@@ -71,6 +96,11 @@ const Register = () => {
         name: formData.name,
         phone: formData.phone,
         email: formData.email,
+        city: formData.city,
+        country: formData.country,
+        dateOfBirth: formData.dateOfBirth ? format(formData.dateOfBirth, 'MM/dd/yyyy') : '',
+        gender: formData.gender,
+        hobbies: formData.hobbies,
       };
 
       submitFormData.append('metadata', JSON.stringify(metadata));
@@ -97,7 +127,7 @@ const Register = () => {
 
   return (
     <div className="min-h-screen flex items-center justify-center p-4">
-      <Card className="w-full max-w-md bg-white/80 backdrop-blur-sm border-0 shadow-2xl">
+      <Card className="w-full max-w-2xl bg-white/80 backdrop-blur-sm border-0 shadow-2xl">
         <CardHeader className="text-center space-y-6">
           <div className="mx-auto w-16 h-16 bg-gradient-to-r from-orange-500 to-yellow-500 rounded-full flex items-center justify-center">
             <Heart className="w-8 h-8 text-white" />
@@ -113,26 +143,28 @@ const Register = () => {
         </CardHeader>
         <CardContent>
           <form onSubmit={handleSubmit} className="space-y-6">
-            <div className="space-y-2">
-              <Label htmlFor="name">Full Name</Label>
-              <Input
-                id="name"
-                value={formData.name}
-                onChange={(e) => handleInputChange('name', e.target.value)}
-                className="h-12"
-                required
-              />
-            </div>
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+              <div className="space-y-2">
+                <Label htmlFor="name">Full Name</Label>
+                <Input
+                  id="name"
+                  value={formData.name}
+                  onChange={(e) => handleInputChange('name', e.target.value)}
+                  className="h-12"
+                  required
+                />
+              </div>
 
-            <div className="space-y-2">
-              <Label htmlFor="phone">Phone Number</Label>
-              <Input
-                id="phone"
-                value={formData.phone}
-                onChange={(e) => handleInputChange('phone', e.target.value)}
-                className="h-12"
-                required
-              />
+              <div className="space-y-2">
+                <Label htmlFor="phone">Phone Number</Label>
+                <Input
+                  id="phone"
+                  value={formData.phone}
+                  onChange={(e) => handleInputChange('phone', e.target.value)}
+                  className="h-12"
+                  required
+                />
+              </div>
             </div>
 
             <div className="space-y-2">
@@ -162,6 +194,100 @@ const Register = () => {
                 {!emailChecking && formData.email && !emailVerified && (
                   <X className="absolute right-3 top-3 h-6 w-6 text-red-500" />
                 )}
+              </div>
+            </div>
+
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+              <div className="space-y-2">
+                <Label htmlFor="city">City</Label>
+                <Input
+                  id="city"
+                  value={formData.city}
+                  onChange={(e) => handleInputChange('city', e.target.value)}
+                  className="h-12"
+                  required
+                />
+              </div>
+
+              <div className="space-y-2">
+                <Label htmlFor="country">Country</Label>
+                <Input
+                  id="country"
+                  value={formData.country}
+                  onChange={(e) => handleInputChange('country', e.target.value)}
+                  className="h-12"
+                  required
+                />
+              </div>
+            </div>
+
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+              <div className="space-y-2">
+                <Label>Date of Birth</Label>
+                <Popover>
+                  <PopoverTrigger asChild>
+                    <Button
+                      variant="outline"
+                      className={cn(
+                        "h-12 w-full justify-start text-left font-normal",
+                        !formData.dateOfBirth && "text-muted-foreground"
+                      )}
+                    >
+                      <CalendarIcon className="mr-2 h-4 w-4" />
+                      {formData.dateOfBirth ? format(formData.dateOfBirth, "MM/dd/yyyy") : <span>Pick a date</span>}
+                    </Button>
+                  </PopoverTrigger>
+                  <PopoverContent className="w-auto p-0" align="start">
+                    <Calendar
+                      mode="single"
+                      selected={formData.dateOfBirth || undefined}
+                      onSelect={(date) => handleInputChange('dateOfBirth', date || null)}
+                      disabled={(date) => date > new Date() || date < new Date("1900-01-01")}
+                      initialFocus
+                      className={cn("p-3 pointer-events-auto")}
+                    />
+                  </PopoverContent>
+                </Popover>
+              </div>
+
+              <div className="space-y-2">
+                <Label>Gender</Label>
+                <RadioGroup
+                  value={formData.gender}
+                  onValueChange={(value) => handleInputChange('gender', value)}
+                  className="flex flex-row space-x-6 mt-2"
+                >
+                  <div className="flex items-center space-x-2">
+                    <RadioGroupItem value="male" id="male" />
+                    <Label htmlFor="male">Male</Label>
+                  </div>
+                  <div className="flex items-center space-x-2">
+                    <RadioGroupItem value="female" id="female" />
+                    <Label htmlFor="female">Female</Label>
+                  </div>
+                  <div className="flex items-center space-x-2">
+                    <RadioGroupItem value="other" id="other" />
+                    <Label htmlFor="other">Other</Label>
+                  </div>
+                </RadioGroup>
+              </div>
+            </div>
+
+            <div className="space-y-2">
+              <Label>Hobbies & Interests</Label>
+              <div className="grid grid-cols-2 md:grid-cols-3 gap-2 max-h-32 overflow-y-auto p-2 border rounded-md">
+                {hobbiesOptions.map((hobby) => (
+                  <div key={hobby} className="flex items-center space-x-2">
+                    <input
+                      type="checkbox"
+                      id={hobby}
+                      checked={formData.hobbies.includes(hobby)}
+                      onChange={() => handleHobbyToggle(hobby)}
+                      className="rounded border-gray-300"
+                    />
+                    <Label htmlFor={hobby} className="text-sm">{hobby}</Label>
+                  </div>
+                ))}
               </div>
             </div>
 
