@@ -63,10 +63,146 @@ const Login = ({ setIsLoggedIn, setUserUID }: LoginProps) => {
       hobbies: "Reading, Traveling, Photography",
       bio: "This is a demo account for testing purposes",
       profilePicture: "",
-      matches: ["user1", "user2"],
-      recommendations: ["user3", "user4", "user5"],
-      notifications: ["user6"],
-      awaiting: ["user7", "user8"]
+      matches: [
+        {
+          UID: "match1",
+          name: "Sarah Johnson",
+          email: "sarah@example.com",
+          city: "Los Angeles",
+          country: "USA",
+          age: 28,
+          gender: "Female",
+          hobbies: "Yoga, Cooking, Hiking",
+          bio: "Love exploring new places and trying different cuisines!",
+          profilePicture: ""
+        },
+        {
+          UID: "match2",
+          name: "Michael Chen",
+          email: "michael@example.com",
+          city: "Seattle",
+          country: "USA",
+          age: 30,
+          gender: "Male",
+          hobbies: "Rock Climbing, Gaming, Coffee",
+          bio: "Software developer who loves outdoor adventures and great coffee.",
+          profilePicture: ""
+        }
+      ],
+      recommendations: [
+        {
+          UID: "rec1",
+          name: "Emma Thompson",
+          email: "emma@example.com",
+          city: "Portland",
+          country: "USA",
+          age: 26,
+          gender: "Female",
+          hobbies: "Art, Music, Dancing",
+          bio: "Artist and musician looking for someone who appreciates creativity and good vibes.",
+          profilePicture: ""
+        },
+        {
+          UID: "rec2",
+          name: "David Rodriguez",
+          email: "david@example.com",
+          city: "Austin",
+          country: "USA",
+          age: 29,
+          gender: "Male",
+          hobbies: "Fitness, Travel, Photography",
+          bio: "Fitness enthusiast and travel photographer. Always planning the next adventure!",
+          profilePicture: ""
+        },
+        {
+          UID: "rec3",
+          name: "Lisa Park",
+          email: "lisa@example.com",
+          city: "Denver",
+          country: "USA",
+          age: 27,
+          gender: "Female",
+          hobbies: "Skiing, Books, Wine Tasting",
+          bio: "Book lover and wine enthusiast. Spend winters on the slopes and summers hiking.",
+          profilePicture: ""
+        },
+        {
+          UID: "rec4",
+          name: "James Wilson",
+          email: "james@example.com",
+          city: "Miami",
+          country: "USA",
+          age: 31,
+          gender: "Male",
+          hobbies: "Surfing, Music Production, Cooking",
+          bio: "Music producer who loves surfing and creating amazing dishes. Let's vibe together!",
+          profilePicture: ""
+        },
+        {
+          UID: "rec5",
+          name: "Anna Martinez",
+          email: "anna@example.com",
+          city: "Chicago",
+          country: "USA",
+          age: 24,
+          gender: "Female",
+          hobbies: "Theater, Volunteering, Yoga",
+          bio: "Theater enthusiast who believes in giving back to the community. Namaste!",
+          profilePicture: ""
+        },
+        {
+          UID: "rec6",
+          name: "Ryan O'Connor",
+          email: "ryan@example.com",
+          city: "Boston",
+          country: "USA",
+          age: 28,
+          gender: "Male",
+          hobbies: "Basketball, Tech, Craft Beer",
+          bio: "Tech professional who loves basketball and exploring local breweries.",
+          profilePicture: ""
+        }
+      ],
+      notifications: [
+        {
+          UID: "notif1",
+          name: "Jessica Brown",
+          email: "jessica@example.com",
+          city: "New York",
+          country: "USA",
+          age: 25,
+          gender: "Female",
+          hobbies: "Fashion, Art, Brunch",
+          bio: "Fashion designer who loves art galleries and weekend brunches.",
+          profilePicture: ""
+        }
+      ],
+      awaiting: [
+        {
+          UID: "await1",
+          name: "Alex Kim",
+          email: "alex@example.com",
+          city: "San Diego",
+          country: "USA",
+          age: 32,
+          gender: "Non-binary",
+          hobbies: "Meditation, Gardening, Board Games",
+          bio: "Peaceful soul who loves growing plants and strategic board games.",
+          profilePicture: ""
+        },
+        {
+          UID: "await2",
+          name: "Sophie Turner",
+          email: "sophie@example.com",
+          city: "Nashville",
+          country: "USA",
+          age: 26,
+          gender: "Female",
+          hobbies: "Music, Writing, Coffee Shops",
+          bio: "Singer-songwriter who finds inspiration in cozy coffee shops.",
+          profilePicture: ""
+        }
+      ]
     };
 
     setUserUID(tempUserData.UID);
