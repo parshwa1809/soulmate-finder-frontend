@@ -26,6 +26,7 @@ const Register = () => {
     phone: "",
     email: "",
     password: "",
+    confirmPassword: "",
     cityOfResidence: "",
     countryOfResidence: "",
     cityOfBirth: "",
@@ -39,6 +40,7 @@ const Register = () => {
   const [emailVerified, setEmailVerified] = useState(false);
   const [emailChecking, setEmailChecking] = useState(false);
   const [showPassword, setShowPassword] = useState(false);
+  const [showConfirmPassword, setShowConfirmPassword] = useState(false);
 
   const handleInputChange = (field: string, value: string | Date | null | string[]) => {
     setFormData(prev => ({ ...prev, [field]: value }));
@@ -93,6 +95,12 @@ const Register = () => {
       return;
     }
 
+    if (formData.password !== formData.confirmPassword) {
+      setError('Passwords do not match');
+      setIsLoading(false);
+      return;
+    }
+
     try {
       const jsonData = {
         name: formData.name,
@@ -133,6 +141,9 @@ const Register = () => {
       setIsLoading(false);
     }
   };
+
+  const passwordsMatch = formData.password && formData.confirmPassword && formData.password === formData.confirmPassword;
+  const passwordsDontMatch = formData.password && formData.confirmPassword && formData.password !== formData.confirmPassword;
 
   return (
     <div className="min-h-screen flex items-center justify-center p-4">
@@ -206,25 +217,58 @@ const Register = () => {
               </div>
             </div>
 
-            <div className="space-y-2">
-              <Label htmlFor="password">Password</Label>
-              <div className="relative">
-                <Input
-                  id="password"
-                  type={showPassword ? "text" : "password"}
-                  value={formData.password}
-                  onChange={(e) => handleInputChange('password', e.target.value)}
-                  className="h-12 pr-10"
-                  required
-                  minLength={6}
-                />
-                <button
-                  type="button"
-                  onClick={() => setShowPassword(!showPassword)}
-                  className="absolute right-3 top-3 text-gray-400 hover:text-gray-600"
-                >
-                  {showPassword ? <EyeOff className="h-6 w-6" /> : <Eye className="h-6 w-6" />}
-                </button>
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+              <div className="space-y-2">
+                <Label htmlFor="password">Password</Label>
+                <div className="relative">
+                  <Input
+                    id="password"
+                    type={showPassword ? "text" : "password"}
+                    value={formData.password}
+                    onChange={(e) => handleInputChange('password', e.target.value)}
+                    className="h-12 pr-10"
+                    required
+                    minLength={6}
+                  />
+                  <button
+                    type="button"
+                    onClick={() => setShowPassword(!showPassword)}
+                    className="absolute right-3 top-3 text-gray-400 hover:text-gray-600"
+                  >
+                    {showPassword ? <EyeOff className="h-6 w-6" /> : <Eye className="h-6 w-6" />}
+                  </button>
+                </div>
+              </div>
+
+              <div className="space-y-2">
+                <Label htmlFor="confirmPassword">Confirm Password</Label>
+                <div className="relative">
+                  <Input
+                    id="confirmPassword"
+                    type={showConfirmPassword ? "text" : "password"}
+                    value={formData.confirmPassword}
+                    onChange={(e) => handleInputChange('confirmPassword', e.target.value)}
+                    className="h-12 pr-10"
+                    required
+                    minLength={6}
+                  />
+                  <button
+                    type="button"
+                    onClick={() => setShowConfirmPassword(!showConfirmPassword)}
+                    className="absolute right-3 top-3 text-gray-400 hover:text-gray-600"
+                  >
+                    {showConfirmPassword ? <EyeOff className="h-6 w-6" /> : <Eye className="h-6 w-6" />}
+                  </button>
+                  {formData.confirmPassword && (
+                    <div className="absolute right-12 top-3">
+                      {passwordsMatch && <Check className="h-6 w-6 text-green-500" />}
+                      {passwordsDontMatch && <X className="h-6 w-6 text-red-500" />}
+                    </div>
+                  )}
+                </div>
+                {passwordsDontMatch && (
+                  <p className="text-sm text-red-500">Passwords do not match</p>
+                )}
               </div>
             </div>
 
@@ -354,7 +398,7 @@ const Register = () => {
 
             <Button
               type="submit"
-              disabled={isLoading || !emailVerified}
+              disabled={isLoading || !emailVerified || passwordsDontMatch}
               className="w-full h-12 bg-gradient-to-r from-orange-500 to-yellow-500 hover:from-orange-600 hover:to-yellow-600 text-white font-medium rounded-md transition-all duration-200 shadow-lg hover:shadow-xl disabled:opacity-50"
             >
               {isLoading ? "Creating Account..." : "Create Account"}
