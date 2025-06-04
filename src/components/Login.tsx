@@ -1,4 +1,3 @@
-
 import { useState } from "react";
 import { Link } from "react-router-dom";
 import { Button } from "@/components/ui/button";
@@ -52,6 +51,10 @@ const Login = ({ setIsLoggedIn, setUserUID }: LoginProps) => {
   };
 
   const handleDemoLogin = () => {
+    // Clear any existing data first
+    localStorage.removeItem('userUID');
+    localStorage.removeItem('userData');
+    
     const tempUserData = {
       UID: "demo-user-123",
       name: "Demo User",
@@ -205,6 +208,7 @@ const Login = ({ setIsLoggedIn, setUserUID }: LoginProps) => {
       ]
     };
 
+    console.log('Setting demo user data:', tempUserData);
     setUserUID(tempUserData.UID);
     localStorage.setItem('userUID', tempUserData.UID);
     localStorage.setItem('userData', JSON.stringify(tempUserData));
