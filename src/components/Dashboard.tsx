@@ -53,7 +53,7 @@ const Dashboard = ({ userUID, setIsLoggedIn }: DashboardProps) => {
           setNotifications(parsedData.notifications || []);
           setAwaiting(parsedData.awaiting || []);
         } else {
-          // For real users, fetch from API
+          // For real users, fetch from API with HTTP support
           await Promise.all([
             loadUsersForCategory(parsedData.matches || [], setMatches),
             loadUsersForCategory(parsedData.recommendations || [], setRecommendations), 
@@ -73,11 +73,22 @@ const Dashboard = ({ userUID, setIsLoggedIn }: DashboardProps) => {
     try {
       const userPromises = userList.map(async (item) => {
         const uid = item.UID || item;
+        console.log(`Fetching user data for UID: ${uid} from ${config.URL}/get:${uid}`);
+        
         const response = await fetch(`${config.URL}/get:${uid}`, {
           method: 'POST',
+          mode: 'cors', // Enable CORS
+          headers: {
+            'Content-Type': 'application/json',
+          },
         });
+        
         if (response.ok) {
-          return await response.json();
+          const userData = await response.json();
+          console.log(`Successfully fetched user data for ${uid}:`, userData);
+          return userData;
+        } else {
+          console.error(`Failed to fetch user ${uid}, status: ${response.status}`);
         }
         return null;
       });
