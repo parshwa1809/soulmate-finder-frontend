@@ -8,7 +8,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
 import { Calendar } from "@/components/ui/calendar";
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
-import { Heart, Check, X, Calendar as CalendarIcon } from "lucide-react";
+import { Heart, Check, X, Calendar as CalendarIcon, Eye, EyeOff } from "lucide-react";
 import { format } from "date-fns";
 import { cn } from "@/lib/utils";
 import { config } from "../config/api";
@@ -25,6 +25,7 @@ const Register = () => {
     name: "",
     phone: "",
     email: "",
+    password: "",
     cityOfResidence: "",
     countryOfResidence: "",
     cityOfBirth: "",
@@ -37,6 +38,7 @@ const Register = () => {
   const [error, setError] = useState("");
   const [emailVerified, setEmailVerified] = useState(false);
   const [emailChecking, setEmailChecking] = useState(false);
+  const [showPassword, setShowPassword] = useState(false);
 
   const handleInputChange = (field: string, value: string | Date | null | string[]) => {
     setFormData(prev => ({ ...prev, [field]: value }));
@@ -96,6 +98,7 @@ const Register = () => {
         name: formData.name,
         phone: formData.phone,
         email: formData.email,
+        password: formData.password,
         cityOfResidence: formData.cityOfResidence,
         countryOfResidence: formData.countryOfResidence,
         cityOfBirth: formData.cityOfBirth,
@@ -200,6 +203,28 @@ const Register = () => {
                 {!emailChecking && formData.email && !emailVerified && (
                   <X className="absolute right-3 top-3 h-6 w-6 text-red-500" />
                 )}
+              </div>
+            </div>
+
+            <div className="space-y-2">
+              <Label htmlFor="password">Password</Label>
+              <div className="relative">
+                <Input
+                  id="password"
+                  type={showPassword ? "text" : "password"}
+                  value={formData.password}
+                  onChange={(e) => handleInputChange('password', e.target.value)}
+                  className="h-12 pr-10"
+                  required
+                  minLength={6}
+                />
+                <button
+                  type="button"
+                  onClick={() => setShowPassword(!showPassword)}
+                  className="absolute right-3 top-3 text-gray-400 hover:text-gray-600"
+                >
+                  {showPassword ? <EyeOff className="h-6 w-6" /> : <Eye className="h-6 w-6" />}
+                </button>
               </div>
             </div>
 
