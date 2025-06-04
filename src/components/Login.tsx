@@ -54,11 +54,11 @@ const Login = ({ setIsLoggedIn, setUserUID }: LoginProps) => {
     <div className="min-h-screen flex items-center justify-center p-4">
       <Card className="w-full max-w-md bg-white/80 backdrop-blur-sm border-0 shadow-2xl">
         <CardHeader className="text-center space-y-6">
-          <div className="mx-auto w-16 h-16 bg-gradient-to-r from-purple-500 to-pink-500 rounded-full flex items-center justify-center">
+          <div className="mx-auto w-16 h-16 bg-gradient-to-r from-orange-500 to-yellow-500 rounded-full flex items-center justify-center">
             <Heart className="w-8 h-8 text-white" />
           </div>
           <div>
-            <CardTitle className="text-3xl font-bold bg-gradient-to-r from-purple-600 to-pink-600 bg-clip-text text-transparent">
+            <CardTitle className="text-3xl font-bold bg-gradient-to-r from-orange-600 to-yellow-600 bg-clip-text text-transparent">
               Welcome Back
             </CardTitle>
             <CardDescription className="text-gray-600 mt-2">
@@ -80,7 +80,7 @@ const Login = ({ setIsLoggedIn, setUserUID }: LoginProps) => {
                   placeholder="Enter your email"
                   value={email}
                   onChange={(e) => setEmail(e.target.value)}
-                  className="pl-10 h-12 border-gray-200 focus:border-purple-500 focus:ring-purple-500"
+                  className="pl-10 h-12 border-gray-200 focus:border-orange-500 focus:ring-orange-500"
                   required
                 />
               </div>
@@ -95,7 +95,7 @@ const Login = ({ setIsLoggedIn, setUserUID }: LoginProps) => {
             <Button
               type="submit"
               disabled={isLoading}
-              className="w-full h-12 bg-gradient-to-r from-purple-500 to-pink-500 hover:from-purple-600 hover:to-pink-600 text-white font-medium rounded-md transition-all duration-200 shadow-lg hover:shadow-xl"
+              className="w-full h-12 bg-gradient-to-r from-orange-500 to-yellow-500 hover:from-orange-600 hover:to-yellow-600 text-white font-medium rounded-md transition-all duration-200 shadow-lg hover:shadow-xl"
             >
               {isLoading ? "Signing In..." : "Sign In"}
             </Button>
@@ -104,7 +104,7 @@ const Login = ({ setIsLoggedIn, setUserUID }: LoginProps) => {
               <span className="text-gray-600">Don't have an account? </span>
               <Link 
                 to="/register" 
-                className="text-purple-600 hover:text-purple-700 font-medium transition-colors"
+                className="text-orange-600 hover:text-orange-700 font-medium transition-colors"
               >
                 Sign up
               </Link>

@@ -1,4 +1,3 @@
-
 import { useState, useEffect } from "react";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
@@ -90,7 +89,7 @@ const Dashboard = ({ userUID, setIsLoggedIn }: DashboardProps) => {
         <div className="flex items-start space-x-4">
           <Avatar className="w-16 h-16">
             <AvatarImage src={user.profilePicture} />
-            <AvatarFallback className="bg-gradient-to-r from-purple-500 to-pink-500 text-white">
+            <AvatarFallback className="bg-gradient-to-r from-orange-500 to-yellow-500 text-white">
               {user.name?.charAt(0) || <User className="w-6 h-6" />}
             </AvatarFallback>
           </Avatar>
@@ -141,7 +140,7 @@ const Dashboard = ({ userUID, setIsLoggedIn }: DashboardProps) => {
     return (
       <div className="min-h-screen flex items-center justify-center">
         <div className="text-center">
-          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-purple-500 mx-auto"></div>
+          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-orange-500 mx-auto"></div>
           <p className="mt-4 text-gray-600">Loading your matches...</p>
         </div>
       </div>
@@ -149,11 +148,11 @@ const Dashboard = ({ userUID, setIsLoggedIn }: DashboardProps) => {
   }
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-purple-50 via-pink-50 to-purple-100">
+    <div className="min-h-screen bg-gradient-to-br from-yellow-50 via-orange-50 to-yellow-100">
       <div className="container mx-auto px-4 py-8">
         <div className="flex justify-between items-center mb-8">
           <div>
-            <h1 className="text-3xl font-bold bg-gradient-to-r from-purple-600 to-pink-600 bg-clip-text text-transparent">
+            <h1 className="text-3xl font-bold bg-gradient-to-r from-orange-600 to-yellow-600 bg-clip-text text-transparent">
               Your Dashboard
             </h1>
             <p className="text-gray-600 mt-2">Discover your perfect matches</p>
@@ -161,7 +160,7 @@ const Dashboard = ({ userUID, setIsLoggedIn }: DashboardProps) => {
           <Button 
             onClick={handleLogout}
             variant="outline"
-            className="border-purple-200 text-purple-600 hover:bg-purple-50"
+            className="border-orange-200 text-orange-600 hover:bg-orange-50"
           >
             Logout
           </Button>
@@ -190,7 +189,7 @@ const Dashboard = ({ userUID, setIsLoggedIn }: DashboardProps) => {
           <TabsContent value="matches" className="space-y-4">
             <Card className="bg-white/80 backdrop-blur-sm border-0 shadow-lg">
               <CardHeader>
-                <CardTitle className="flex items-center gap-2 text-purple-600">
+                <CardTitle className="flex items-center gap-2 text-orange-600">
                   <Heart className="w-5 h-5" />
                   Your Matches
                 </CardTitle>
@@ -219,7 +218,7 @@ const Dashboard = ({ userUID, setIsLoggedIn }: DashboardProps) => {
           <TabsContent value="recommendations" className="space-y-4">
             <Card className="bg-white/80 backdrop-blur-sm border-0 shadow-lg">
               <CardHeader>
-                <CardTitle className="flex items-center gap-2 text-purple-600">
+                <CardTitle className="flex items-center gap-2 text-orange-600">
                   <Users className="w-5 h-5" />
                   Recommended for You
                 </CardTitle>
@@ -248,7 +247,7 @@ const Dashboard = ({ userUID, setIsLoggedIn }: DashboardProps) => {
           <TabsContent value="notifications" className="space-y-4">
             <Card className="bg-white/80 backdrop-blur-sm border-0 shadow-lg">
               <CardHeader>
-                <CardTitle className="flex items-center gap-2 text-purple-600">
+                <CardTitle className="flex items-center gap-2 text-orange-600">
                   <Bell className="w-5 h-5" />
                   Notifications
                 </CardTitle>
@@ -277,7 +276,7 @@ const Dashboard = ({ userUID, setIsLoggedIn }: DashboardProps) => {
           <TabsContent value="awaiting" className="space-y-4">
             <Card className="bg-white/80 backdrop-blur-sm border-0 shadow-lg">
               <CardHeader>
-                <CardTitle className="flex items-center gap-2 text-purple-600">
+                <CardTitle className="flex items-center gap-2 text-orange-600">
                   <Clock className="w-5 h-5" />
                   Awaiting Response
                 </CardTitle>

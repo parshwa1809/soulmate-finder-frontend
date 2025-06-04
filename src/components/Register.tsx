@@ -1,4 +1,3 @@
-
 import { useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { Button } from "@/components/ui/button";
@@ -135,11 +134,11 @@ const Register = () => {
     <div className="min-h-screen flex items-center justify-center p-4">
       <Card className="w-full max-w-2xl bg-white/80 backdrop-blur-sm border-0 shadow-2xl">
         <CardHeader className="text-center space-y-6">
-          <div className="mx-auto w-16 h-16 bg-gradient-to-r from-purple-500 to-pink-500 rounded-full flex items-center justify-center">
+          <div className="mx-auto w-16 h-16 bg-gradient-to-r from-orange-500 to-yellow-500 rounded-full flex items-center justify-center">
             <Heart className="w-8 h-8 text-white" />
           </div>
           <div>
-            <CardTitle className="text-3xl font-bold bg-gradient-to-r from-purple-600 to-pink-600 bg-clip-text text-transparent">
+            <CardTitle className="text-3xl font-bold bg-gradient-to-r from-orange-600 to-yellow-600 bg-clip-text text-transparent">
               Join LoveMatch
             </CardTitle>
             <CardDescription className="text-gray-600 mt-2">
@@ -190,7 +189,7 @@ const Register = () => {
                   />
                   {emailChecking && (
                     <div className="absolute right-3 top-3">
-                      <div className="animate-spin rounded-full h-6 w-6 border-b-2 border-purple-500"></div>
+                      <div className="animate-spin rounded-full h-6 w-6 border-b-2 border-orange-500"></div>
                     </div>
                   )}
                   {!emailChecking && formData.email && emailVerified && (
@@ -342,7 +341,7 @@ const Register = () => {
             <Button
               type="submit"
               disabled={isLoading || !emailVerified}
-              className="w-full h-12 bg-gradient-to-r from-purple-500 to-pink-500 hover:from-purple-600 hover:to-pink-600 text-white font-medium rounded-md transition-all duration-200 shadow-lg hover:shadow-xl disabled:opacity-50"
+              className="w-full h-12 bg-gradient-to-r from-orange-500 to-yellow-500 hover:from-orange-600 hover:to-yellow-600 text-white font-medium rounded-md transition-all duration-200 shadow-lg hover:shadow-xl disabled:opacity-50"
             >
               {isLoading ? "Creating Account..." : "Create Account"}
             </Button>
@@ -351,7 +350,7 @@ const Register = () => {
               <span className="text-gray-600">Already have an account? </span>
               <Link 
                 to="/login" 
-                className="text-purple-600 hover:text-purple-700 font-medium transition-colors"
+                className="text-orange-600 hover:text-orange-700 font-medium transition-colors"
               >
                 Sign in
               </Link>
