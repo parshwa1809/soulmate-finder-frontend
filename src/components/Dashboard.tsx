@@ -6,6 +6,8 @@ import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Badge } from "@/components/ui/badge";
 import { Heart, Bell, Clock, Users, User } from "lucide-react";
 import { config } from "../config/api";
+import UserActions from "./UserActions";
+import ProfileView from "./ProfileView";
 
 interface User {
   UID: string;
@@ -17,6 +19,7 @@ interface User {
   gender?: string;
   hobbies?: string;
   profilePicture?: string;
+  bio?: string;
 }
 
 interface DashboardProps {
@@ -30,6 +33,7 @@ const Dashboard = ({ userUID, setIsLoggedIn }: DashboardProps) => {
   const [notifications, setNotifications] = useState<User[]>([]);
   const [awaiting, setAwaiting] = useState<User[]>([]);
   const [isLoading, setIsLoading] = useState(true);
+  const [selectedUser, setSelectedUser] = useState<User | null>(null);
 
   useEffect(() => {
     loadUserData();
@@ -83,9 +87,22 @@ const Dashboard = ({ userUID, setIsLoggedIn }: DashboardProps) => {
     setIsLoggedIn(false);
   };
 
-  const UserCard = ({ user }: { user: User }) => (
-    <Card className="hover:shadow-lg transition-shadow duration-200 bg-white/80 backdrop-blur-sm">
-      <CardContent className="p-6">
+  const handleUserClick = (user: User) => {
+    setSelectedUser(user);
+  };
+
+  const handleBackToList = () => {
+    setSelectedUser(null);
+  };
+
+  const handleActionComplete = () => {
+    loadUserData(); // Reload data after action
+    setSelectedUser(null); // Go back to list
+  };
+
+  const UserCard = ({ user, showActions = false }: { user: User; showActions?: boolean }) => (
+    <Card className="hover:shadow-lg transition-shadow duration-200 bg-white/80 backdrop-blur-sm cursor-pointer">
+      <CardContent className="p-6" onClick={() => handleUserClick(user)}>
         <div className="flex items-start space-x-4">
           <Avatar className="w-16 h-16">
             <AvatarImage src={user.profilePicture} />
@@ -120,6 +137,15 @@ const Dashboard = ({ userUID, setIsLoggedIn }: DashboardProps) => {
             )}
           </div>
         </div>
+        {showActions && (
+          <div onClick={(e) => e.stopPropagation()}>
+            <UserActions 
+              userUID={user.UID} 
+              currentUserUID={userUID}
+              onActionComplete={handleActionComplete}
+            />
+          </div>
+        )}
       </CardContent>
     </Card>
   );
@@ -135,6 +161,22 @@ const Dashboard = ({ userUID, setIsLoggedIn }: DashboardProps) => {
       <p className="mt-2 text-gray-600">{description}</p>
     </div>
   );
+
+  if (selectedUser) {
+    return (
+      <div className="min-h-screen bg-gradient-to-br from-yellow-50 via-orange-50 to-yellow-100">
+        <div className="container mx-auto px-4 py-8">
+          <ProfileView user={selectedUser} onBack={handleBackToList}>
+            <UserActions 
+              userUID={selectedUser.UID} 
+              currentUserUID={userUID}
+              onActionComplete={handleActionComplete}
+            />
+          </ProfileView>
+        </div>
+      </div>
+    );
+  }
 
   if (isLoading) {
     return (
@@ -166,15 +208,15 @@ const Dashboard = ({ userUID, setIsLoggedIn }: DashboardProps) => {
           </Button>
         </div>
 
-        <Tabs defaultValue="matches" className="space-y-6">
+        <Tabs defaultValue="recommendations" className="space-y-6">
           <TabsList className="grid w-full grid-cols-4 bg-white/80 backdrop-blur-sm">
+            <TabsTrigger value="recommendations" className="flex items-center gap-2">
+              <Users className="w-4 h-4" />
+              Discover ({recommendations.length})
+            </TabsTrigger>
             <TabsTrigger value="matches" className="flex items-center gap-2">
               <Heart className="w-4 h-4" />
               Matches ({matches.length})
-            </TabsTrigger>
-            <TabsTrigger value="recommendations" className="flex items-center gap-2">
-              <Users className="w-4 h-4" />
-              Recommendations ({recommendations.length})
             </TabsTrigger>
             <TabsTrigger value="notifications" className="flex items-center gap-2">
               <Bell className="w-4 h-4" />
@@ -185,6 +227,35 @@ const Dashboard = ({ userUID, setIsLoggedIn }: DashboardProps) => {
               Awaiting ({awaiting.length})
             </TabsTrigger>
           </TabsList>
+
+          <TabsContent value="recommendations" className="space-y-4">
+            <Card className="bg-white/80 backdrop-blur-sm border-0 shadow-lg">
+              <CardHeader>
+                <CardTitle className="flex items-center gap-2 text-orange-600">
+                  <Users className="w-5 h-5" />
+                  Discover New People
+                </CardTitle>
+                <CardDescription>
+                  Profiles our algorithm thinks you'll love
+                </CardDescription>
+              </CardHeader>
+              <CardContent>
+                {recommendations.length > 0 ? (
+                  <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+                    {recommendations.map((user) => (
+                      <UserCard key={user.UID} user={user} showActions={true} />
+                    ))}
+                  </div>
+                ) : (
+                  <EmptyState
+                    icon={Users}
+                    title="No recommendations"
+                    description="We're finding the perfect people for you!"
+                  />
+                )}
+              </CardContent>
+            </Card>
+          </TabsContent>
 
           <TabsContent value="matches" className="space-y-4">
             <Card className="bg-white/80 backdrop-blur-sm border-0 shadow-lg">
@@ -209,35 +280,6 @@ const Dashboard = ({ userUID, setIsLoggedIn }: DashboardProps) => {
                     icon={Heart}
                     title="No matches yet"
                     description="Keep swiping to find your perfect match!"
-                  />
-                )}
-              </CardContent>
-            </Card>
-          </TabsContent>
-
-          <TabsContent value="recommendations" className="space-y-4">
-            <Card className="bg-white/80 backdrop-blur-sm border-0 shadow-lg">
-              <CardHeader>
-                <CardTitle className="flex items-center gap-2 text-orange-600">
-                  <Users className="w-5 h-5" />
-                  Recommended for You
-                </CardTitle>
-                <CardDescription>
-                  Profiles our algorithm thinks you'll love
-                </CardDescription>
-              </CardHeader>
-              <CardContent>
-                {recommendations.length > 0 ? (
-                  <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-                    {recommendations.map((user) => (
-                      <UserCard key={user.UID} user={user} />
-                    ))}
-                  </div>
-                ) : (
-                  <EmptyState
-                    icon={Users}
-                    title="No recommendations"
-                    description="We're finding the perfect people for you!"
                   />
                 )}
               </CardContent>
