@@ -77,12 +77,10 @@ const Dashboard = ({ userUID, setIsLoggedIn }: DashboardProps) => {
         
         const response = await fetch(`${config.URL}/get:${uid}`, {
           method: 'POST',
-          mode: 'cors', // Enable CORS
+          mode: 'cors',
           headers: {
             'Content-Type': 'application/json',
           },
-          // Note: SSL verification handling is done at browser level
-          // For development with self-signed certificates, user may need to visit the URL first
         });
         
         if (response.ok) {
@@ -99,10 +97,6 @@ const Dashboard = ({ userUID, setIsLoggedIn }: DashboardProps) => {
       setter(users);
     } catch (error) {
       console.error('Error fetching users:', error);
-      // If HTTPS fails due to SSL issues, log helpful message
-      if (error instanceof TypeError && error.message.includes('fetch')) {
-        console.error('SSL/TLS connection failed. For development, you may need to visit', config.URL, 'directly in your browser and accept the certificate first.');
-      }
       setter([]);
     }
   };
