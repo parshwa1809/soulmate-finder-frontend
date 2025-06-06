@@ -1,3 +1,4 @@
+
 import { useState } from "react";
 import { Link } from "react-router-dom";
 import { Button } from "@/components/ui/button";
@@ -24,12 +25,12 @@ const Login = ({ setIsLoggedIn, setUserUID }: LoginProps) => {
     setError("");
 
     try {
-      const formData = new FormData();
-      formData.append('metadata', JSON.stringify({ email, password }));
-
       const response = await fetch(`${config.URL}/account:login`, {
         method: 'POST',
-        body: formData,
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({ email, password }),
       });
 
       const data = await response.json();
