@@ -1,8 +1,6 @@
 
-
-
 export const config = {
-  URL: 'https://lovabhagya.com', // Updated to new backend URL
+  URL: 'https://lovebhagya.com', // Fixed typo in URL
   MAX_IMAGES: 5
 };
 
@@ -11,5 +9,3 @@ if (import.meta.env.DEV) {
   // For development, we'll handle CORS and HTTPS requests
   console.log('Development mode: Using HTTPS backend at', config.URL);
 }
-
-
