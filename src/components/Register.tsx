@@ -1,4 +1,3 @@
-
 import { useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { Button } from "@/components/ui/button";
@@ -80,24 +79,38 @@ const Register = () => {
     
     setEmailChecking(true);
     try {
+      const formData = new FormData();
+      formData.append('metadata', JSON.stringify({ email }));
+
       const response = await fetch(`${config.URL}${config.ENDPOINTS.VERIFY_EMAIL}`, {
         method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({ email }),
+        body: formData,
       });
 
-      const isAvailable = await response.json();
-      setEmailVerified(isAvailable);
+      const data = await response.json();
+      console.log('Email verification response:', data);
       
-      if (!isAvailable) {
-        setError('Email already exists. Please use a different email.');
+      if (response.ok) {
+        if (data.exists === false) {
+          // Email is available
+          setEmailVerified(true);
+          setError('');
+        } else if (data.exists === true) {
+          // Email already exists
+          setEmailVerified(false);
+          setError(data.message || 'Email already exists. Please use a different email.');
+        } else if (data.error) {
+          // API returned an error
+          setEmailVerified(false);
+          setError(data.error);
+        }
       } else {
-        setError('');
+        setEmailVerified(false);
+        setError('Failed to verify email. Please try again.');
       }
     } catch (error) {
       console.error('Email verification error:', error);
+      setEmailVerified(false);
       setError('Failed to verify email. Please try again.');
     } finally {
       setEmailChecking(false);
