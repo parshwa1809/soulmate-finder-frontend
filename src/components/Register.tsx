@@ -274,7 +274,7 @@ const Register = () => {
 
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
               <div className="space-y-2">
-                <Label htmlFor="cityOfResidence">City of Residence</Label>
+                <Label htmlFor="cityOfResidence">City</Label>
                 <Input
                   id="cityOfResidence"
                   value={formData.cityOfResidence}
