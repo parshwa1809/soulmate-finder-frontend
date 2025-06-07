@@ -1,4 +1,5 @@
 import { useState, useEffect } from "react";
+import { useNavigate } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
@@ -28,6 +29,7 @@ interface DashboardProps {
 }
 
 const Dashboard = ({ userUID, setIsLoggedIn }: DashboardProps) => {
+  const navigate = useNavigate();
   const [matches, setMatches] = useState<User[]>([]);
   const [recommendations, setRecommendations] = useState<User[]>([]);
   const [notifications, setNotifications] = useState<User[]>([]);
@@ -150,6 +152,10 @@ const Dashboard = ({ userUID, setIsLoggedIn }: DashboardProps) => {
     setIsLoggedIn(false);
   };
 
+  const handleViewProfile = () => {
+    navigate("/profile");
+  };
+
   const handleUserClick = (user: User) => {
     setSelectedUser(user);
   };
@@ -262,13 +268,23 @@ const Dashboard = ({ userUID, setIsLoggedIn }: DashboardProps) => {
             </h1>
             <p className="text-gray-600 mt-2">Discover your perfect matches</p>
           </div>
-          <Button 
-            onClick={handleLogout}
-            variant="outline"
-            className="border-orange-200 text-orange-600 hover:bg-orange-50"
-          >
-            Logout
-          </Button>
+          <div className="flex gap-3">
+            <Button 
+              onClick={handleViewProfile}
+              variant="outline"
+              className="border-orange-200 text-orange-600 hover:bg-orange-50"
+            >
+              <User className="w-4 h-4 mr-2" />
+              View Profile
+            </Button>
+            <Button 
+              onClick={handleLogout}
+              variant="outline"
+              className="border-red-200 text-red-600 hover:bg-red-50"
+            >
+              Logout
+            </Button>
+          </div>
         </div>
 
         <Tabs defaultValue="recommendations" className="space-y-6">
