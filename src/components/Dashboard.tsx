@@ -91,20 +91,25 @@ const Dashboard = ({ userUID, setIsLoggedIn }: DashboardProps) => {
         const parsedData = JSON.parse(userData);
         console.log('Loading user data from localStorage:', parsedData);
         
-        // For demo mode, use the data directly from localStorage
-        if (userUID === "demo-user-123") {
-          setMatches(parsedData.matches || []);
-          setRecommendations(parsedData.recommendations || []);
-          setNotifications(parsedData.notifications || []);
-          setAwaiting(parsedData.awaiting || []);
-        } else {
-          // For real users, fetch from API with HTTP support
-          await Promise.all([
-            loadUsersForCategory(parsedData.matches || [], setMatches),
-            loadUsersForCategory(parsedData.recommendations || [], setRecommendations), 
-            loadUsersForCategory(parsedData.notifications || [], setNotifications),
-            loadUsersForCategory(parsedData.awaiting || [], setAwaiting)
-          ]);
+        // Process the data arrays from the API response
+        if (parsedData.recommendations && Array.isArray(parsedData.recommendations)) {
+          console.log('Processing recommendations:', parsedData.recommendations);
+          await loadUsersForCategory(parsedData.recommendations, setRecommendations);
+        }
+        
+        if (parsedData.matches && Array.isArray(parsedData.matches)) {
+          console.log('Processing matches:', parsedData.matches);
+          await loadUsersForCategory(parsedData.matches, setMatches);
+        }
+        
+        if (parsedData.notifications && Array.isArray(parsedData.notifications)) {
+          console.log('Processing notifications:', parsedData.notifications);
+          await loadUsersForCategory(parsedData.notifications, setNotifications);
+        }
+        
+        if (parsedData.awaiting && Array.isArray(parsedData.awaiting)) {
+          console.log('Processing awaiting:', parsedData.awaiting);
+          await loadUsersForCategory(parsedData.awaiting, setAwaiting);
         }
       }
     } catch (error) {
@@ -116,9 +121,12 @@ const Dashboard = ({ userUID, setIsLoggedIn }: DashboardProps) => {
 
   const loadUsersForCategory = async (userList: any[], setter: (users: User[]) => void) => {
     try {
+      console.log('Loading users for category:', userList);
+      
       const userPromises = userList.map(async (item) => {
-        const uid = item.UID || item;
-        console.log(`Fetching user data for UID: ${uid} from ${config.URL}${config.ENDPOINTS.GET_PROFILE}/${uid}`);
+        // Handle both array format [UID, score, date, ...] and object format
+        const uid = Array.isArray(item) ? item[0] : (item.UID || item);
+        console.log(`Fetching user data for UID: ${uid}`);
         
         const response = await fetch(`${config.URL}${config.ENDPOINTS.GET_PROFILE}/${uid}`, {
           method: 'GET',
@@ -139,6 +147,7 @@ const Dashboard = ({ userUID, setIsLoggedIn }: DashboardProps) => {
       });
 
       const users = (await Promise.all(userPromises)).filter(Boolean);
+      console.log(`Setting ${users.length} users for category`);
       setter(users);
     } catch (error) {
       console.error('Error fetching users:', error);
@@ -165,8 +174,8 @@ const Dashboard = ({ userUID, setIsLoggedIn }: DashboardProps) => {
   };
 
   const handleActionComplete = () => {
-    loadUserData(); // Reload data after action
-    setSelectedUser(null); // Go back to list
+    loadUserData();
+    setSelectedUser(null);
   };
 
   const UserCard = ({ user, showActions = false }: { user: User; showActions?: boolean }) => (
@@ -262,7 +271,6 @@ const Dashboard = ({ userUID, setIsLoggedIn }: DashboardProps) => {
 
   return (
     <div className="min-h-screen bg-background">
-      {/* Header */}
       <div className="border-b border-border bg-card/50 backdrop-blur-sm sticky top-0 z-50">
         <div className="max-w-7xl mx-auto px-6 py-4 flex items-center justify-between">
           <div>
@@ -290,7 +298,6 @@ const Dashboard = ({ userUID, setIsLoggedIn }: DashboardProps) => {
         </div>
       </div>
 
-      {/* Content */}
       <div className="max-w-7xl mx-auto px-6 py-8">
         <Tabs defaultValue="recommendations" className="space-y-6">
           <TabsList className="grid w-full grid-cols-4 bg-card border-border">

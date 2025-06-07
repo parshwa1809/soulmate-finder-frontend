@@ -1,4 +1,3 @@
-
 import { useState } from "react";
 import { Link } from "react-router-dom";
 import { Button } from "@/components/ui/button";
@@ -85,27 +84,32 @@ const Login = ({ setIsLoggedIn, setUserUID }: LoginProps) => {
       if (response.ok && data.LOGIN === "SUCCESSFUL") {
         console.log('Login successful for UID:', data.UID);
         
-        // Store essential data only
+        // Store user UID
         setUserUID(data.UID);
         safeSetLocalStorage('userUID', data.UID);
         
-        // Store minimal user data to avoid quota issues
-        const essentialData = {
+        // Process and store the complete user data from API response
+        const userData = {
           UID: data.UID,
-          LOGIN: data.LOGIN
+          LOGIN: data.LOGIN,
+          recommendations: data.RECOMMENDATIONS || [],
+          matches: data.MATCHED || [],
+          notifications: data.NOTIFICATIONS || [],
+          awaiting: data.AWAITING || []
         };
-        safeSetLocalStorage('userData', JSON.stringify(essentialData));
+        
+        console.log('Storing user data:', userData);
+        safeSetLocalStorage('userData', JSON.stringify(userData));
         
         setIsLoggedIn(true);
         
         toast({
           title: "Login Successful",
-          description: "Welcome back!",
+          description: `Welcome back! Found ${userData.recommendations.length} recommendations.`,
         });
         
       } else {
         console.error('Login failed:', data);
-        // Handle unsuccessful login response
         if (data.LOGIN === "UNSUCCESSFUL" || data.ERROR !== "OK") {
           setError(data.ERROR || 'Invalid email or password. Please try again.');
         } else {
