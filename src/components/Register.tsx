@@ -13,7 +13,7 @@ import { format } from "date-fns";
 import { cn } from "@/lib/utils";
 import { config } from "../config/api";
 import ImageUpload from "./ImageUpload";
-import { countries, cities } from "../data/locations";
+import { countries, getCitiesForCountry } from "../data/locations";
 
 const hobbiesOptions = [
   "Reading", "Traveling", "Cooking", "Sports", "Music", "Movies", 
@@ -48,7 +48,21 @@ const Register = () => {
   const [showConfirmPassword, setShowConfirmPassword] = useState(false);
 
   const handleInputChange = (field: string, value: string | Date | null | string[]) => {
-    setFormData(prev => ({ ...prev, [field]: value }));
+    setFormData(prev => {
+      const newData = { ...prev, [field]: value };
+      
+      // Reset city when country changes
+      if (field === 'country') {
+        newData.city = "";
+      }
+      
+      // Reset birth_city when birth_country changes
+      if (field === 'birth_country') {
+        newData.birth_city = "";
+      }
+      
+      return newData;
+    });
   };
 
   const handleHobbyToggle = (hobby: string) => {
@@ -161,6 +175,9 @@ const Register = () => {
 
   const passwordsMatch = formData.password && formData.confirmPassword && formData.password === formData.confirmPassword;
   const passwordsDontMatch = formData.password && formData.confirmPassword && formData.password !== formData.confirmPassword;
+
+  const availableCities = formData.country ? getCitiesForCountry(formData.country) : [];
+  const availableBirthCities = formData.birth_country ? getCitiesForCountry(formData.birth_country) : [];
 
   return (
     <div className="min-h-screen flex items-center justify-center p-4">
@@ -292,24 +309,8 @@ const Register = () => {
               </div>
             </div>
 
-            {/* Location information with dropdowns */}
+            {/* Location information with dependent dropdowns */}
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-              <div className="space-y-2">
-                <Label htmlFor="city">City</Label>
-                <Select value={formData.city} onValueChange={(value) => handleInputChange('city', value)}>
-                  <SelectTrigger className="h-12">
-                    <SelectValue placeholder="Select your city" />
-                  </SelectTrigger>
-                  <SelectContent className="max-h-[200px]">
-                    {cities.map((city) => (
-                      <SelectItem key={city} value={city}>
-                        {city}
-                      </SelectItem>
-                    ))}
-                  </SelectContent>
-                </Select>
-              </div>
-
               <div className="space-y-2">
                 <Label htmlFor="country">Country</Label>
                 <Select value={formData.country} onValueChange={(value) => handleInputChange('country', value)}>
@@ -320,6 +321,26 @@ const Register = () => {
                     {countries.map((country) => (
                       <SelectItem key={country} value={country}>
                         {country}
+                      </SelectItem>
+                    ))}
+                  </SelectContent>
+                </Select>
+              </div>
+
+              <div className="space-y-2">
+                <Label htmlFor="city">City</Label>
+                <Select 
+                  value={formData.city} 
+                  onValueChange={(value) => handleInputChange('city', value)}
+                  disabled={!formData.country}
+                >
+                  <SelectTrigger className="h-12">
+                    <SelectValue placeholder={formData.country ? "Select your city" : "Select country first"} />
+                  </SelectTrigger>
+                  <SelectContent className="max-h-[200px]">
+                    {availableCities.map((city) => (
+                      <SelectItem key={city} value={city}>
+                        {city}
                       </SelectItem>
                     ))}
                   </SelectContent>
@@ -340,24 +361,8 @@ const Register = () => {
               />
             </div>
 
-            {/* Birth location with dropdowns */}
+            {/* Birth location with dependent dropdowns */}
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-              <div className="space-y-2">
-                <Label htmlFor="birth_city">City of Birth</Label>
-                <Select value={formData.birth_city} onValueChange={(value) => handleInputChange('birth_city', value)}>
-                  <SelectTrigger className="h-12">
-                    <SelectValue placeholder="Select city of birth" />
-                  </SelectTrigger>
-                  <SelectContent className="max-h-[200px]">
-                    {cities.map((city) => (
-                      <SelectItem key={city} value={city}>
-                        {city}
-                      </SelectItem>
-                    ))}
-                  </SelectContent>
-                </Select>
-              </div>
-
               <div className="space-y-2">
                 <Label htmlFor="birth_country">Country of Birth</Label>
                 <Select value={formData.birth_country} onValueChange={(value) => handleInputChange('birth_country', value)}>
@@ -368,6 +373,26 @@ const Register = () => {
                     {countries.map((country) => (
                       <SelectItem key={country} value={country}>
                         {country}
+                      </SelectItem>
+                    ))}
+                  </SelectContent>
+                </Select>
+              </div>
+
+              <div className="space-y-2">
+                <Label htmlFor="birth_city">City of Birth</Label>
+                <Select 
+                  value={formData.birth_city} 
+                  onValueChange={(value) => handleInputChange('birth_city', value)}
+                  disabled={!formData.birth_country}
+                >
+                  <SelectTrigger className="h-12">
+                    <SelectValue placeholder={formData.birth_country ? "Select city of birth" : "Select country first"} />
+                  </SelectTrigger>
+                  <SelectContent className="max-h-[200px]">
+                    {availableBirthCities.map((city) => (
+                      <SelectItem key={city} value={city}>
+                        {city}
                       </SelectItem>
                     ))}
                   </SelectContent>
