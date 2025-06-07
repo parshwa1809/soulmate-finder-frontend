@@ -80,7 +80,7 @@ const Register = () => {
     
     setEmailChecking(true);
     try {
-      const response = await fetch(`${config.URL}/verify:email`, {
+      const response = await fetch(`${config.URL}${config.ENDPOINTS.VERIFY_EMAIL}`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -151,9 +151,9 @@ const Register = () => {
         formDataToSend.append('images', image);
       });
 
-      console.log('Sending registration data with images:', metadata);
+      console.log('Sending registration data to account:create endpoint:', metadata);
 
-      const response = await fetch(`${config.URL}/create`, {
+      const response = await fetch(`${config.URL}${config.ENDPOINTS.CREATE_ACCOUNT}`, {
         method: 'POST',
         body: formDataToSend,
       });

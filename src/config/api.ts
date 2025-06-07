@@ -1,7 +1,11 @@
 
 export const config = {
   URL: 'https://lovebhagya.com',
-  MAX_IMAGES: 5
+  MAX_IMAGES: 5,
+  ENDPOINTS: {
+    CREATE_ACCOUNT: '/account:create',
+    VERIFY_EMAIL: '/verify:email'
+  }
 };
 
 // Configure fetch to work with HTTPS in production
