@@ -1,4 +1,3 @@
-
 import { useState } from "react";
 import { Link } from "react-router-dom";
 import { Button } from "@/components/ui/button";
@@ -19,6 +18,31 @@ const Login = ({ setIsLoggedIn, setUserUID }: LoginProps) => {
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState("");
 
+  const fetchUserProfile = async (uid: string) => {
+    try {
+      console.log(`Fetching user profile for UID: ${uid}`);
+      const response = await fetch(`${config.PROFILE_URL}${config.ENDPOINTS.GET_PROFILE}/${uid}`, {
+        method: 'GET',
+        mode: 'cors',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+      });
+
+      if (response.ok) {
+        const profileData = await response.json();
+        console.log('User profile fetched successfully:', profileData);
+        return profileData;
+      } else {
+        console.error(`Failed to fetch user profile, status: ${response.status}`);
+        return null;
+      }
+    } catch (error) {
+      console.error('Error fetching user profile:', error);
+      return null;
+    }
+  };
+
   const handleLogin = async (e: React.FormEvent) => {
     e.preventDefault();
     setIsLoading(true);
@@ -36,9 +60,18 @@ const Login = ({ setIsLoggedIn, setUserUID }: LoginProps) => {
       const data = await response.json();
       
       if (response.ok && data.LOGIN !== "UNSUCCESSFUL") {
+        // Fetch user profile after successful login
+        const profileData = await fetchUserProfile(data.UID);
+        
+        // Store both login data and profile data
+        const combinedUserData = {
+          ...data,
+          profile: profileData
+        };
+
         setUserUID(data.UID);
         localStorage.setItem('userUID', data.UID);
-        localStorage.setItem('userData', JSON.stringify(data));
+        localStorage.setItem('userData', JSON.stringify(combinedUserData));
         setIsLoggedIn(true);
       } else {
         // Handle unsuccessful login response
