@@ -1,4 +1,3 @@
-
 import { useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { Button } from "@/components/ui/button";
@@ -13,6 +12,7 @@ import { Heart, Check, X, Calendar as CalendarIcon, Eye, EyeOff, Clock } from "l
 import { format } from "date-fns";
 import { cn } from "@/lib/utils";
 import { config } from "../config/api";
+import ImageUpload from "./ImageUpload";
 
 const hobbiesOptions = [
   "Reading", "Traveling", "Cooking", "Sports", "Music", "Movies", 
@@ -38,6 +38,7 @@ const Register = () => {
     gender: "",
     hobbies: [] as string[],
   });
+  const [images, setImages] = useState<File[]>([]);
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState("");
   const [emailVerified, setEmailVerified] = useState(false);
@@ -104,8 +105,14 @@ const Register = () => {
       return;
     }
 
+    if (images.length === 0) {
+      setError('Please upload at least one profile picture');
+      setIsLoading(false);
+      return;
+    }
+
     try {
-      const jsonData = {
+      const metadata = {
         name: formData.name,
         phone: formData.phone,
         email: formData.email,
@@ -121,14 +128,18 @@ const Register = () => {
         hobbies: formData.hobbies,
       };
 
-      console.log('Sending registration data:', jsonData);
+      const formDataToSend = new FormData();
+      formDataToSend.append('metadata', JSON.stringify(metadata));
+      
+      images.forEach((image) => {
+        formDataToSend.append('images', image);
+      });
 
-      const response = await fetch(`${config.URL}/account:create`, {
+      console.log('Sending registration data with images:', metadata);
+
+      const response = await fetch(`${config.URL}/create`, {
         method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify(jsonData),
+        body: formDataToSend,
       });
 
       const data = await response.json();
@@ -168,6 +179,7 @@ const Register = () => {
         </CardHeader>
         <CardContent>
           <form onSubmit={handleSubmit} className="space-y-6">
+            {/* Basic Information */}
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
               <div className="space-y-2">
                 <Label htmlFor="name">Full Name</Label>
@@ -192,6 +204,7 @@ const Register = () => {
               </div>
             </div>
 
+            {/* Email with verification */}
             <div className="space-y-2">
               <Label htmlFor="email">Email Address</Label>
               <div className="relative">
@@ -222,6 +235,7 @@ const Register = () => {
               </div>
             </div>
 
+            {/* Password fields */}
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
               <div className="space-y-2">
                 <Label htmlFor="password">Password</Label>
@@ -277,6 +291,7 @@ const Register = () => {
               </div>
             </div>
 
+            {/* Location information */}
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
               <div className="space-y-2">
                 <Label htmlFor="city">City</Label>
@@ -301,6 +316,7 @@ const Register = () => {
               </div>
             </div>
 
+            {/* Profession */}
             <div className="space-y-2">
               <Label htmlFor="profession">Profession</Label>
               <Input
@@ -313,6 +329,7 @@ const Register = () => {
               />
             </div>
 
+            {/* Birth location */}
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
               <div className="space-y-2">
                 <Label htmlFor="birth_city">City of Birth</Label>
@@ -337,6 +354,7 @@ const Register = () => {
               </div>
             </div>
 
+            {/* Date and time of birth */}
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
               <div className="space-y-2">
                 <Label>Date of Birth</Label>
@@ -382,6 +400,7 @@ const Register = () => {
               </div>
             </div>
 
+            {/* Gender selection */}
             <div className="space-y-2">
               <Label>Gender</Label>
               <RadioGroup
@@ -404,6 +423,7 @@ const Register = () => {
               </RadioGroup>
             </div>
 
+            {/* Hobbies selection */}
             <div className="space-y-2">
               <Label>Hobbies & Interests</Label>
               <div className="grid grid-cols-2 md:grid-cols-3 gap-2 max-h-32 overflow-y-auto p-2 border rounded-md">
@@ -422,6 +442,9 @@ const Register = () => {
               </div>
             </div>
 
+            {/* Image upload section */}
+            <ImageUpload images={images} onImagesChange={setImages} />
+
             {error && (
               <div className="text-red-500 text-sm text-center bg-red-50 p-3 rounded-md">
                 {error}
@@ -430,7 +453,7 @@ const Register = () => {
 
             <Button
               type="submit"
-              disabled={isLoading || !emailVerified || passwordsDontMatch}
+              disabled={isLoading || !emailVerified || passwordsDontMatch || images.length === 0}
               className="w-full h-12 bg-gradient-to-r from-orange-500 to-yellow-500 hover:from-orange-600 hover:to-yellow-600 text-white font-medium rounded-md transition-all duration-200 shadow-lg hover:shadow-xl disabled:opacity-50"
             >
               {isLoading ? "Creating Account..." : "Create Account"}

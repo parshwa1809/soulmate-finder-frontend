@@ -1,6 +1,6 @@
 
 export const config = {
-  URL: 'https://lovebhagya.com', // Fixed typo in URL
+  URL: 'https://lovebhagya.com',
   MAX_IMAGES: 5
 };
 
