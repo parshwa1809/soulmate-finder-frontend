@@ -1,3 +1,4 @@
+
 import { useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { Button } from "@/components/ui/button";
@@ -8,7 +9,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
 import { Calendar } from "@/components/ui/calendar";
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
-import { Heart, Check, X, Calendar as CalendarIcon, Eye, EyeOff } from "lucide-react";
+import { Heart, Check, X, Calendar as CalendarIcon, Eye, EyeOff, Clock } from "lucide-react";
 import { format } from "date-fns";
 import { cn } from "@/lib/utils";
 import { config } from "../config/api";
@@ -27,11 +28,13 @@ const Register = () => {
     email: "",
     password: "",
     confirmPassword: "",
-    cityOfResidence: "",
-    countryOfResidence: "",
-    cityOfBirth: "",
-    countryOfBirth: "",
-    dateOfBirth: null as Date | null,
+    city: "",
+    country: "",
+    profession: "",
+    birth_city: "",
+    birth_country: "",
+    dob: null as Date | null,
+    tob: "",
     gender: "",
     hobbies: [] as string[],
   });
@@ -107,11 +110,13 @@ const Register = () => {
         phone: formData.phone,
         email: formData.email,
         password: formData.password,
-        cityOfResidence: formData.cityOfResidence,
-        countryOfResidence: formData.countryOfResidence,
-        cityOfBirth: formData.cityOfBirth,
-        countryOfBirth: formData.countryOfBirth,
-        dateOfBirth: formData.dateOfBirth ? format(formData.dateOfBirth, 'MM/dd/yyyy') : '',
+        city: formData.city,
+        country: formData.country,
+        profession: formData.profession,
+        birth_city: formData.birth_city,
+        birth_country: formData.birth_country,
+        dob: formData.dob ? format(formData.dob, 'yyyy-MM-dd') : '',
+        tob: formData.tob,
         gender: formData.gender,
         hobbies: formData.hobbies,
       };
@@ -274,46 +279,58 @@ const Register = () => {
 
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
               <div className="space-y-2">
-                <Label htmlFor="cityOfResidence">City</Label>
+                <Label htmlFor="city">City</Label>
                 <Input
-                  id="cityOfResidence"
-                  value={formData.cityOfResidence}
-                  onChange={(e) => handleInputChange('cityOfResidence', e.target.value)}
+                  id="city"
+                  value={formData.city}
+                  onChange={(e) => handleInputChange('city', e.target.value)}
                   className="h-12"
                   required
                 />
               </div>
 
               <div className="space-y-2">
-                <Label htmlFor="countryOfResidence">Country of Residence</Label>
+                <Label htmlFor="country">Country</Label>
                 <Input
-                  id="countryOfResidence"
-                  value={formData.countryOfResidence}
-                  onChange={(e) => handleInputChange('countryOfResidence', e.target.value)}
+                  id="country"
+                  value={formData.country}
+                  onChange={(e) => handleInputChange('country', e.target.value)}
                   className="h-12"
                   required
                 />
               </div>
             </div>
 
+            <div className="space-y-2">
+              <Label htmlFor="profession">Profession</Label>
+              <Input
+                id="profession"
+                value={formData.profession}
+                onChange={(e) => handleInputChange('profession', e.target.value)}
+                className="h-12"
+                placeholder="e.g., Software Engineer, Doctor, Teacher"
+                required
+              />
+            </div>
+
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
               <div className="space-y-2">
-                <Label htmlFor="cityOfBirth">City of Birth</Label>
+                <Label htmlFor="birth_city">City of Birth</Label>
                 <Input
-                  id="cityOfBirth"
-                  value={formData.cityOfBirth}
-                  onChange={(e) => handleInputChange('cityOfBirth', e.target.value)}
+                  id="birth_city"
+                  value={formData.birth_city}
+                  onChange={(e) => handleInputChange('birth_city', e.target.value)}
                   className="h-12"
                   required
                 />
               </div>
 
               <div className="space-y-2">
-                <Label htmlFor="countryOfBirth">Country of Birth</Label>
+                <Label htmlFor="birth_country">Country of Birth</Label>
                 <Input
-                  id="countryOfBirth"
-                  value={formData.countryOfBirth}
-                  onChange={(e) => handleInputChange('countryOfBirth', e.target.value)}
+                  id="birth_country"
+                  value={formData.birth_country}
+                  onChange={(e) => handleInputChange('birth_country', e.target.value)}
                   className="h-12"
                   required
                 />
@@ -329,18 +346,18 @@ const Register = () => {
                       variant="outline"
                       className={cn(
                         "h-12 w-full justify-start text-left font-normal",
-                        !formData.dateOfBirth && "text-muted-foreground"
+                        !formData.dob && "text-muted-foreground"
                       )}
                     >
                       <CalendarIcon className="mr-2 h-4 w-4" />
-                      {formData.dateOfBirth ? format(formData.dateOfBirth, "MM/dd/yyyy") : <span>Pick a date</span>}
+                      {formData.dob ? format(formData.dob, "yyyy-MM-dd") : <span>Pick a date</span>}
                     </Button>
                   </PopoverTrigger>
                   <PopoverContent className="w-auto p-0" align="start">
                     <Calendar
                       mode="single"
-                      selected={formData.dateOfBirth || undefined}
-                      onSelect={(date) => handleInputChange('dateOfBirth', date || null)}
+                      selected={formData.dob || undefined}
+                      onSelect={(date) => handleInputChange('dob', date || null)}
                       disabled={(date) => date > new Date() || date < new Date("1900-01-01")}
                       initialFocus
                       className={cn("p-3 pointer-events-auto")}
@@ -350,26 +367,41 @@ const Register = () => {
               </div>
 
               <div className="space-y-2">
-                <Label>Gender</Label>
-                <RadioGroup
-                  value={formData.gender}
-                  onValueChange={(value) => handleInputChange('gender', value)}
-                  className="flex flex-row space-x-6 mt-2"
-                >
-                  <div className="flex items-center space-x-2">
-                    <RadioGroupItem value="male" id="male" />
-                    <Label htmlFor="male">Male</Label>
-                  </div>
-                  <div className="flex items-center space-x-2">
-                    <RadioGroupItem value="female" id="female" />
-                    <Label htmlFor="female">Female</Label>
-                  </div>
-                  <div className="flex items-center space-x-2">
-                    <RadioGroupItem value="other" id="other" />
-                    <Label htmlFor="other">Other</Label>
-                  </div>
-                </RadioGroup>
+                <Label htmlFor="tob">Time of Birth</Label>
+                <div className="relative">
+                  <Input
+                    id="tob"
+                    type="time"
+                    value={formData.tob}
+                    onChange={(e) => handleInputChange('tob', e.target.value)}
+                    className="h-12 pr-10"
+                    required
+                  />
+                  <Clock className="absolute right-3 top-3 h-6 w-6 text-gray-400 pointer-events-none" />
+                </div>
               </div>
+            </div>
+
+            <div className="space-y-2">
+              <Label>Gender</Label>
+              <RadioGroup
+                value={formData.gender}
+                onValueChange={(value) => handleInputChange('gender', value)}
+                className="flex flex-row space-x-6 mt-2"
+              >
+                <div className="flex items-center space-x-2">
+                  <RadioGroupItem value="male" id="male" />
+                  <Label htmlFor="male">Male</Label>
+                </div>
+                <div className="flex items-center space-x-2">
+                  <RadioGroupItem value="female" id="female" />
+                  <Label htmlFor="female">Female</Label>
+                </div>
+                <div className="flex items-center space-x-2">
+                  <RadioGroupItem value="other" id="other" />
+                  <Label htmlFor="other">Other</Label>
+                </div>
+              </RadioGroup>
             </div>
 
             <div className="space-y-2">
