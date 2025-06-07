@@ -1,5 +1,4 @@
 
-
 import { useState } from "react";
 import { Link } from "react-router-dom";
 import { Button } from "@/components/ui/button";
@@ -36,13 +35,18 @@ const Login = ({ setIsLoggedIn, setUserUID }: LoginProps) => {
 
       const data = await response.json();
       
-      if (response.ok) {
+      if (response.ok && data.LOGIN !== "UNSUCCESSFUL") {
         setUserUID(data.UID);
         localStorage.setItem('userUID', data.UID);
         localStorage.setItem('userData', JSON.stringify(data));
         setIsLoggedIn(true);
       } else {
-        setError(data.message || 'Login failed');
+        // Handle unsuccessful login response
+        if (data.LOGIN === "UNSUCCESSFUL") {
+          setError('Invalid email or password. Please try again.');
+        } else {
+          setError(data.message || 'Login failed');
+        }
       }
     } catch (error) {
       setError('Network error. Please try again.');
