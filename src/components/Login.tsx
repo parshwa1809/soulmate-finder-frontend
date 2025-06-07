@@ -24,7 +24,7 @@ const Login = ({ setIsLoggedIn, setUserUID }: LoginProps) => {
       const formData = new FormData();
       formData.append('metadata', JSON.stringify({ uid }));
 
-      const response = await fetch(`${config.URL}${config.ENDPOINTS.FIND_PROFILE}`, {
+      const response = await fetch(`${config.URL}${config.ENDPOINTS.GET_PROFILE}`, {
         method: 'POST',
         body: formData,
       });
