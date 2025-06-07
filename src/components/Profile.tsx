@@ -1,3 +1,4 @@
+
 import { useState, useEffect } from "react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
@@ -13,6 +14,7 @@ import {
   Camera,
   Edit
 } from "lucide-react";
+import { config } from "../config/api";
 
 interface ProfileData {
   uid: string;
@@ -188,22 +190,64 @@ const Profile = ({ onEdit }: ProfileProps) => {
     };
   };
 
-  useEffect(() => {
-    const userData = localStorage.getItem('userData');
-    console.log('Raw userData from localStorage:', userData);
-    if (userData) {
-      try {
-        const parsedData = JSON.parse(userData);
-        console.log('Parsed userData:', parsedData);
-        
-        const transformedData = transformUserData(parsedData.profile || parsedData);
-        console.log('Transformed profile data:', transformedData);
-        setProfileData(transformedData);
-      } catch (error) {
-        console.error('Error parsing user data:', error);
+  const fetchUserProfile = async (uid: string) => {
+    try {
+      console.log(`Fetching user profile for UID: ${uid}`);
+      const response = await fetch(`${config.URL}${config.ENDPOINTS.GET_PROFILE}/${uid}`, {
+        method: 'GET',
+      });
+
+      if (response.ok) {
+        const profileData = await response.json();
+        console.log('User profile fetched successfully:', profileData);
+        return profileData;
+      } else {
+        console.error(`Failed to fetch user profile, status: ${response.status}`);
+        return null;
       }
+    } catch (error) {
+      console.error('Error fetching user profile:', error);
+      return null;
     }
-    setIsLoading(false);
+  };
+
+  useEffect(() => {
+    const loadProfileData = async () => {
+      // First try to get UID from localStorage
+      const userUID = localStorage.getItem('userUID');
+      
+      if (userUID) {
+        // Fetch fresh profile data from API
+        const freshProfileData = await fetchUserProfile(userUID);
+        if (freshProfileData) {
+          const transformedData = transformUserData(freshProfileData);
+          console.log('Transformed fresh profile data:', transformedData);
+          setProfileData(transformedData);
+          setIsLoading(false);
+          return;
+        }
+      }
+
+      // Fallback to userData from localStorage
+      const userData = localStorage.getItem('userData');
+      console.log('Raw userData from localStorage:', userData);
+      if (userData) {
+        try {
+          const parsedData = JSON.parse(userData);
+          console.log('Parsed userData:', parsedData);
+          
+          // The profile data is directly in the root of userData, not under a 'profile' property
+          const transformedData = transformUserData(parsedData);
+          console.log('Transformed profile data:', transformedData);
+          setProfileData(transformedData);
+        } catch (error) {
+          console.error('Error parsing user data:', error);
+        }
+      }
+      setIsLoading(false);
+    };
+
+    loadProfileData();
   }, []);
 
   if (isLoading) {
