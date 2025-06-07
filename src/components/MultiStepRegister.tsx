@@ -99,10 +99,11 @@ const MultiStepRegister = () => {
       console.log('Email verification response:', data);
       
       if (response.ok) {
-        if (data.exists === false) {
+        // Updated logic to handle the actual response format
+        if (data.verify === true) {
           setEmailVerified(true);
           setError('');
-        } else if (data.exists === true) {
+        } else if (data.verify === false) {
           setEmailVerified(false);
           setError(data.message || 'Email already exists. Please use a different email.');
         } else if (data.error) {
