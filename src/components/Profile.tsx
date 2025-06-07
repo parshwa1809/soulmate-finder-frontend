@@ -81,8 +81,6 @@ const Profile = ({ onEdit }: ProfileProps) => {
     }
     
     if (base64String.length > 20 && /^[A-Za-z0-9+/=]+$/.test(base64String)) {
-      // Try different image formats
-      const formats = ['jpeg', 'jpg', 'png', 'webp'];
       const dataUrl = `data:image/jpeg;base64,${base64String}`;
       console.log('Created data URL:', dataUrl.substring(0, 100) + '...');
       return dataUrl;
@@ -95,7 +93,6 @@ const Profile = ({ onEdit }: ProfileProps) => {
   const transformUserData = (apiData: any): ProfileData => {
     console.log('Raw API data for transformation:', apiData);
     
-    // Parse hobbies if it's a JSON string
     let hobbies: string[] = [];
     if (apiData.HOBBIES || apiData.hobbies) {
       try {
@@ -109,7 +106,6 @@ const Profile = ({ onEdit }: ProfileProps) => {
       }
     }
 
-    // Handle DOB
     let dob = '';
     if (apiData.DOB || apiData.dob) {
       try {
@@ -125,7 +121,6 @@ const Profile = ({ onEdit }: ProfileProps) => {
       }
     }
 
-    // Enhanced image processing
     let images: string[] = [];
     const imageFields = ['IMAGES', 'images', 'profileImages', 'PROFILEIMAGES'];
     
@@ -174,9 +169,6 @@ const Profile = ({ onEdit }: ProfileProps) => {
     }
     
     console.log('Final processed images:', images.length, 'images found');
-    images.forEach((img, idx) => {
-      console.log(`Image ${idx + 1}:`, img.substring(0, 50) + '... (length: ' + img.length + ')');
-    });
 
     return {
       uid: apiData.UID || apiData.uid || '',
@@ -204,15 +196,6 @@ const Profile = ({ onEdit }: ProfileProps) => {
         const parsedData = JSON.parse(userData);
         console.log('Parsed userData:', parsedData);
         
-        const allLocalStorageKeys = Object.keys(localStorage);
-        console.log('All localStorage keys:', allLocalStorageKeys);
-        
-        allLocalStorageKeys.forEach(key => {
-          if (key.toLowerCase().includes('image') || key.toLowerCase().includes('photo')) {
-            console.log(`Found potential image key ${key}:`, localStorage.getItem(key));
-          }
-        });
-        
         const transformedData = transformUserData(parsedData.profile || parsedData);
         console.log('Transformed profile data:', transformedData);
         setProfileData(transformedData);
@@ -225,10 +208,10 @@ const Profile = ({ onEdit }: ProfileProps) => {
 
   if (isLoading) {
     return (
-      <div className="flex items-center justify-center min-h-screen">
+      <div className="flex items-center justify-center min-h-screen bg-background">
         <div className="text-center">
-          <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-orange-500 mx-auto mb-4"></div>
-          <p className="text-gray-600">Loading profile...</p>
+          <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary mx-auto mb-4"></div>
+          <p className="text-muted-foreground">Loading profile...</p>
         </div>
       </div>
     );
@@ -236,11 +219,11 @@ const Profile = ({ onEdit }: ProfileProps) => {
 
   if (!profileData) {
     return (
-      <div className="flex items-center justify-center min-h-screen">
+      <div className="flex items-center justify-center min-h-screen bg-background">
         <Card className="max-w-md w-full">
           <CardContent className="p-6 text-center">
-            <User className="w-12 h-12 text-gray-400 mx-auto mb-4" />
-            <p className="text-gray-600">No profile data available</p>
+            <User className="w-12 h-12 text-muted-foreground mx-auto mb-4" />
+            <p className="text-muted-foreground">No profile data available</p>
           </CardContent>
         </Card>
       </div>
@@ -267,205 +250,243 @@ const Profile = ({ onEdit }: ProfileProps) => {
   };
 
   return (
-    <div className="max-w-4xl mx-auto p-4 space-y-6">
-      {/* Header Card */}
-      <Card className="bg-white/80 backdrop-blur-sm border-0 shadow-lg">
-        <CardContent className="p-8">
-          <div className="flex flex-col md:flex-row items-center md:items-start space-y-6 md:space-y-0 md:space-x-8">
-            {/* Profile Picture */}
-            <div className="relative">
-              <Avatar className="w-32 h-32">
-                <AvatarImage 
-                  src={profileData?.images?.[0]} 
-                  onError={(e) => {
-                    console.error('Failed to load avatar image:', profileData?.images?.[0]);
-                  }}
-                  onLoad={() => {
-                    console.log('Successfully loaded avatar image:', profileData?.images?.[0]);
-                  }}
-                />
-                <AvatarFallback className="bg-gradient-to-r from-orange-500 to-yellow-500 text-white text-3xl">
-                  {profileData?.name?.charAt(0) || <User className="w-16 h-16" />}
-                </AvatarFallback>
-              </Avatar>
-              {profileData?.images && profileData.images.length > 1 && (
-                <Badge className="absolute -bottom-2 -right-2 bg-orange-500">
-                  <Camera className="w-3 h-3 mr-1" />
-                  {profileData.images.length}
-                </Badge>
-              )}
-            </div>
-
-            {/* Basic Info */}
-            <div className="flex-1 text-center md:text-left">
-              <div className="flex flex-col md:flex-row md:items-center md:justify-between mb-4">
-                <h1 className="text-3xl font-bold text-gray-900 mb-2 md:mb-0">
-                  {profileData?.name}
-                </h1>
-                {onEdit && (
-                  <Button onClick={onEdit} variant="outline" className="border-orange-200 text-orange-600 hover:bg-orange-50">
-                    <Edit className="w-4 h-4 mr-2" />
-                    Edit Profile
-                  </Button>
+    <div className="min-h-screen bg-background">
+      <div className="max-w-6xl mx-auto px-4 py-8">
+        {/* Hero Section */}
+        <div className="relative mb-12">
+          <div className="absolute inset-0 bg-gradient-to-r from-primary/5 to-primary/10 rounded-3xl"></div>
+          <div className="relative p-8 md:p-12">
+            <div className="flex flex-col md:flex-row items-center md:items-start gap-8">
+              {/* Profile Picture */}
+              <div className="relative">
+                <Avatar className="w-32 h-32 md:w-40 md:h-40 border-4 border-background shadow-2xl">
+                  <AvatarImage 
+                    src={profileData?.images?.[0]} 
+                    className="object-cover"
+                  />
+                  <AvatarFallback className="bg-primary text-primary-foreground text-4xl font-semibold">
+                    {profileData?.name?.charAt(0) || <User className="w-20 h-20" />}
+                  </AvatarFallback>
+                </Avatar>
+                {profileData?.images && profileData.images.length > 1 && (
+                  <Badge className="absolute -bottom-2 -right-2 bg-primary">
+                    <Camera className="w-3 h-3 mr-1" />
+                    {profileData.images.length}
+                  </Badge>
                 )}
               </div>
 
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-3 text-gray-600">
-                {profileData?.dob && (
-                  <div className="flex items-center justify-center md:justify-start">
-                    <Calendar className="w-4 h-4 mr-2" />
-                    {calculateAge(profileData.dob)} years old
+              {/* Profile Info */}
+              <div className="flex-1 text-center md:text-left">
+                <div className="flex flex-col md:flex-row md:items-center md:justify-between mb-6">
+                  <div>
+                    <h1 className="text-4xl md:text-5xl font-bold text-foreground mb-2">
+                      {profileData?.name}
+                    </h1>
+                    <p className="text-xl text-muted-foreground">
+                      {profileData?.profession || 'Professional'}
+                    </p>
                   </div>
-                )}
-                
-                {profileData?.city && profileData.country && (
-                  <div className="flex items-center justify-center md:justify-start">
-                    <MapPin className="w-4 h-4 mr-2" />
-                    {profileData.city}, {profileData.country}
-                  </div>
-                )}
+                  {onEdit && (
+                    <Button 
+                      onClick={onEdit} 
+                      size="lg"
+                      className="mt-4 md:mt-0"
+                    >
+                      <Edit className="w-4 h-4 mr-2" />
+                      Edit Profile
+                    </Button>
+                  )}
+                </div>
 
-                {profileData?.profession && (
-                  <div className="flex items-center justify-center md:justify-start">
-                    <Briefcase className="w-4 h-4 mr-2" />
-                    {profileData.profession}
-                  </div>
-                )}
+                {/* Quick Stats */}
+                <div className="grid grid-cols-2 md:grid-cols-4 gap-4 text-center md:text-left">
+                  {profileData?.dob && (
+                    <div className="flex items-center justify-center md:justify-start">
+                      <Calendar className="w-5 h-5 mr-2 text-primary" />
+                      <span className="text-sm font-medium">{calculateAge(profileData.dob)} years</span>
+                    </div>
+                  )}
+                  
+                  {profileData?.city && profileData.country && (
+                    <div className="flex items-center justify-center md:justify-start">
+                      <MapPin className="w-5 h-5 mr-2 text-primary" />
+                      <span className="text-sm font-medium">{profileData.city}, {profileData.country}</span>
+                    </div>
+                  )}
 
-                {profileData?.tob && (
-                  <div className="flex items-center justify-center md:justify-start">
-                    <Clock className="w-4 h-4 mr-2" />
-                    Born at {formatTime(profileData.tob)}
-                  </div>
-                )}
+                  {profileData?.profession && (
+                    <div className="flex items-center justify-center md:justify-start">
+                      <Briefcase className="w-5 h-5 mr-2 text-primary" />
+                      <span className="text-sm font-medium">{profileData.profession}</span>
+                    </div>
+                  )}
+
+                  {profileData?.tob && (
+                    <div className="flex items-center justify-center md:justify-start">
+                      <Clock className="w-5 h-5 mr-2 text-primary" />
+                      <span className="text-sm font-medium">{formatTime(profileData.tob)}</span>
+                    </div>
+                  )}
+                </div>
               </div>
             </div>
           </div>
-        </CardContent>
-      </Card>
+        </div>
 
-      {/* Details Grid */}
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-        {/* Personal Details */}
-        <Card className="bg-white/80 backdrop-blur-sm border-0 shadow-lg">
-          <CardHeader>
-            <CardTitle className="flex items-center text-gray-900">
-              <User className="w-5 h-5 mr-2 text-orange-500" />
-              Personal Details
-            </CardTitle>
-          </CardHeader>
-          <CardContent className="space-y-4">
-            <div>
-              <label className="text-sm font-medium text-gray-500">Email</label>
-              <p className="text-gray-900">{profileData?.email}</p>
-            </div>
-            
-            {profileData?.gender && (
-              <div>
-                <label className="text-sm font-medium text-gray-500">Gender</label>
-                <p className="text-gray-900 capitalize">{profileData.gender}</p>
-              </div>
-            )}
-
-            {profileData?.dob && (
-              <div>
-                <label className="text-sm font-medium text-gray-500">Date of Birth</label>
-                <p className="text-gray-900">{new Date(profileData.dob).toLocaleDateString()}</p>
-              </div>
-            )}
-
-            {profileData?.birth_city && profileData.birth_country && (
-              <div>
-                <label className="text-sm font-medium text-gray-500">Birth Place</label>
-                <p className="text-gray-900">{profileData.birth_city}, {profileData.birth_country}</p>
-              </div>
-            )}
-          </CardContent>
-        </Card>
-
-        {/* Interests & Hobbies */}
-        <Card className="bg-white/80 backdrop-blur-sm border-0 shadow-lg">
-          <CardHeader>
-            <CardTitle className="flex items-center text-gray-900">
-              <Heart className="w-5 h-5 mr-2 text-orange-500" />
-              Interests & Hobbies
-            </CardTitle>
-          </CardHeader>
-          <CardContent>
-            {profileData?.hobbies && profileData.hobbies.length > 0 ? (
-              <div className="flex flex-wrap gap-2">
-                {profileData.hobbies.map((hobby, index) => (
-                  <Badge key={index} variant="secondary" className="bg-orange-100 text-orange-700">
-                    {hobby}
-                  </Badge>
-                ))}
-              </div>
-            ) : (
-              <p className="text-gray-500 italic">No hobbies listed</p>
-            )}
-          </CardContent>
-        </Card>
-      </div>
-
-      {/* Enhanced Photo Gallery */}
-      <Card className="bg-white/80 backdrop-blur-sm border-0 shadow-lg">
-        <CardHeader>
-          <CardTitle className="flex items-center text-gray-900">
-            <Camera className="w-5 h-5 mr-2 text-orange-500" />
-            Photos {profileData?.images && profileData.images.length > 0 ? `(${profileData.images.length})` : '(0)'}
-          </CardTitle>
-        </CardHeader>
-        <CardContent>
-          {profileData?.images && profileData.images.length > 0 ? (
-            <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
-              {profileData.images.map((image, index) => {
-                console.log(`Rendering image ${index + 1}:`, image ? image.substring(0, 50) + '...' : 'Empty image');
-                
-                if (!image || image.length === 0) {
-                  console.warn(`Skipping empty image at index ${index}`);
-                  return null;
-                }
-                
-                return (
-                  <div key={index} className="aspect-square overflow-hidden rounded-lg border-2 border-gray-200 shadow-md bg-gray-100">
-                    <img
-                      src={image}
-                      alt={`Profile photo ${index + 1}`}
-                      className="w-full h-full object-cover hover:scale-105 transition-transform duration-200 cursor-pointer"
-                      onError={(e) => {
-                        console.error(`Failed to load image ${index + 1}:`, image.substring(0, 100));
-                        const target = e.currentTarget;
-                        target.style.display = 'none';
-                        const parent = target.parentElement;
-                        if (parent) {
-                          parent.innerHTML = `
-                            <div class="w-full h-full flex items-center justify-center bg-gray-200 text-gray-500">
-                              <div class="text-center">
-                                <svg class="w-8 h-8 mx-auto mb-2" fill="currentColor" viewBox="0 0 20 20">
-                                  <path fill-rule="evenodd" d="M4 3a2 2 0 00-2 2v10a2 2 0 002 2h12a2 2 0 002-2V5a2 2 0 00-2-2H4zm12 12H4l4-8 3 6 2-4 3 6z" clip-rule="evenodd" />
-                                </svg>
-                                <p class="text-xs">Image ${index + 1}</p>
-                              </div>
-                            </div>
-                          `;
-                        }
-                      }}
-                      onLoad={() => {
-                        console.log(`Successfully loaded image ${index + 1}`);
-                      }}
-                    />
+        {/* Content Grid */}
+        <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
+          {/* Main Content */}
+          <div className="lg:col-span-2 space-y-8">
+            {/* Personal Information */}
+            <Card className="border-0 shadow-lg">
+              <CardHeader>
+                <CardTitle className="flex items-center text-xl">
+                  <User className="w-5 h-5 mr-3 text-primary" />
+                  Personal Information
+                </CardTitle>
+              </CardHeader>
+              <CardContent className="space-y-6">
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                  <div>
+                    <label className="text-sm font-semibold text-muted-foreground uppercase tracking-wide">Email</label>
+                    <p className="text-lg text-foreground mt-1">{profileData?.email}</p>
                   </div>
-                );
-              })}
-            </div>
-          ) : (
-            <div className="text-center py-8">
-              <Camera className="w-12 h-12 text-gray-400 mx-auto mb-4" />
-              <p className="text-gray-500 italic">No photos uploaded yet</p>
-            </div>
-          )}
-        </CardContent>
-      </Card>
+                  
+                  {profileData?.gender && (
+                    <div>
+                      <label className="text-sm font-semibold text-muted-foreground uppercase tracking-wide">Gender</label>
+                      <p className="text-lg text-foreground mt-1 capitalize">{profileData.gender}</p>
+                    </div>
+                  )}
+
+                  {profileData?.dob && (
+                    <div>
+                      <label className="text-sm font-semibold text-muted-foreground uppercase tracking-wide">Date of Birth</label>
+                      <p className="text-lg text-foreground mt-1">{new Date(profileData.dob).toLocaleDateString()}</p>
+                    </div>
+                  )}
+
+                  {profileData?.birth_city && profileData.birth_country && (
+                    <div>
+                      <label className="text-sm font-semibold text-muted-foreground uppercase tracking-wide">Birth Place</label>
+                      <p className="text-lg text-foreground mt-1">{profileData.birth_city}, {profileData.birth_country}</p>
+                    </div>
+                  )}
+                </div>
+              </CardContent>
+            </Card>
+
+            {/* Photo Gallery */}
+            <Card className="border-0 shadow-lg">
+              <CardHeader>
+                <CardTitle className="flex items-center text-xl">
+                  <Camera className="w-5 h-5 mr-3 text-primary" />
+                  Photo Gallery
+                  {profileData?.images && profileData.images.length > 0 && (
+                    <Badge variant="secondary" className="ml-3">
+                      {profileData.images.length} photos
+                    </Badge>
+                  )}
+                </CardTitle>
+              </CardHeader>
+              <CardContent>
+                {profileData?.images && profileData.images.length > 0 ? (
+                  <div className="grid grid-cols-2 md:grid-cols-3 gap-4">
+                    {profileData.images.map((image, index) => {
+                      if (!image || image.length === 0) return null;
+                      
+                      return (
+                        <div key={index} className="aspect-square overflow-hidden rounded-xl bg-muted group cursor-pointer">
+                          <img
+                            src={image}
+                            alt={`Photo ${index + 1}`}
+                            className="w-full h-full object-cover transition-transform duration-300 group-hover:scale-110"
+                            onError={(e) => {
+                              const target = e.currentTarget;
+                              target.style.display = 'none';
+                              const parent = target.parentElement;
+                              if (parent) {
+                                parent.innerHTML = `
+                                  <div class="w-full h-full flex items-center justify-center bg-muted text-muted-foreground">
+                                    <div class="text-center">
+                                      <svg class="w-8 h-8 mx-auto mb-2" fill="currentColor" viewBox="0 0 20 20">
+                                        <path fill-rule="evenodd" d="M4 3a2 2 0 00-2 2v10a2 2 0 002 2h12a2 2 0 002-2V5a2 2 0 00-2-2H4zm12 12H4l4-8 3 6 2-4 3 6z" clip-rule="evenodd" />
+                                      </svg>
+                                      <p class="text-xs">Photo ${index + 1}</p>
+                                    </div>
+                                  </div>
+                                `;
+                              }
+                            }}
+                          />
+                        </div>
+                      );
+                    })}
+                  </div>
+                ) : (
+                  <div className="text-center py-12">
+                    <div className="w-16 h-16 mx-auto mb-4 rounded-full bg-muted flex items-center justify-center">
+                      <Camera className="w-8 h-8 text-muted-foreground" />
+                    </div>
+                    <p className="text-muted-foreground">No photos uploaded yet</p>
+                  </div>
+                )}
+              </CardContent>
+            </Card>
+          </div>
+
+          {/* Sidebar */}
+          <div className="space-y-8">
+            {/* Interests & Hobbies */}
+            <Card className="border-0 shadow-lg">
+              <CardHeader>
+                <CardTitle className="flex items-center text-xl">
+                  <Heart className="w-5 h-5 mr-3 text-primary" />
+                  Interests
+                </CardTitle>
+              </CardHeader>
+              <CardContent>
+                {profileData?.hobbies && profileData.hobbies.length > 0 ? (
+                  <div className="flex flex-wrap gap-2">
+                    {profileData.hobbies.map((hobby, index) => (
+                      <Badge 
+                        key={index} 
+                        variant="secondary" 
+                        className="px-3 py-1 rounded-full text-sm"
+                      >
+                        {hobby}
+                      </Badge>
+                    ))}
+                  </div>
+                ) : (
+                  <div className="text-center py-8">
+                    <Heart className="w-8 h-8 text-muted-foreground mx-auto mb-2" />
+                    <p className="text-muted-foreground text-sm">No interests listed</p>
+                  </div>
+                )}
+              </CardContent>
+            </Card>
+
+            {/* Quick Actions */}
+            <Card className="border-0 shadow-lg">
+              <CardHeader>
+                <CardTitle className="text-xl">Quick Actions</CardTitle>
+              </CardHeader>
+              <CardContent className="space-y-3">
+                <Button variant="outline" className="w-full justify-start">
+                  <Edit className="w-4 h-4 mr-2" />
+                  Edit Profile
+                </Button>
+                <Button variant="outline" className="w-full justify-start">
+                  <Camera className="w-4 h-4 mr-2" />
+                  Upload Photos
+                </Button>
+              </CardContent>
+            </Card>
+          </div>
+        </div>
+      </div>
     </div>
   );
 };
