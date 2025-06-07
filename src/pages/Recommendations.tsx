@@ -32,6 +32,49 @@ const Recommendations = () => {
     loadRecommendations();
   }, []);
 
+  const transformUserData = (apiData: any): User => {
+    // Parse hobbies if it's a JSON string
+    let hobbies = '';
+    if (apiData.HOBBIES) {
+      try {
+        const hobbiesArray = JSON.parse(apiData.HOBBIES);
+        hobbies = Array.isArray(hobbiesArray) ? hobbiesArray.join(', ') : apiData.HOBBIES;
+      } catch {
+        hobbies = apiData.HOBBIES;
+      }
+    }
+
+    // Calculate age from DOB if available
+    let age = undefined;
+    if (apiData.DOB) {
+      try {
+        const dobData = JSON.parse(apiData.DOB);
+        const birthDate = new Date(dobData.year, dobData.month - 1, dobData.day);
+        const today = new Date();
+        age = today.getFullYear() - birthDate.getFullYear();
+        const monthDiff = today.getMonth() - birthDate.getMonth();
+        if (monthDiff < 0 || (monthDiff === 0 && today.getDate() < birthDate.getDate())) {
+          age--;
+        }
+      } catch {
+        // If DOB parsing fails, leave age undefined
+      }
+    }
+
+    return {
+      UID: apiData.UID,
+      name: apiData.NAME || 'Unknown User',
+      email: apiData.EMAIL,
+      city: apiData.CITY,
+      country: apiData.COUNTRY,
+      age: age,
+      gender: apiData.GENDER,
+      hobbies: hobbies,
+      profilePicture: apiData.profilePicture || '',
+      bio: apiData.BIO || apiData.bio
+    };
+  };
+
   const loadRecommendations = async () => {
     try {
       const userData = localStorage.getItem('userData');
@@ -54,7 +97,8 @@ const Recommendations = () => {
           method: 'GET',
         });
         if (response.ok) {
-          return await response.json();
+          const userData = await response.json();
+          return transformUserData(userData);
         }
         return null;
       });
