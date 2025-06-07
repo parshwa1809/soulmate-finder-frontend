@@ -1,4 +1,3 @@
-
 import { useState, useEffect } from "react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
@@ -41,6 +40,8 @@ const Profile = ({ onEdit }: ProfileProps) => {
   const [isLoading, setIsLoading] = useState(true);
 
   const transformUserData = (apiData: any): ProfileData => {
+    console.log('Raw API data for transformation:', apiData);
+    
     // Parse hobbies if it's a JSON string
     let hobbies: string[] = [];
     if (apiData.HOBBIES || apiData.hobbies) {
@@ -71,21 +72,37 @@ const Profile = ({ onEdit }: ProfileProps) => {
       }
     }
 
-    // Handle images - parse if it's a JSON string
+    // Handle images - more comprehensive parsing
     let images: string[] = [];
-    if (apiData.IMAGES || apiData.images) {
-      try {
-        const imagesData = apiData.IMAGES || apiData.images;
-        if (typeof imagesData === 'string') {
-          images = JSON.parse(imagesData);
-        } else if (Array.isArray(imagesData)) {
-          images = imagesData;
+    const imageFields = ['IMAGES', 'images', 'profileImages', 'PROFILEIMAGES'];
+    
+    for (const field of imageFields) {
+      if (apiData[field]) {
+        console.log(`Found images in field ${field}:`, apiData[field]);
+        try {
+          const imagesData = apiData[field];
+          if (typeof imagesData === 'string') {
+            // Try to parse as JSON first
+            try {
+              images = JSON.parse(imagesData);
+            } catch {
+              // If not JSON, treat as comma-separated URLs
+              images = imagesData.split(',').map((img: string) => img.trim()).filter(Boolean);
+            }
+          } else if (Array.isArray(imagesData)) {
+            images = imagesData.filter(Boolean);
+          } else if (typeof imagesData === 'object' && imagesData !== null) {
+            // If it's an object, try to extract URLs from values
+            images = Object.values(imagesData).filter(Boolean) as string[];
+          }
+          break; // Stop at first valid field found
+        } catch (error) {
+          console.error(`Error parsing images from field ${field}:`, error);
         }
-      } catch {
-        // If parsing fails, treat as empty array
-        images = [];
       }
     }
+    
+    console.log('Parsed images:', images);
 
     return {
       uid: apiData.UID || apiData.uid || '',
@@ -112,6 +129,17 @@ const Profile = ({ onEdit }: ProfileProps) => {
       try {
         const parsedData = JSON.parse(userData);
         console.log('Parsed userData:', parsedData);
+        
+        // Check if images are stored in any other location in localStorage
+        const allLocalStorageKeys = Object.keys(localStorage);
+        console.log('All localStorage keys:', allLocalStorageKeys);
+        
+        allLocalStorageKeys.forEach(key => {
+          if (key.toLowerCase().includes('image') || key.toLowerCase().includes('photo')) {
+            console.log(`Found potential image key ${key}:`, localStorage.getItem(key));
+          }
+        });
+        
         // Transform the data to handle both uppercase and lowercase field names
         const transformedData = transformUserData(parsedData.profile || parsedData);
         console.log('Transformed profile data:', transformedData);
@@ -175,7 +203,12 @@ const Profile = ({ onEdit }: ProfileProps) => {
             {/* Profile Picture */}
             <div className="relative">
               <Avatar className="w-32 h-32">
-                <AvatarImage src={profileData?.images?.[0]} />
+                <AvatarImage 
+                  src={profileData?.images?.[0]} 
+                  onError={(e) => {
+                    console.error('Failed to load avatar image:', profileData?.images?.[0]);
+                  }}
+                />
                 <AvatarFallback className="bg-gradient-to-r from-orange-500 to-yellow-500 text-white text-3xl">
                   {profileData?.name?.charAt(0) || <User className="w-16 h-16" />}
                 </AvatarFallback>
@@ -299,16 +332,16 @@ const Profile = ({ onEdit }: ProfileProps) => {
         </Card>
       </div>
 
-      {/* Photo Gallery */}
-      {profileData?.images && profileData.images.length > 0 && (
-        <Card className="bg-white/80 backdrop-blur-sm border-0 shadow-lg">
-          <CardHeader>
-            <CardTitle className="flex items-center text-gray-900">
-              <Camera className="w-5 h-5 mr-2 text-orange-500" />
-              Photos ({profileData.images.length})
-            </CardTitle>
-          </CardHeader>
-          <CardContent>
+      {/* Photo Gallery with Debug Info */}
+      <Card className="bg-white/80 backdrop-blur-sm border-0 shadow-lg">
+        <CardHeader>
+          <CardTitle className="flex items-center text-gray-900">
+            <Camera className="w-5 h-5 mr-2 text-orange-500" />
+            Photos {profileData?.images && profileData.images.length > 0 ? `(${profileData.images.length})` : '(0)'}
+          </CardTitle>
+        </CardHeader>
+        <CardContent>
+          {profileData?.images && profileData.images.length > 0 ? (
             <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
               {profileData.images.map((image, index) => (
                 <div key={index} className="aspect-square overflow-hidden rounded-lg">
@@ -320,13 +353,24 @@ const Profile = ({ onEdit }: ProfileProps) => {
                       console.error(`Failed to load image ${index + 1}:`, image);
                       e.currentTarget.style.display = 'none';
                     }}
+                    onLoad={() => {
+                      console.log(`Successfully loaded image ${index + 1}:`, image);
+                    }}
                   />
                 </div>
               ))}
             </div>
-          </CardContent>
-        </Card>
-      )}
+          ) : (
+            <div className="text-center py-8">
+              <Camera className="w-12 h-12 text-gray-400 mx-auto mb-4" />
+              <p className="text-gray-500 italic">No photos uploaded yet</p>
+              <p className="text-sm text-gray-400 mt-2">
+                Debug: Images array length: {profileData?.images?.length || 0}
+              </p>
+            </div>
+          )}
+        </CardContent>
+      </Card>
     </div>
   );
 };
