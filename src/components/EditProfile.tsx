@@ -8,6 +8,7 @@ import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { User, Save, X } from "lucide-react";
+import { useToast } from "@/hooks/use-toast";
 import { config } from "../config/api";
 import ImageUpload from "./ImageUpload";
 
@@ -30,6 +31,7 @@ const EditProfile = ({ onCancel, onSave }: EditProfileProps) => {
   const [isLoading, setIsLoading] = useState(false);
   const [profileData, setProfileData] = useState<any>(null);
   const [images, setImages] = useState<File[]>([]);
+  const { toast } = useToast();
   
   const { register, handleSubmit, setValue, formState: { errors } } = useForm<ProfileFormData>();
 
@@ -54,13 +56,90 @@ const EditProfile = ({ onCancel, onSave }: EditProfileProps) => {
     }
   }, [setValue]);
 
+  const convertFilesToBase64 = async (files: File[]): Promise<string[]> => {
+    const base64Images: string[] = [];
+    
+    for (const file of files) {
+      try {
+        const base64 = await new Promise<string>((resolve, reject) => {
+          const reader = new FileReader();
+          reader.onload = () => {
+            const result = reader.result as string;
+            // Remove the data:image/jpeg;base64, prefix to get just the base64 string
+            const base64String = result.split(',')[1];
+            resolve(base64String);
+          };
+          reader.onerror = reject;
+          reader.readAsDataURL(file);
+        });
+        base64Images.push(base64);
+      } catch (error) {
+        console.error('Error converting file to base64:', error);
+        toast({
+          title: "Error",
+          description: "Failed to process image files",
+          variant: "destructive",
+        });
+      }
+    }
+    
+    return base64Images;
+  };
+
+  const updateProfileAPI = async (profileData: any, imageData: string[]) => {
+    try {
+      const userUID = localStorage.getItem('userUID');
+      if (!userUID) {
+        throw new Error('User UID not found');
+      }
+
+      // Prepare the data for API
+      const apiData = {
+        UID: userUID,
+        NAME: profileData.name,
+        EMAIL: profileData.email,
+        CITY: profileData.city || '',
+        COUNTRY: profileData.country || '',
+        PROFESSION: profileData.profession || '',
+        GENDER: profileData.gender || '',
+        bio: profileData.bio || '',
+        IMAGES: imageData.length > 0 ? imageData.map(img => ({ data: img })) : []
+      };
+
+      console.log('Sending profile update to API:', apiData);
+
+      const response = await fetch(`${config.URL}/update:profile`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(apiData),
+      });
+
+      if (!response.ok) {
+        throw new Error(`API request failed with status: ${response.status}`);
+      }
+
+      const result = await response.json();
+      console.log('Profile update response:', result);
+      
+      return result;
+    } catch (error) {
+      console.error('Error updating profile via API:', error);
+      throw error;
+    }
+  };
+
   const onSubmit = async (data: ProfileFormData) => {
     setIsLoading(true);
     try {
-      const userUID = localStorage.getItem('userUID');
+      // Convert images to base64
+      const imageData = await convertFilesToBase64(images);
       
-      // Here you would typically make an API call to update the profile
-      // For now, we'll just update localStorage
+      // Update profile via API
+      await updateProfileAPI(data, imageData);
+      
+      // Update localStorage with new data
       const currentUserData = JSON.parse(localStorage.getItem('userData') || '{}');
       const updatedProfile = {
         ...currentUserData,
@@ -79,13 +158,28 @@ const EditProfile = ({ onCancel, onSave }: EditProfileProps) => {
         gender: data.gender
       };
       
+      // Add images if they were uploaded
+      if (imageData.length > 0) {
+        updatedProfile.IMAGES = imageData.map(img => ({ data: img }));
+        updatedProfile.images = imageData.map(img => ({ data: img }));
+      }
+      
       localStorage.setItem('userData', JSON.stringify(updatedProfile));
       
-      console.log('Profile updated:', data);
-      console.log('Images to upload:', images);
+      toast({
+        title: "Success",
+        description: "Profile updated successfully!",
+      });
+      
+      console.log('Profile updated successfully');
       onSave();
     } catch (error) {
       console.error('Error updating profile:', error);
+      toast({
+        title: "Error",
+        description: "Failed to update profile. Please try again.",
+        variant: "destructive",
+      });
     } finally {
       setIsLoading(false);
     }
@@ -93,6 +187,7 @@ const EditProfile = ({ onCancel, onSave }: EditProfileProps) => {
 
   const handleImagesChange = (newImages: File[]) => {
     setImages(newImages);
+    console.log('Images selected:', newImages.length);
   };
 
   if (!profileData) {
@@ -120,7 +215,7 @@ const EditProfile = ({ onCancel, onSave }: EditProfileProps) => {
             {/* Profile Picture */}
             <div className="flex justify-center mb-6">
               <Avatar className="w-24 h-24">
-                <AvatarImage src={profileData.IMAGES?.[0] || profileData.images?.[0]} />
+                <AvatarImage src={profileData.IMAGES?.[0]?.data ? `data:image/jpeg;base64,${profileData.IMAGES[0].data}` : profileData.images?.[0]} />
                 <AvatarFallback className="bg-gradient-to-r from-orange-500 to-yellow-500 text-white text-2xl">
                   {profileData.NAME?.charAt(0) || profileData.name?.charAt(0) || <User className="w-8 h-8" />}
                 </AvatarFallback>

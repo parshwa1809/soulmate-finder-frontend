@@ -7,7 +7,8 @@ export const config = {
     CREATE_ACCOUNT: '/account:create',
     VERIFY_EMAIL: '/verify:email',
     GET_PROFILE: '/get:profile',
-    FIND_PROFILE: '/get:profile'
+    FIND_PROFILE: '/get:profile',
+    UPDATE_PROFILE: '/update:profile'
   }
 };
 
