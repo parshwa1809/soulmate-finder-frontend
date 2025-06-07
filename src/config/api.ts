@@ -6,7 +6,8 @@ export const config = {
   ENDPOINTS: {
     CREATE_ACCOUNT: '/account:create',
     VERIFY_EMAIL: '/verify:email',
-    GET_PROFILE: '/get:profile'
+    GET_PROFILE: '/get:profile',
+    FIND_PROFILE: '/find:profile'
   }
 };
 

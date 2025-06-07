@@ -1,4 +1,3 @@
-
 import { useState } from "react";
 import { Link } from "react-router-dom";
 import { Button } from "@/components/ui/button";
@@ -22,12 +21,12 @@ const Login = ({ setIsLoggedIn, setUserUID }: LoginProps) => {
   const fetchUserProfile = async (uid: string) => {
     try {
       console.log(`Fetching user profile for UID: ${uid}`);
-      const response = await fetch(`${config.PROFILE_URL}${config.ENDPOINTS.GET_PROFILE}/${uid}`, {
-        method: 'GET',
-        mode: 'cors',
-        headers: {
-          'Content-Type': 'application/json',
-        },
+      const formData = new FormData();
+      formData.append('metadata', JSON.stringify({ uid }));
+
+      const response = await fetch(`${config.URL}${config.ENDPOINTS.FIND_PROFILE}`, {
+        method: 'POST',
+        body: formData,
       });
 
       if (response.ok) {

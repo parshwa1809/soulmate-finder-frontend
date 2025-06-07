@@ -1,4 +1,3 @@
-
 import { Routes, Route, Navigate } from "react-router-dom";
 import { useState } from "react";
 import Login from "../components/Login";
@@ -8,6 +7,7 @@ import Matches from "./Matches";
 import Recommendations from "./Recommendations";
 import Notifications from "./Notifications";
 import Awaiting from "./Awaiting";
+import ProfilePage from "./Profile";
 
 const Index = () => {
   const [isLoggedIn, setIsLoggedIn] = useState(false);
@@ -37,6 +37,14 @@ const Index = () => {
           element={
             isLoggedIn ? 
             <Dashboard userUID={userUID} setIsLoggedIn={setIsLoggedIn} /> : 
+            <Navigate to="/login" />
+          } 
+        />
+        <Route 
+          path="/profile" 
+          element={
+            isLoggedIn ? 
+            <ProfilePage /> : 
             <Navigate to="/login" />
           } 
         />
