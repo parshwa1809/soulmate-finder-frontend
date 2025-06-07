@@ -1,3 +1,4 @@
+
 import { useState, useEffect } from "react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
@@ -70,6 +71,22 @@ const Profile = ({ onEdit }: ProfileProps) => {
       }
     }
 
+    // Handle images - parse if it's a JSON string
+    let images: string[] = [];
+    if (apiData.IMAGES || apiData.images) {
+      try {
+        const imagesData = apiData.IMAGES || apiData.images;
+        if (typeof imagesData === 'string') {
+          images = JSON.parse(imagesData);
+        } else if (Array.isArray(imagesData)) {
+          images = imagesData;
+        }
+      } catch {
+        // If parsing fails, treat as empty array
+        images = [];
+      }
+    }
+
     return {
       uid: apiData.UID || apiData.uid || '',
       name: apiData.NAME || apiData.name || 'Unknown User',
@@ -83,18 +100,21 @@ const Profile = ({ onEdit }: ProfileProps) => {
       dob: dob,
       tob: apiData.TOB || apiData.tob || '',
       hobbies: hobbies,
-      images: apiData.IMAGES || apiData.images || [],
+      images: images,
       login: apiData.LOGIN || apiData.login || ''
     };
   };
 
   useEffect(() => {
     const userData = localStorage.getItem('userData');
+    console.log('Raw userData from localStorage:', userData);
     if (userData) {
       try {
         const parsedData = JSON.parse(userData);
+        console.log('Parsed userData:', parsedData);
         // Transform the data to handle both uppercase and lowercase field names
         const transformedData = transformUserData(parsedData.profile || parsedData);
+        console.log('Transformed profile data:', transformedData);
         setProfileData(transformedData);
       } catch (error) {
         console.error('Error parsing user data:', error);
@@ -155,12 +175,12 @@ const Profile = ({ onEdit }: ProfileProps) => {
             {/* Profile Picture */}
             <div className="relative">
               <Avatar className="w-32 h-32">
-                <AvatarImage src={profileData.images?.[0]} />
+                <AvatarImage src={profileData?.images?.[0]} />
                 <AvatarFallback className="bg-gradient-to-r from-orange-500 to-yellow-500 text-white text-3xl">
-                  {profileData.name?.charAt(0) || <User className="w-16 h-16" />}
+                  {profileData?.name?.charAt(0) || <User className="w-16 h-16" />}
                 </AvatarFallback>
               </Avatar>
-              {profileData.images && profileData.images.length > 1 && (
+              {profileData?.images && profileData.images.length > 1 && (
                 <Badge className="absolute -bottom-2 -right-2 bg-orange-500">
                   <Camera className="w-3 h-3 mr-1" />
                   {profileData.images.length}
@@ -172,7 +192,7 @@ const Profile = ({ onEdit }: ProfileProps) => {
             <div className="flex-1 text-center md:text-left">
               <div className="flex flex-col md:flex-row md:items-center md:justify-between mb-4">
                 <h1 className="text-3xl font-bold text-gray-900 mb-2 md:mb-0">
-                  {profileData.name}
+                  {profileData?.name}
                 </h1>
                 {onEdit && (
                   <Button onClick={onEdit} variant="outline" className="border-orange-200 text-orange-600 hover:bg-orange-50">
@@ -183,28 +203,28 @@ const Profile = ({ onEdit }: ProfileProps) => {
               </div>
 
               <div className="grid grid-cols-1 md:grid-cols-2 gap-3 text-gray-600">
-                {profileData.dob && (
+                {profileData?.dob && (
                   <div className="flex items-center justify-center md:justify-start">
                     <Calendar className="w-4 h-4 mr-2" />
                     {calculateAge(profileData.dob)} years old
                   </div>
                 )}
                 
-                {profileData.city && profileData.country && (
+                {profileData?.city && profileData.country && (
                   <div className="flex items-center justify-center md:justify-start">
                     <MapPin className="w-4 h-4 mr-2" />
                     {profileData.city}, {profileData.country}
                   </div>
                 )}
 
-                {profileData.profession && (
+                {profileData?.profession && (
                   <div className="flex items-center justify-center md:justify-start">
                     <Briefcase className="w-4 h-4 mr-2" />
                     {profileData.profession}
                   </div>
                 )}
 
-                {profileData.tob && (
+                {profileData?.tob && (
                   <div className="flex items-center justify-center md:justify-start">
                     <Clock className="w-4 h-4 mr-2" />
                     Born at {formatTime(profileData.tob)}
@@ -229,24 +249,24 @@ const Profile = ({ onEdit }: ProfileProps) => {
           <CardContent className="space-y-4">
             <div>
               <label className="text-sm font-medium text-gray-500">Email</label>
-              <p className="text-gray-900">{profileData.email}</p>
+              <p className="text-gray-900">{profileData?.email}</p>
             </div>
             
-            {profileData.gender && (
+            {profileData?.gender && (
               <div>
                 <label className="text-sm font-medium text-gray-500">Gender</label>
                 <p className="text-gray-900 capitalize">{profileData.gender}</p>
               </div>
             )}
 
-            {profileData.dob && (
+            {profileData?.dob && (
               <div>
                 <label className="text-sm font-medium text-gray-500">Date of Birth</label>
                 <p className="text-gray-900">{new Date(profileData.dob).toLocaleDateString()}</p>
               </div>
             )}
 
-            {profileData.birth_city && profileData.birth_country && (
+            {profileData?.birth_city && profileData.birth_country && (
               <div>
                 <label className="text-sm font-medium text-gray-500">Birth Place</label>
                 <p className="text-gray-900">{profileData.birth_city}, {profileData.birth_country}</p>
@@ -264,7 +284,7 @@ const Profile = ({ onEdit }: ProfileProps) => {
             </CardTitle>
           </CardHeader>
           <CardContent>
-            {profileData.hobbies && profileData.hobbies.length > 0 ? (
+            {profileData?.hobbies && profileData.hobbies.length > 0 ? (
               <div className="flex flex-wrap gap-2">
                 {profileData.hobbies.map((hobby, index) => (
                   <Badge key={index} variant="secondary" className="bg-orange-100 text-orange-700">
@@ -280,7 +300,7 @@ const Profile = ({ onEdit }: ProfileProps) => {
       </div>
 
       {/* Photo Gallery */}
-      {profileData.images && profileData.images.length > 0 && (
+      {profileData?.images && profileData.images.length > 0 && (
         <Card className="bg-white/80 backdrop-blur-sm border-0 shadow-lg">
           <CardHeader>
             <CardTitle className="flex items-center text-gray-900">
@@ -296,6 +316,10 @@ const Profile = ({ onEdit }: ProfileProps) => {
                     src={image}
                     alt={`Profile ${index + 1}`}
                     className="w-full h-full object-cover hover:scale-105 transition-transform duration-200"
+                    onError={(e) => {
+                      console.error(`Failed to load image ${index + 1}:`, image);
+                      e.currentTarget.style.display = 'none';
+                    }}
                   />
                 </div>
               ))}
