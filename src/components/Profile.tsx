@@ -250,6 +250,19 @@ const Profile = ({ onEdit }: ProfileProps) => {
     loadProfileData();
   }, []);
 
+  const handleEditProfile = () => {
+    if (onEdit) {
+      onEdit();
+    }
+  };
+
+  const handleUploadPhotos = () => {
+    // This will be handled by the parent component (ProfilePage)
+    if (onEdit) {
+      onEdit();
+    }
+  };
+
   if (isLoading) {
     return (
       <div className="flex items-center justify-center min-h-screen bg-background">
@@ -333,7 +346,7 @@ const Profile = ({ onEdit }: ProfileProps) => {
                   </div>
                   {onEdit && (
                     <Button 
-                      onClick={onEdit} 
+                      onClick={handleEditProfile} 
                       size="lg"
                       className="mt-4 md:mt-0"
                     >
@@ -518,11 +531,19 @@ const Profile = ({ onEdit }: ProfileProps) => {
                 <CardTitle className="text-xl">Quick Actions</CardTitle>
               </CardHeader>
               <CardContent className="space-y-3">
-                <Button variant="outline" className="w-full justify-start">
+                <Button 
+                  variant="outline" 
+                  className="w-full justify-start"
+                  onClick={handleEditProfile}
+                >
                   <Edit className="w-4 h-4 mr-2" />
                   Edit Profile
                 </Button>
-                <Button variant="outline" className="w-full justify-start">
+                <Button 
+                  variant="outline" 
+                  className="w-full justify-start"
+                  onClick={handleUploadPhotos}
+                >
                   <Camera className="w-4 h-4 mr-2" />
                   Upload Photos
                 </Button>

@@ -9,6 +9,7 @@ import { Textarea } from "@/components/ui/textarea";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { User, Save, X } from "lucide-react";
 import { config } from "../config/api";
+import ImageUpload from "./ImageUpload";
 
 interface ProfileFormData {
   name: string;
@@ -28,6 +29,7 @@ interface EditProfileProps {
 const EditProfile = ({ onCancel, onSave }: EditProfileProps) => {
   const [isLoading, setIsLoading] = useState(false);
   const [profileData, setProfileData] = useState<any>(null);
+  const [images, setImages] = useState<File[]>([]);
   
   const { register, handleSubmit, setValue, formState: { errors } } = useForm<ProfileFormData>();
 
@@ -36,17 +38,16 @@ const EditProfile = ({ onCancel, onSave }: EditProfileProps) => {
     if (userData) {
       try {
         const parsedData = JSON.parse(userData);
-        const profile = parsedData.profile || parsedData;
-        setProfileData(profile);
+        setProfileData(parsedData);
         
         // Set form values
-        setValue('name', profile.name || '');
-        setValue('email', profile.email || '');
-        setValue('city', profile.city || '');
-        setValue('country', profile.country || '');
-        setValue('profession', profile.profession || '');
-        setValue('bio', profile.bio || '');
-        setValue('gender', profile.gender || '');
+        setValue('name', parsedData.NAME || parsedData.name || '');
+        setValue('email', parsedData.EMAIL || parsedData.email || '');
+        setValue('city', parsedData.CITY || parsedData.city || '');
+        setValue('country', parsedData.COUNTRY || parsedData.country || '');
+        setValue('profession', parsedData.PROFESSION || parsedData.profession || '');
+        setValue('bio', parsedData.bio || '');
+        setValue('gender', parsedData.GENDER || parsedData.gender || '');
       } catch (error) {
         console.error('Error parsing user data:', error);
       }
@@ -62,24 +63,36 @@ const EditProfile = ({ onCancel, onSave }: EditProfileProps) => {
       // For now, we'll just update localStorage
       const currentUserData = JSON.parse(localStorage.getItem('userData') || '{}');
       const updatedProfile = {
-        ...currentUserData.profile,
-        ...data
-      };
-      
-      const updatedUserData = {
         ...currentUserData,
-        profile: updatedProfile
+        NAME: data.name,
+        name: data.name,
+        EMAIL: data.email,
+        email: data.email,
+        CITY: data.city,
+        city: data.city,
+        COUNTRY: data.country,
+        country: data.country,
+        PROFESSION: data.profession,
+        profession: data.profession,
+        bio: data.bio,
+        GENDER: data.gender,
+        gender: data.gender
       };
       
-      localStorage.setItem('userData', JSON.stringify(updatedUserData));
+      localStorage.setItem('userData', JSON.stringify(updatedProfile));
       
       console.log('Profile updated:', data);
+      console.log('Images to upload:', images);
       onSave();
     } catch (error) {
       console.error('Error updating profile:', error);
     } finally {
       setIsLoading(false);
     }
+  };
+
+  const handleImagesChange = (newImages: File[]) => {
+    setImages(newImages);
   };
 
   if (!profileData) {
@@ -94,7 +107,7 @@ const EditProfile = ({ onCancel, onSave }: EditProfileProps) => {
   }
 
   return (
-    <div className="max-w-2xl mx-auto p-4">
+    <div className="max-w-4xl mx-auto p-4">
       <Card className="bg-white/80 backdrop-blur-sm border-0 shadow-lg">
         <CardHeader>
           <CardTitle className="flex items-center text-gray-900">
@@ -107,12 +120,15 @@ const EditProfile = ({ onCancel, onSave }: EditProfileProps) => {
             {/* Profile Picture */}
             <div className="flex justify-center mb-6">
               <Avatar className="w-24 h-24">
-                <AvatarImage src={profileData.images?.[0]} />
+                <AvatarImage src={profileData.IMAGES?.[0] || profileData.images?.[0]} />
                 <AvatarFallback className="bg-gradient-to-r from-orange-500 to-yellow-500 text-white text-2xl">
-                  {profileData.name?.charAt(0) || <User className="w-8 h-8" />}
+                  {profileData.NAME?.charAt(0) || profileData.name?.charAt(0) || <User className="w-8 h-8" />}
                 </AvatarFallback>
               </Avatar>
             </div>
+
+            {/* Image Upload Section */}
+            <ImageUpload images={images} onImagesChange={handleImagesChange} />
 
             {/* Basic Information */}
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
