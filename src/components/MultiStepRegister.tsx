@@ -1,4 +1,3 @@
-
 import { useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { Button } from "@/components/ui/button";
@@ -14,6 +13,7 @@ import { format } from "date-fns";
 import { cn } from "@/lib/utils";
 import { config } from "../config/api";
 import ImageUpload from "./ImageUpload";
+import DateRoller from "./DateRoller";
 import { countries, getCitiesForCountry } from "../data/locations";
 
 const hobbiesOptions = [
@@ -432,29 +432,11 @@ const MultiStepRegister = () => {
             <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
               <div className="space-y-2">
                 <Label className="text-sm font-medium text-foreground">Date of Birth *</Label>
-                <Popover>
-                  <PopoverTrigger asChild>
-                    <Button
-                      variant="outline"
-                      className={cn(
-                        "h-11 w-full justify-start text-left font-normal bg-background border-border",
-                        !formData.dob && "text-muted-foreground"
-                      )}
-                    >
-                      <CalendarIcon className="mr-2 h-4 w-4" />
-                      {formData.dob ? format(formData.dob, "yyyy-MM-dd") : <span>Pick a date</span>}
-                    </Button>
-                  </PopoverTrigger>
-                  <PopoverContent className="w-auto p-0 z-50 bg-card border-border" align="start">
-                    <Calendar
-                      mode="single"
-                      selected={formData.dob || undefined}
-                      onSelect={(date) => handleInputChange('dob', date || null)}
-                      disabled={(date) => date > new Date() || date < new Date("1900-01-01")}
-                      initialFocus
-                    />
-                  </PopoverContent>
-                </Popover>
+                <DateRoller
+                  value={formData.dob}
+                  onChange={(date) => handleInputChange('dob', date)}
+                  placeholder="Pick a date"
+                />
               </div>
 
               <div className="space-y-2">
