@@ -42,7 +42,6 @@ const Profile = ({ onEdit }: ProfileProps) => {
   const convertBase64ToDataUrl = (base64Data: any): string => {
     console.log('Converting base64 data:', typeof base64Data, base64Data);
     
-    // Handle null/undefined
     if (!base64Data) {
       console.log('No base64 data provided');
       return '';
@@ -50,12 +49,9 @@ const Profile = ({ onEdit }: ProfileProps) => {
 
     let base64String = '';
 
-    // If it's an object, extract base64 string
     if (typeof base64Data === 'object') {
-      // Try common object properties
       base64String = base64Data.data || base64Data.base64 || base64Data.content || base64Data.image || '';
       
-      // If still no string found, stringify and look for base64 pattern
       if (!base64String) {
         try {
           const stringified = JSON.stringify(base64Data);
@@ -72,25 +68,23 @@ const Profile = ({ onEdit }: ProfileProps) => {
       base64String = String(base64Data);
     }
 
-    // Clean the string
     base64String = base64String.trim();
     
-    // Check if it's already a data URL
     if (base64String.startsWith('data:')) {
       console.log('Already a data URL');
       return base64String;
     }
     
-    // Check if it's a regular URL
     if (base64String.startsWith('http://') || base64String.startsWith('https://')) {
       console.log('Regular URL detected');
       return base64String;
     }
     
-    // Check if it looks like valid base64
     if (base64String.length > 20 && /^[A-Za-z0-9+/=]+$/.test(base64String)) {
+      // Try different image formats
+      const formats = ['jpeg', 'jpg', 'png', 'webp'];
       const dataUrl = `data:image/jpeg;base64,${base64String}`;
-      console.log('Created data URL from base64:', dataUrl.substring(0, 50) + '...');
+      console.log('Created data URL:', dataUrl.substring(0, 100) + '...');
       return dataUrl;
     }
     
@@ -131,49 +125,58 @@ const Profile = ({ onEdit }: ProfileProps) => {
       }
     }
 
-    // Handle images - enhanced to handle base64 encoded images
+    // Enhanced image processing
     let images: string[] = [];
     const imageFields = ['IMAGES', 'images', 'profileImages', 'PROFILEIMAGES'];
     
     for (const field of imageFields) {
       if (apiData[field]) {
-        console.log(`Found images in field ${field}:`, apiData[field]);
+        console.log(`Processing images from field ${field}:`, apiData[field]);
         try {
           const imagesData = apiData[field];
+          
           if (typeof imagesData === 'string') {
             try {
-              // Try to parse as JSON first
               const parsedImages = JSON.parse(imagesData);
               if (Array.isArray(parsedImages)) {
-                images = parsedImages.map(img => convertBase64ToDataUrl(img)).filter(Boolean);
+                images = parsedImages
+                  .map(img => convertBase64ToDataUrl(img))
+                  .filter(url => url && url.length > 0);
               } else {
-                // Single image as base64 string
                 const converted = convertBase64ToDataUrl(imagesData);
                 if (converted) images = [converted];
               }
             } catch {
-              // If not JSON, treat as comma-separated base64 strings or single base64
               if (imagesData.includes(',')) {
-                images = imagesData.split(',').map((img: string) => convertBase64ToDataUrl(img.trim())).filter(Boolean);
+                images = imagesData.split(',')
+                  .map((img: string) => convertBase64ToDataUrl(img.trim()))
+                  .filter(url => url && url.length > 0);
               } else {
                 const converted = convertBase64ToDataUrl(imagesData);
                 if (converted) images = [converted];
               }
             }
           } else if (Array.isArray(imagesData)) {
-            images = imagesData.map(img => convertBase64ToDataUrl(img)).filter(Boolean);
+            images = imagesData
+              .map(img => convertBase64ToDataUrl(img))
+              .filter(url => url && url.length > 0);
           } else if (typeof imagesData === 'object' && imagesData !== null) {
-            // If it's an object, try to extract base64 strings from values
-            images = Object.values(imagesData).map(img => convertBase64ToDataUrl(img as string)).filter(Boolean);
+            images = Object.values(imagesData)
+              .map(img => convertBase64ToDataUrl(img as string))
+              .filter(url => url && url.length > 0);
           }
-          break; // Stop at first valid field found
+          
+          if (images.length > 0) break;
         } catch (error) {
           console.error(`Error parsing images from field ${field}:`, error);
         }
       }
     }
     
-    console.log('Final processed images:', images);
+    console.log('Final processed images:', images.length, 'images found');
+    images.forEach((img, idx) => {
+      console.log(`Image ${idx + 1}:`, img.substring(0, 50) + '... (length: ' + img.length + ')');
+    });
 
     return {
       uid: apiData.UID || apiData.uid || '',
@@ -201,7 +204,6 @@ const Profile = ({ onEdit }: ProfileProps) => {
         const parsedData = JSON.parse(userData);
         console.log('Parsed userData:', parsedData);
         
-        // Check if images are stored in any other location in localStorage
         const allLocalStorageKeys = Object.keys(localStorage);
         console.log('All localStorage keys:', allLocalStorageKeys);
         
@@ -211,7 +213,6 @@ const Profile = ({ onEdit }: ProfileProps) => {
           }
         });
         
-        // Transform the data to handle both uppercase and lowercase field names
         const transformedData = transformUserData(parsedData.profile || parsedData);
         console.log('Transformed profile data:', transformedData);
         setProfileData(transformedData);
@@ -406,7 +407,7 @@ const Profile = ({ onEdit }: ProfileProps) => {
         </Card>
       </div>
 
-      {/* Photo Gallery */}
+      {/* Enhanced Photo Gallery */}
       <Card className="bg-white/80 backdrop-blur-sm border-0 shadow-lg">
         <CardHeader>
           <CardTitle className="flex items-center text-gray-900">
@@ -418,23 +419,36 @@ const Profile = ({ onEdit }: ProfileProps) => {
           {profileData?.images && profileData.images.length > 0 ? (
             <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
               {profileData.images.map((image, index) => {
-                console.log(`Rendering image ${index + 1}:`, image.substring(0, 50) + '...');
+                console.log(`Rendering image ${index + 1}:`, image ? image.substring(0, 50) + '...' : 'Empty image');
                 
-                if (!image) {
+                if (!image || image.length === 0) {
                   console.warn(`Skipping empty image at index ${index}`);
                   return null;
                 }
                 
                 return (
-                  <div key={index} className="aspect-square overflow-hidden rounded-lg border-2 border-gray-200 shadow-md bg-gray-50">
+                  <div key={index} className="aspect-square overflow-hidden rounded-lg border-2 border-gray-200 shadow-md bg-gray-100">
                     <img
                       src={image}
                       alt={`Profile photo ${index + 1}`}
                       className="w-full h-full object-cover hover:scale-105 transition-transform duration-200 cursor-pointer"
-                      style={{ backgroundColor: '#f9fafb' }}
                       onError={(e) => {
                         console.error(`Failed to load image ${index + 1}:`, image.substring(0, 100));
-                        e.currentTarget.src = 'data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMjQiIGhlaWdodD0iMjQiIHZpZXdCb3g9IjAgMCAyNCAyNCIgZmlsbD0ibm9uZSIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj4KPHJlY3Qgd2lkdGg9IjI0IiBoZWlnaHQ9IjI0IiBmaWxsPSIjZjNmNGY2Ii8+CjxwYXRoIGQ9Im0xNSAxMi0zIDNtMCAwLTMtM20zIDN2LTZhMyAzIDAgMSAwLTYgMHYxOGEzIDMgMCAwIDAgNiAwdi02WiIgc3Ryb2tlPSIjOWNhM2FmIiBzdHJva2Utd2lkdGg9IjIiIHN0cm9rZS1saW5lY2FwPSJyb3VuZCIgc3Ryb2tlLWxpbmVqb2luPSJyb3VuZCIvPgo8L3N2Zz4K';
+                        const target = e.currentTarget;
+                        target.style.display = 'none';
+                        const parent = target.parentElement;
+                        if (parent) {
+                          parent.innerHTML = `
+                            <div class="w-full h-full flex items-center justify-center bg-gray-200 text-gray-500">
+                              <div class="text-center">
+                                <svg class="w-8 h-8 mx-auto mb-2" fill="currentColor" viewBox="0 0 20 20">
+                                  <path fill-rule="evenodd" d="M4 3a2 2 0 00-2 2v10a2 2 0 002 2h12a2 2 0 002-2V5a2 2 0 00-2-2H4zm12 12H4l4-8 3 6 2-4 3 6z" clip-rule="evenodd" />
+                                </svg>
+                                <p class="text-xs">Image ${index + 1}</p>
+                              </div>
+                            </div>
+                          `;
+                        }
                       }}
                       onLoad={() => {
                         console.log(`Successfully loaded image ${index + 1}`);
