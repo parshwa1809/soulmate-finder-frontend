@@ -21,12 +21,9 @@ const Login = ({ setIsLoggedIn, setUserUID }: LoginProps) => {
   const fetchUserProfile = async (uid: string) => {
     try {
       console.log(`Fetching user profile for UID: ${uid}`);
-      const formData = new FormData();
-      formData.append('metadata', JSON.stringify({ uid }));
 
-      const response = await fetch(`${config.URL}${config.ENDPOINTS.GET_PROFILE}`, {
-        method: 'POST',
-        body: formData,
+      const response = await fetch(`${config.URL}${config.ENDPOINTS.GET_PROFILE}/${uid}`, {
+        method: 'GET',
       });
 
       if (response.ok) {
