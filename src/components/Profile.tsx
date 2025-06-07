@@ -1,4 +1,3 @@
-
 import { useState, useEffect } from "react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
@@ -40,12 +39,63 @@ const Profile = ({ onEdit }: ProfileProps) => {
   const [profileData, setProfileData] = useState<ProfileData | null>(null);
   const [isLoading, setIsLoading] = useState(true);
 
+  const transformUserData = (apiData: any): ProfileData => {
+    // Parse hobbies if it's a JSON string
+    let hobbies: string[] = [];
+    if (apiData.HOBBIES || apiData.hobbies) {
+      try {
+        const hobbiesData = apiData.HOBBIES || apiData.hobbies;
+        const hobbiesArray = typeof hobbiesData === 'string' ? JSON.parse(hobbiesData) : hobbiesData;
+        hobbies = Array.isArray(hobbiesArray) ? hobbiesArray : hobbiesData.split(',').map((h: string) => h.trim());
+      } catch {
+        hobbies = typeof (apiData.HOBBIES || apiData.hobbies) === 'string' 
+          ? (apiData.HOBBIES || apiData.hobbies).split(',').map((h: string) => h.trim()) 
+          : [];
+      }
+    }
+
+    // Handle DOB
+    let dob = '';
+    if (apiData.DOB || apiData.dob) {
+      try {
+        const dobData = apiData.DOB || apiData.dob;
+        if (typeof dobData === 'string' && dobData.includes('{')) {
+          const dobObj = JSON.parse(dobData);
+          dob = `${dobObj.year}-${String(dobObj.month).padStart(2, '0')}-${String(dobObj.day).padStart(2, '0')}`;
+        } else {
+          dob = dobData;
+        }
+      } catch {
+        dob = apiData.DOB || apiData.dob || '';
+      }
+    }
+
+    return {
+      uid: apiData.UID || apiData.uid || '',
+      name: apiData.NAME || apiData.name || 'Unknown User',
+      email: apiData.EMAIL || apiData.email || '',
+      city: apiData.CITY || apiData.city || '',
+      country: apiData.COUNTRY || apiData.country || '',
+      birth_city: apiData.BIRTH_CITY || apiData.birth_city || '',
+      birth_country: apiData.BIRTH_COUNTRY || apiData.birth_country || '',
+      gender: apiData.GENDER || apiData.gender || '',
+      profession: apiData.PROFESSION || apiData.profession || '',
+      dob: dob,
+      tob: apiData.TOB || apiData.tob || '',
+      hobbies: hobbies,
+      images: apiData.IMAGES || apiData.images || [],
+      login: apiData.LOGIN || apiData.login || ''
+    };
+  };
+
   useEffect(() => {
     const userData = localStorage.getItem('userData');
     if (userData) {
       try {
         const parsedData = JSON.parse(userData);
-        setProfileData(parsedData.profile || parsedData);
+        // Transform the data to handle both uppercase and lowercase field names
+        const transformedData = transformUserData(parsedData.profile || parsedData);
+        setProfileData(transformedData);
       } catch (error) {
         console.error('Error parsing user data:', error);
       }
