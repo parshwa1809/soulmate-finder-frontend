@@ -13,6 +13,7 @@ import { format } from "date-fns";
 import { cn } from "@/lib/utils";
 import { config } from "../config/api";
 import ImageUpload from "./ImageUpload";
+import { countries, cities } from "../data/locations";
 
 const hobbiesOptions = [
   "Reading", "Traveling", "Cooking", "Sports", "Music", "Movies", 
@@ -291,28 +292,38 @@ const Register = () => {
               </div>
             </div>
 
-            {/* Location information */}
+            {/* Location information with dropdowns */}
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
               <div className="space-y-2">
                 <Label htmlFor="city">City</Label>
-                <Input
-                  id="city"
-                  value={formData.city}
-                  onChange={(e) => handleInputChange('city', e.target.value)}
-                  className="h-12"
-                  required
-                />
+                <Select value={formData.city} onValueChange={(value) => handleInputChange('city', value)}>
+                  <SelectTrigger className="h-12">
+                    <SelectValue placeholder="Select your city" />
+                  </SelectTrigger>
+                  <SelectContent className="max-h-[200px]">
+                    {cities.map((city) => (
+                      <SelectItem key={city} value={city}>
+                        {city}
+                      </SelectItem>
+                    ))}
+                  </SelectContent>
+                </Select>
               </div>
 
               <div className="space-y-2">
                 <Label htmlFor="country">Country</Label>
-                <Input
-                  id="country"
-                  value={formData.country}
-                  onChange={(e) => handleInputChange('country', e.target.value)}
-                  className="h-12"
-                  required
-                />
+                <Select value={formData.country} onValueChange={(value) => handleInputChange('country', value)}>
+                  <SelectTrigger className="h-12">
+                    <SelectValue placeholder="Select your country" />
+                  </SelectTrigger>
+                  <SelectContent className="max-h-[200px]">
+                    {countries.map((country) => (
+                      <SelectItem key={country} value={country}>
+                        {country}
+                      </SelectItem>
+                    ))}
+                  </SelectContent>
+                </Select>
               </div>
             </div>
 
@@ -329,28 +340,38 @@ const Register = () => {
               />
             </div>
 
-            {/* Birth location */}
+            {/* Birth location with dropdowns */}
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
               <div className="space-y-2">
                 <Label htmlFor="birth_city">City of Birth</Label>
-                <Input
-                  id="birth_city"
-                  value={formData.birth_city}
-                  onChange={(e) => handleInputChange('birth_city', e.target.value)}
-                  className="h-12"
-                  required
-                />
+                <Select value={formData.birth_city} onValueChange={(value) => handleInputChange('birth_city', value)}>
+                  <SelectTrigger className="h-12">
+                    <SelectValue placeholder="Select city of birth" />
+                  </SelectTrigger>
+                  <SelectContent className="max-h-[200px]">
+                    {cities.map((city) => (
+                      <SelectItem key={city} value={city}>
+                        {city}
+                      </SelectItem>
+                    ))}
+                  </SelectContent>
+                </Select>
               </div>
 
               <div className="space-y-2">
                 <Label htmlFor="birth_country">Country of Birth</Label>
-                <Input
-                  id="birth_country"
-                  value={formData.birth_country}
-                  onChange={(e) => handleInputChange('birth_country', e.target.value)}
-                  className="h-12"
-                  required
-                />
+                <Select value={formData.birth_country} onValueChange={(value) => handleInputChange('birth_country', value)}>
+                  <SelectTrigger className="h-12">
+                    <SelectValue placeholder="Select country of birth" />
+                  </SelectTrigger>
+                  <SelectContent className="max-h-[200px]">
+                    {countries.map((country) => (
+                      <SelectItem key={country} value={country}>
+                        {country}
+                      </SelectItem>
+                    ))}
+                  </SelectContent>
+                </Select>
               </div>
             </div>
 
