@@ -1,4 +1,3 @@
-
 import { useState, useEffect } from "react";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
@@ -51,8 +50,8 @@ const Recommendations = () => {
     try {
       const userPromises = userList.map(async (item) => {
         const uid = item.UID || item;
-        const response = await fetch(`${config.URL}/get:${uid}`, {
-          method: 'POST',
+        const response = await fetch(`${config.URL}${config.ENDPOINTS.GET_PROFILE}/${uid}`, {
+          method: 'GET',
         });
         if (response.ok) {
           return await response.json();

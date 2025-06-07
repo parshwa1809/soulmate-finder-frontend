@@ -73,10 +73,10 @@ const Dashboard = ({ userUID, setIsLoggedIn }: DashboardProps) => {
     try {
       const userPromises = userList.map(async (item) => {
         const uid = item.UID || item;
-        console.log(`Fetching user data for UID: ${uid} from ${config.URL}/get:${uid}`);
+        console.log(`Fetching user data for UID: ${uid} from ${config.URL}${config.ENDPOINTS.GET_PROFILE}/${uid}`);
         
-        const response = await fetch(`${config.URL}/get:${uid}`, {
-          method: 'POST',
+        const response = await fetch(`${config.URL}${config.ENDPOINTS.GET_PROFILE}/${uid}`, {
+          method: 'GET',
           mode: 'cors',
           headers: {
             'Content-Type': 'application/json',
