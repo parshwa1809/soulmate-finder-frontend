@@ -22,7 +22,7 @@ const Login = ({ setIsLoggedIn, setUserUID }: LoginProps) => {
     try {
       console.log(`Fetching user profile for UID: ${uid}`);
 
-      const response = await fetch(`${config.URL}${config.ENDPOINTS.GET_PROFILE}/${uid}`, {
+      const response = await fetch(`${config.URL}${config.ENDPOINTS.GET_PROFILE}?uid=${uid}`, {
         method: 'GET',
       });
 
@@ -61,6 +61,19 @@ const Login = ({ setIsLoggedIn, setUserUID }: LoginProps) => {
         // Fetch user profile after successful login
         const profileData = await fetchUserProfile(data.UID);
         
+        // Extract UIDs from recommendations (first item in each array)
+        const recommendationUIDs = data.RECOMMENDATIONS?.map((rec: any[]) => rec[0]) || [];
+        console.log('Extracted recommendation UIDs:', recommendationUIDs);
+        
+        // Fetch profiles for each recommendation UID
+        const recommendationProfiles = await Promise.all(
+          recommendationUIDs.map((uid: string) => fetchUserProfile(uid))
+        );
+        
+        // Filter out null responses
+        const validRecommendations = recommendationProfiles.filter(profile => profile !== null);
+        console.log('Fetched recommendation profiles:', validRecommendations);
+
         // Transform the backend data structure to match the frontend expectations
         const transformedUserData = {
           UID: data.UID,
@@ -68,7 +81,7 @@ const Login = ({ setIsLoggedIn, setUserUID }: LoginProps) => {
           ERROR: data.ERROR,
           profile: profileData,
           matches: data.MATCHED || [],
-          recommendations: data.RECOMMENDATIONS || [],
+          recommendations: validRecommendations,
           notifications: data.NOTIFICATIONS || [],
           awaiting: data.AWAITING || []
         };
