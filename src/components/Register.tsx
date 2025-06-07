@@ -439,10 +439,12 @@ const Register = () => {
                     value={formData.tob}
                     onChange={(e) => handleInputChange('tob', e.target.value)}
                     className="h-12 pr-10"
+                    placeholder="14:30"
                     required
                   />
                   <Clock className="absolute right-3 top-3 h-6 w-6 text-gray-400 pointer-events-none" />
                 </div>
+                <p className="text-xs text-gray-500">Format: 24-hour time (e.g., 14:30 for 2:30 PM)</p>
               </div>
             </div>
 
