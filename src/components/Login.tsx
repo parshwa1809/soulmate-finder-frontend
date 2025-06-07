@@ -1,11 +1,10 @@
-
 import { useState } from "react";
 import { Link } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Label } from "@/components/ui/label";
-import { Mail, Heart, Lock, User } from "lucide-react";
+import { Mail, Heart, Lock, User, Eye, EyeOff } from "lucide-react";
 import { config } from "../config/api";
 
 interface LoginProps {
@@ -18,6 +17,7 @@ const Login = ({ setIsLoggedIn, setUserUID }: LoginProps) => {
   const [password, setPassword] = useState("");
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState("");
+  const [showPassword, setShowPassword] = useState(false);
 
   const fetchUserProfile = async (uid: string) => {
     try {
@@ -275,61 +275,68 @@ const Login = ({ setIsLoggedIn, setUserUID }: LoginProps) => {
   };
 
   return (
-    <div className="min-h-screen flex items-center justify-center p-4">
-      <Card className="w-full max-w-md bg-white/80 backdrop-blur-sm border-0 shadow-2xl">
-        <CardHeader className="text-center space-y-6">
-          <div className="mx-auto w-16 h-16 bg-gradient-to-r from-orange-500 to-yellow-500 rounded-full flex items-center justify-center">
-            <Heart className="w-8 h-8 text-white" />
+    <div className="min-h-screen bg-background flex items-center justify-center p-4">
+      <Card className="w-full max-w-md bg-card shadow-lg border-border">
+        <CardHeader className="text-center space-y-4">
+          <div className="mx-auto w-12 h-12 bg-primary rounded-full flex items-center justify-center">
+            <Heart className="w-6 h-6 text-primary-foreground" />
           </div>
           <div>
-            <CardTitle className="text-3xl font-bold bg-gradient-to-r from-orange-600 to-yellow-600 bg-clip-text text-transparent">
+            <CardTitle className="text-2xl font-semibold text-foreground">
               Welcome Back
             </CardTitle>
-            <CardDescription className="text-gray-600 mt-2">
+            <CardDescription className="text-muted-foreground mt-2">
               Sign in to find your perfect match
             </CardDescription>
           </div>
         </CardHeader>
-        <CardContent>
-          <form onSubmit={handleLogin} className="space-y-6">
+        <CardContent className="space-y-6">
+          <form onSubmit={handleLogin} className="space-y-4">
             <div className="space-y-2">
-              <Label htmlFor="email" className="text-sm font-medium text-gray-700">
+              <Label htmlFor="email" className="text-sm font-medium text-foreground">
                 Email Address
               </Label>
               <div className="relative">
-                <Mail className="absolute left-3 top-3 h-4 w-4 text-gray-400" />
+                <Mail className="absolute left-3 top-3 h-4 w-4 text-muted-foreground" />
                 <Input
                   id="email"
                   type="email"
                   placeholder="Enter your email"
                   value={email}
                   onChange={(e) => setEmail(e.target.value)}
-                  className="pl-10 h-12 border-gray-200 focus:border-orange-500 focus:ring-orange-500"
+                  className="pl-10 h-11 bg-background border-border focus:border-primary"
                   required
                 />
               </div>
             </div>
 
             <div className="space-y-2">
-              <Label htmlFor="password" className="text-sm font-medium text-gray-700">
+              <Label htmlFor="password" className="text-sm font-medium text-foreground">
                 Password
               </Label>
               <div className="relative">
-                <Lock className="absolute left-3 top-3 h-4 w-4 text-gray-400" />
+                <Lock className="absolute left-3 top-3 h-4 w-4 text-muted-foreground" />
                 <Input
                   id="password"
-                  type="password"
+                  type={showPassword ? "text" : "password"}
                   placeholder="Enter your password"
                   value={password}
                   onChange={(e) => setPassword(e.target.value)}
-                  className="pl-10 h-12 border-gray-200 focus:border-orange-500 focus:ring-orange-500"
+                  className="pl-10 pr-10 h-11 bg-background border-border focus:border-primary"
                   required
                 />
+                <button
+                  type="button"
+                  onClick={() => setShowPassword(!showPassword)}
+                  className="absolute right-3 top-3 text-muted-foreground hover:text-foreground"
+                >
+                  {showPassword ? <EyeOff className="h-4 w-4" /> : <Eye className="h-4 w-4" />}
+                </button>
               </div>
             </div>
 
             {error && (
-              <div className="text-red-500 text-sm text-center bg-red-50 p-3 rounded-md">
+              <div className="text-destructive text-sm text-center bg-destructive/10 p-3 rounded-md border border-destructive/20">
                 {error}
               </div>
             )}
@@ -337,17 +344,17 @@ const Login = ({ setIsLoggedIn, setUserUID }: LoginProps) => {
             <Button
               type="submit"
               disabled={isLoading}
-              className="w-full h-12 bg-gradient-to-r from-orange-500 to-yellow-500 hover:from-orange-600 hover:to-yellow-600 text-white font-medium rounded-md transition-all duration-200 shadow-lg hover:shadow-xl"
+              className="w-full h-11 bg-primary hover:bg-primary/90 text-primary-foreground font-medium"
             >
               {isLoading ? "Signing In..." : "Sign In"}
             </Button>
 
             <div className="relative">
               <div className="absolute inset-0 flex items-center">
-                <span className="w-full border-t" />
+                <span className="w-full border-t border-border" />
               </div>
               <div className="relative flex justify-center text-xs uppercase">
-                <span className="bg-white px-2 text-gray-500">Or</span>
+                <span className="bg-card px-2 text-muted-foreground">Or</span>
               </div>
             </div>
 
@@ -355,17 +362,17 @@ const Login = ({ setIsLoggedIn, setUserUID }: LoginProps) => {
               type="button"
               onClick={handleDemoLogin}
               variant="outline"
-              className="w-full h-12 border-orange-200 text-orange-600 hover:bg-orange-50 hover:text-orange-700 font-medium rounded-md transition-all duration-200"
+              className="w-full h-11 border-border text-foreground hover:bg-muted font-medium"
             >
               <User className="w-4 h-4 mr-2" />
               Demo Login
             </Button>
 
             <div className="text-center">
-              <span className="text-gray-600">Don't have an account? </span>
+              <span className="text-muted-foreground">Don't have an account? </span>
               <Link 
                 to="/register" 
-                className="text-orange-600 hover:text-orange-700 font-medium transition-colors"
+                className="text-primary hover:text-primary/80 font-medium transition-colors"
               >
                 Sign up
               </Link>

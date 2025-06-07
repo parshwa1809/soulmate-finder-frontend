@@ -5,7 +5,7 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/com
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Badge } from "@/components/ui/badge";
-import { Heart, Bell, Clock, Users, User } from "lucide-react";
+import { Heart, Bell, Clock, Users, User, LogOut } from "lucide-react";
 import { config } from "../config/api";
 import UserActions from "./UserActions";
 import ProfileView from "./ProfileView";
@@ -170,26 +170,26 @@ const Dashboard = ({ userUID, setIsLoggedIn }: DashboardProps) => {
   };
 
   const UserCard = ({ user, showActions = false }: { user: User; showActions?: boolean }) => (
-    <Card className="hover:shadow-lg transition-shadow duration-200 bg-white/80 backdrop-blur-sm cursor-pointer">
+    <Card className="hover:shadow-lg transition-all duration-200 bg-card border-border cursor-pointer hover:border-primary/20">
       <CardContent className="p-6" onClick={() => handleUserClick(user)}>
         <div className="flex items-start space-x-4">
-          <Avatar className="w-16 h-16">
+          <Avatar className="w-16 h-16 ring-2 ring-border">
             <AvatarImage src={user.profilePicture} />
-            <AvatarFallback className="bg-gradient-to-r from-orange-500 to-yellow-500 text-white">
+            <AvatarFallback className="bg-primary text-primary-foreground">
               {user.name?.charAt(0) || <User className="w-6 h-6" />}
             </AvatarFallback>
           </Avatar>
           <div className="flex-1 min-w-0">
-            <h3 className="font-semibold text-lg text-gray-900 truncate">
+            <h3 className="font-semibold text-lg text-foreground truncate">
               {user.name || 'Unknown User'}
             </h3>
             {user.city && user.country && (
-              <p className="text-sm text-gray-600 truncate">
+              <p className="text-sm text-muted-foreground truncate">
                 {user.city}, {user.country}
               </p>
             )}
             {user.age && (
-              <p className="text-sm text-gray-600">
+              <p className="text-sm text-muted-foreground">
                 {user.age} years old
               </p>
             )}
@@ -197,7 +197,7 @@ const Dashboard = ({ userUID, setIsLoggedIn }: DashboardProps) => {
               <div className="mt-2">
                 <div className="flex flex-wrap gap-1">
                   {user.hobbies.split(',').slice(0, 3).map((hobby, index) => (
-                    <Badge key={index} variant="secondary" className="text-xs">
+                    <Badge key={index} variant="secondary" className="text-xs bg-muted text-muted-foreground">
                       {hobby.trim()}
                     </Badge>
                   ))}
@@ -224,17 +224,19 @@ const Dashboard = ({ userUID, setIsLoggedIn }: DashboardProps) => {
     title: string; 
     description: string; 
   }) => (
-    <div className="text-center py-12">
-      <Icon className="mx-auto h-12 w-12 text-gray-400" />
-      <h3 className="mt-4 text-lg font-medium text-gray-900">{title}</h3>
-      <p className="mt-2 text-gray-600">{description}</p>
+    <div className="text-center py-16">
+      <div className="w-16 h-16 mx-auto mb-6 bg-muted rounded-full flex items-center justify-center">
+        <Icon className="w-8 h-8 text-muted-foreground" />
+      </div>
+      <h3 className="text-xl font-semibold text-foreground mb-2">{title}</h3>
+      <p className="text-muted-foreground max-w-md mx-auto">{description}</p>
     </div>
   );
 
   if (selectedUser) {
     return (
-      <div className="min-h-screen bg-gradient-to-br from-yellow-50 via-orange-50 to-yellow-100">
-        <div className="container mx-auto px-4 py-8">
+      <div className="min-h-screen bg-background">
+        <div className="max-w-4xl mx-auto px-6 py-8">
           <ProfileView user={selectedUser} onBack={handleBackToList}>
             <UserActions 
               userUID={selectedUser.UID} 
@@ -249,78 +251,85 @@ const Dashboard = ({ userUID, setIsLoggedIn }: DashboardProps) => {
 
   if (isLoading) {
     return (
-      <div className="min-h-screen flex items-center justify-center">
+      <div className="min-h-screen flex items-center justify-center bg-background">
         <div className="text-center">
-          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-orange-500 mx-auto"></div>
-          <p className="mt-4 text-gray-600">Loading your matches...</p>
+          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-primary mx-auto"></div>
+          <p className="mt-4 text-muted-foreground">Loading your matches...</p>
         </div>
       </div>
     );
   }
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-yellow-50 via-orange-50 to-yellow-100">
-      <div className="container mx-auto px-4 py-8">
-        <div className="flex justify-between items-center mb-8">
+    <div className="min-h-screen bg-background">
+      {/* Header */}
+      <div className="border-b border-border bg-card/50 backdrop-blur-sm sticky top-0 z-50">
+        <div className="max-w-7xl mx-auto px-6 py-4 flex items-center justify-between">
           <div>
-            <h1 className="text-3xl font-bold bg-gradient-to-r from-orange-600 to-yellow-600 bg-clip-text text-transparent">
-              Your Dashboard
-            </h1>
-            <p className="text-gray-600 mt-2">Discover your perfect matches</p>
+            <h1 className="text-2xl font-semibold text-foreground">Dashboard</h1>
+            <p className="text-muted-foreground mt-1">Discover your perfect matches</p>
           </div>
           <div className="flex gap-3">
             <Button 
               onClick={handleViewProfile}
               variant="outline"
-              className="border-orange-200 text-orange-600 hover:bg-orange-50"
+              className="border-border text-foreground hover:bg-muted"
             >
               <User className="w-4 h-4 mr-2" />
-              View Profile
+              Profile
             </Button>
             <Button 
               onClick={handleLogout}
               variant="outline"
-              className="border-red-200 text-red-600 hover:bg-red-50"
+              className="border-destructive/20 text-destructive hover:bg-destructive/10"
             >
+              <LogOut className="w-4 h-4 mr-2" />
               Logout
             </Button>
           </div>
         </div>
+      </div>
 
+      {/* Content */}
+      <div className="max-w-7xl mx-auto px-6 py-8">
         <Tabs defaultValue="recommendations" className="space-y-6">
-          <TabsList className="grid w-full grid-cols-4 bg-white/80 backdrop-blur-sm">
-            <TabsTrigger value="recommendations" className="flex items-center gap-2">
+          <TabsList className="grid w-full grid-cols-4 bg-card border-border">
+            <TabsTrigger value="recommendations" className="flex items-center gap-2 data-[state=active]:bg-primary data-[state=active]:text-primary-foreground">
               <Users className="w-4 h-4" />
               Discover ({recommendations.length})
             </TabsTrigger>
-            <TabsTrigger value="matches" className="flex items-center gap-2">
+            <TabsTrigger value="matches" className="flex items-center gap-2 data-[state=active]:bg-primary data-[state=active]:text-primary-foreground">
               <Heart className="w-4 h-4" />
               Matches ({matches.length})
             </TabsTrigger>
-            <TabsTrigger value="notifications" className="flex items-center gap-2">
+            <TabsTrigger value="notifications" className="flex items-center gap-2 data-[state=active]:bg-primary data-[state=active]:text-primary-foreground">
               <Bell className="w-4 h-4" />
               Notifications ({notifications.length})
             </TabsTrigger>
-            <TabsTrigger value="awaiting" className="flex items-center gap-2">
+            <TabsTrigger value="awaiting" className="flex items-center gap-2 data-[state=active]:bg-primary data-[state=active]:text-primary-foreground">
               <Clock className="w-4 h-4" />
               Awaiting ({awaiting.length})
             </TabsTrigger>
           </TabsList>
 
-          <TabsContent value="recommendations" className="space-y-4">
-            <Card className="bg-white/80 backdrop-blur-sm border-0 shadow-lg">
-              <CardHeader>
-                <CardTitle className="flex items-center gap-2 text-orange-600">
-                  <Users className="w-5 h-5" />
-                  Discover New People
-                </CardTitle>
-                <CardDescription>
-                  Profiles our algorithm thinks you'll love
-                </CardDescription>
+          <TabsContent value="recommendations" className="space-y-6">
+            <Card className="bg-card border-border shadow-sm">
+              <CardHeader className="pb-4">
+                <div className="flex items-center gap-3">
+                  <div className="w-8 h-8 bg-primary/10 rounded-lg flex items-center justify-center">
+                    <Users className="w-4 h-4 text-primary" />
+                  </div>
+                  <div>
+                    <CardTitle className="text-foreground">Discover New People</CardTitle>
+                    <CardDescription className="text-muted-foreground">
+                      Profiles our algorithm thinks you'll love
+                    </CardDescription>
+                  </div>
+                </div>
               </CardHeader>
               <CardContent>
                 {recommendations.length > 0 ? (
-                  <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+                  <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
                     {recommendations.map((user) => (
                       <UserCard key={user.UID} user={user} showActions={true} />
                     ))}
@@ -336,20 +345,24 @@ const Dashboard = ({ userUID, setIsLoggedIn }: DashboardProps) => {
             </Card>
           </TabsContent>
 
-          <TabsContent value="matches" className="space-y-4">
-            <Card className="bg-white/80 backdrop-blur-sm border-0 shadow-lg">
-              <CardHeader>
-                <CardTitle className="flex items-center gap-2 text-orange-600">
-                  <Heart className="w-5 h-5" />
-                  Your Matches
-                </CardTitle>
-                <CardDescription>
-                  People who liked you back - it's a match!
-                </CardDescription>
+          <TabsContent value="matches" className="space-y-6">
+            <Card className="bg-card border-border shadow-sm">
+              <CardHeader className="pb-4">
+                <div className="flex items-center gap-3">
+                  <div className="w-8 h-8 bg-primary/10 rounded-lg flex items-center justify-center">
+                    <Heart className="w-4 h-4 text-primary" />
+                  </div>
+                  <div>
+                    <CardTitle className="text-foreground">Your Matches</CardTitle>
+                    <CardDescription className="text-muted-foreground">
+                      People who liked you back - it's a match!
+                    </CardDescription>
+                  </div>
+                </div>
               </CardHeader>
               <CardContent>
                 {matches.length > 0 ? (
-                  <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+                  <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
                     {matches.map((user) => (
                       <UserCard key={user.UID} user={user} />
                     ))}
@@ -365,20 +378,24 @@ const Dashboard = ({ userUID, setIsLoggedIn }: DashboardProps) => {
             </Card>
           </TabsContent>
 
-          <TabsContent value="notifications" className="space-y-4">
-            <Card className="bg-white/80 backdrop-blur-sm border-0 shadow-lg">
-              <CardHeader>
-                <CardTitle className="flex items-center gap-2 text-orange-600">
-                  <Bell className="w-5 h-5" />
-                  Notifications
-                </CardTitle>
-                <CardDescription>
-                  Recent activity and updates
-                </CardDescription>
+          <TabsContent value="notifications" className="space-y-6">
+            <Card className="bg-card border-border shadow-sm">
+              <CardHeader className="pb-4">
+                <div className="flex items-center gap-3">
+                  <div className="w-8 h-8 bg-primary/10 rounded-lg flex items-center justify-center">
+                    <Bell className="w-4 h-4 text-primary" />
+                  </div>
+                  <div>
+                    <CardTitle className="text-foreground">Notifications</CardTitle>
+                    <CardDescription className="text-muted-foreground">
+                      Recent activity and updates
+                    </CardDescription>
+                  </div>
+                </div>
               </CardHeader>
               <CardContent>
                 {notifications.length > 0 ? (
-                  <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+                  <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
                     {notifications.map((user) => (
                       <UserCard key={user.UID} user={user} />
                     ))}
@@ -394,20 +411,24 @@ const Dashboard = ({ userUID, setIsLoggedIn }: DashboardProps) => {
             </Card>
           </TabsContent>
 
-          <TabsContent value="awaiting" className="space-y-4">
-            <Card className="bg-white/80 backdrop-blur-sm border-0 shadow-lg">
-              <CardHeader>
-                <CardTitle className="flex items-center gap-2 text-orange-600">
-                  <Clock className="w-5 h-5" />
-                  Awaiting Response
-                </CardTitle>
-                <CardDescription>
-                  People waiting for your response
-                </CardDescription>
+          <TabsContent value="awaiting" className="space-y-6">
+            <Card className="bg-card border-border shadow-sm">
+              <CardHeader className="pb-4">
+                <div className="flex items-center gap-3">
+                  <div className="w-8 h-8 bg-primary/10 rounded-lg flex items-center justify-center">
+                    <Clock className="w-4 h-4 text-primary" />
+                  </div>
+                  <div>
+                    <CardTitle className="text-foreground">Awaiting Response</CardTitle>
+                    <CardDescription className="text-muted-foreground">
+                      People waiting for your response
+                    </CardDescription>
+                  </div>
+                </div>
               </CardHeader>
               <CardContent>
                 {awaiting.length > 0 ? (
-                  <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+                  <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
                     {awaiting.map((user) => (
                       <UserCard key={user.UID} user={user} />
                     ))}
