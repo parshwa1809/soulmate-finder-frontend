@@ -42,12 +42,41 @@ const Profile = ({ onEdit }: ProfileProps) => {
   const convertBase64ToDataUrl = (base64Data: any): string => {
     console.log('Converting base64 data:', typeof base64Data, base64Data);
     
+    // Handle null/undefined
+    if (base64Data === null || base64Data === undefined) {
+      return '';
+    }
+
+    // If it's an object, try to extract the base64 string
+    if (typeof base64Data === 'object') {
+      // Try common object properties that might contain base64 data
+      const possibleBase64 = base64Data.data || base64Data.base64 || base64Data.content || base64Data.image;
+      if (possibleBase64 && typeof possibleBase64 === 'string') {
+        base64Data = possibleBase64;
+      } else {
+        // If object doesn't have expected properties, try to stringify and see if it's valid
+        try {
+          const stringified = JSON.stringify(base64Data);
+          if (stringified && stringified !== '{}' && stringified !== 'null') {
+            console.log('Object converted to string:', stringified);
+            // If the stringified object looks like it might contain base64, extract it
+            const base64Match = stringified.match(/"([A-Za-z0-9+/=]{20,})"/);
+            if (base64Match) {
+              base64Data = base64Match[1];
+            } else {
+              return '';
+            }
+          } else {
+            return '';
+          }
+        } catch {
+          return '';
+        }
+      }
+    }
+
     // Ensure we have a string
     if (typeof base64Data !== 'string') {
-      if (base64Data === null || base64Data === undefined) {
-        return '';
-      }
-      // Try to convert to string
       base64Data = String(base64Data);
     }
 
@@ -59,6 +88,12 @@ const Profile = ({ onEdit }: ProfileProps) => {
     // Check if it's a regular URL
     if (base64Data.startsWith('http://') || base64Data.startsWith('https://')) {
       return base64Data;
+    }
+    
+    // Remove any whitespace and check if it looks like base64
+    base64Data = base64Data.trim();
+    if (base64Data.length === 0) {
+      return '';
     }
     
     // Assume it's a base64 string and convert to data URL
