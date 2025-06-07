@@ -24,7 +24,6 @@ const ProfilePage = () => {
 
   const handleSaveEdit = () => {
     setIsEditing(false);
-    // Optionally show a success message here
   };
 
   const handleLogout = () => {
@@ -34,27 +33,27 @@ const ProfilePage = () => {
   };
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-yellow-50 via-orange-50 to-yellow-100">
+    <div className="min-h-screen bg-background">
       {/* Header */}
-      <div className="bg-white/80 backdrop-blur-sm border-b border-orange-100">
-        <div className="max-w-4xl mx-auto px-4 py-4 flex items-center justify-between">
+      <div className="border-b border-border bg-card/50 backdrop-blur-sm sticky top-0 z-50">
+        <div className="max-w-7xl mx-auto px-6 py-4 flex items-center justify-between">
           <Button 
             onClick={handleBack}
             variant="ghost" 
-            className="text-orange-600 hover:text-orange-700"
+            className="text-muted-foreground hover:text-foreground"
           >
             <ArrowLeft className="w-4 h-4 mr-2" />
             Back to Dashboard
           </Button>
           
-          <h1 className="text-xl font-semibold text-gray-900">
+          <h1 className="text-xl font-semibold text-foreground">
             {isEditing ? 'Edit Profile' : 'My Profile'}
           </h1>
           
           <Button 
             onClick={handleLogout}
             variant="outline"
-            className="border-red-200 text-red-600 hover:bg-red-50"
+            className="border-destructive/20 text-destructive hover:bg-destructive/10"
           >
             <LogOut className="w-4 h-4 mr-2" />
             Logout
@@ -63,7 +62,7 @@ const ProfilePage = () => {
       </div>
 
       {/* Profile Content */}
-      <div className="py-8">
+      <div className="max-w-7xl mx-auto px-6 py-8">
         {isEditing ? (
           <EditProfile onCancel={handleCancelEdit} onSave={handleSaveEdit} />
         ) : (
