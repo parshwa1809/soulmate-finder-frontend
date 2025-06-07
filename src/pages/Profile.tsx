@@ -2,19 +2,29 @@
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import Profile from "../components/Profile";
+import EditProfile from "../components/EditProfile";
 import { Button } from "@/components/ui/button";
 import { ArrowLeft, LogOut } from "lucide-react";
 
 const ProfilePage = () => {
   const navigate = useNavigate();
+  const [isEditing, setIsEditing] = useState(false);
 
   const handleBack = () => {
     navigate("/dashboard");
   };
 
   const handleEdit = () => {
-    // Navigate to edit profile page when implemented
-    console.log("Edit profile clicked");
+    setIsEditing(true);
+  };
+
+  const handleCancelEdit = () => {
+    setIsEditing(false);
+  };
+
+  const handleSaveEdit = () => {
+    setIsEditing(false);
+    // Optionally show a success message here
   };
 
   const handleLogout = () => {
@@ -37,7 +47,9 @@ const ProfilePage = () => {
             Back to Dashboard
           </Button>
           
-          <h1 className="text-xl font-semibold text-gray-900">My Profile</h1>
+          <h1 className="text-xl font-semibold text-gray-900">
+            {isEditing ? 'Edit Profile' : 'My Profile'}
+          </h1>
           
           <Button 
             onClick={handleLogout}
@@ -52,7 +64,11 @@ const ProfilePage = () => {
 
       {/* Profile Content */}
       <div className="py-8">
-        <Profile onEdit={handleEdit} />
+        {isEditing ? (
+          <EditProfile onCancel={handleCancelEdit} onSave={handleSaveEdit} />
+        ) : (
+          <Profile onEdit={handleEdit} />
+        )}
       </div>
     </div>
   );
