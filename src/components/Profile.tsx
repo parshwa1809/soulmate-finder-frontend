@@ -39,20 +39,31 @@ const Profile = ({ onEdit }: ProfileProps) => {
   const [profileData, setProfileData] = useState<ProfileData | null>(null);
   const [isLoading, setIsLoading] = useState(true);
 
-  const convertBase64ToDataUrl = (base64String: string): string => {
+  const convertBase64ToDataUrl = (base64Data: any): string => {
+    console.log('Converting base64 data:', typeof base64Data, base64Data);
+    
+    // Ensure we have a string
+    if (typeof base64Data !== 'string') {
+      if (base64Data === null || base64Data === undefined) {
+        return '';
+      }
+      // Try to convert to string
+      base64Data = String(base64Data);
+    }
+
     // Check if it's already a data URL
-    if (base64String.startsWith('data:')) {
-      return base64String;
+    if (base64Data.startsWith('data:')) {
+      return base64Data;
     }
     
     // Check if it's a regular URL
-    if (base64String.startsWith('http://') || base64String.startsWith('https://')) {
-      return base64String;
+    if (base64Data.startsWith('http://') || base64Data.startsWith('https://')) {
+      return base64Data;
     }
     
     // Assume it's a base64 string and convert to data URL
     // Default to JPEG if no format is specified
-    return `data:image/jpeg;base64,${base64String}`;
+    return `data:image/jpeg;base64,${base64Data}`;
   };
 
   const transformUserData = (apiData: any): ProfileData => {
