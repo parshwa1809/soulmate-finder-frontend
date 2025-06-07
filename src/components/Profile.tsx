@@ -39,6 +39,22 @@ const Profile = ({ onEdit }: ProfileProps) => {
   const [profileData, setProfileData] = useState<ProfileData | null>(null);
   const [isLoading, setIsLoading] = useState(true);
 
+  const convertBase64ToDataUrl = (base64String: string): string => {
+    // Check if it's already a data URL
+    if (base64String.startsWith('data:')) {
+      return base64String;
+    }
+    
+    // Check if it's a regular URL
+    if (base64String.startsWith('http://') || base64String.startsWith('https://')) {
+      return base64String;
+    }
+    
+    // Assume it's a base64 string and convert to data URL
+    // Default to JPEG if no format is specified
+    return `data:image/jpeg;base64,${base64String}`;
+  };
+
   const transformUserData = (apiData: any): ProfileData => {
     console.log('Raw API data for transformation:', apiData);
     
@@ -72,7 +88,7 @@ const Profile = ({ onEdit }: ProfileProps) => {
       }
     }
 
-    // Handle images - more comprehensive parsing
+    // Handle images - enhanced to handle base64 encoded images
     let images: string[] = [];
     const imageFields = ['IMAGES', 'images', 'profileImages', 'PROFILEIMAGES'];
     
@@ -82,18 +98,28 @@ const Profile = ({ onEdit }: ProfileProps) => {
         try {
           const imagesData = apiData[field];
           if (typeof imagesData === 'string') {
-            // Try to parse as JSON first
             try {
-              images = JSON.parse(imagesData);
+              // Try to parse as JSON first
+              const parsedImages = JSON.parse(imagesData);
+              if (Array.isArray(parsedImages)) {
+                images = parsedImages.map(img => convertBase64ToDataUrl(img)).filter(Boolean);
+              } else {
+                // Single image as base64 string
+                images = [convertBase64ToDataUrl(imagesData)];
+              }
             } catch {
-              // If not JSON, treat as comma-separated URLs
-              images = imagesData.split(',').map((img: string) => img.trim()).filter(Boolean);
+              // If not JSON, treat as comma-separated base64 strings or single base64
+              if (imagesData.includes(',')) {
+                images = imagesData.split(',').map((img: string) => convertBase64ToDataUrl(img.trim())).filter(Boolean);
+              } else {
+                images = [convertBase64ToDataUrl(imagesData)];
+              }
             }
           } else if (Array.isArray(imagesData)) {
-            images = imagesData.filter(Boolean);
+            images = imagesData.map(img => convertBase64ToDataUrl(img)).filter(Boolean);
           } else if (typeof imagesData === 'object' && imagesData !== null) {
-            // If it's an object, try to extract URLs from values
-            images = Object.values(imagesData).filter(Boolean) as string[];
+            // If it's an object, try to extract base64 strings from values
+            images = Object.values(imagesData).map(img => convertBase64ToDataUrl(img as string)).filter(Boolean);
           }
           break; // Stop at first valid field found
         } catch (error) {
@@ -102,7 +128,7 @@ const Profile = ({ onEdit }: ProfileProps) => {
       }
     }
     
-    console.log('Parsed images:', images);
+    console.log('Parsed and converted images:', images);
 
     return {
       uid: apiData.UID || apiData.uid || '',
@@ -207,6 +233,9 @@ const Profile = ({ onEdit }: ProfileProps) => {
                   src={profileData?.images?.[0]} 
                   onError={(e) => {
                     console.error('Failed to load avatar image:', profileData?.images?.[0]);
+                  }}
+                  onLoad={() => {
+                    console.log('Successfully loaded avatar image:', profileData?.images?.[0]);
                   }}
                 />
                 <AvatarFallback className="bg-gradient-to-r from-orange-500 to-yellow-500 text-white text-3xl">
@@ -332,7 +361,7 @@ const Profile = ({ onEdit }: ProfileProps) => {
         </Card>
       </div>
 
-      {/* Photo Gallery with Debug Info */}
+      {/* Photo Gallery */}
       <Card className="bg-white/80 backdrop-blur-sm border-0 shadow-lg">
         <CardHeader>
           <CardTitle className="flex items-center text-gray-900">
@@ -351,6 +380,7 @@ const Profile = ({ onEdit }: ProfileProps) => {
                     className="w-full h-full object-cover hover:scale-105 transition-transform duration-200"
                     onError={(e) => {
                       console.error(`Failed to load image ${index + 1}:`, image);
+                      // Show a placeholder or hide the image
                       e.currentTarget.style.display = 'none';
                     }}
                     onLoad={() => {
@@ -364,9 +394,6 @@ const Profile = ({ onEdit }: ProfileProps) => {
             <div className="text-center py-8">
               <Camera className="w-12 h-12 text-gray-400 mx-auto mb-4" />
               <p className="text-gray-500 italic">No photos uploaded yet</p>
-              <p className="text-sm text-gray-400 mt-2">
-                Debug: Images array length: {profileData?.images?.length || 0}
-              </p>
             </div>
           )}
         </CardContent>
