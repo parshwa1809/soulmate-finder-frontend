@@ -1,3 +1,4 @@
+
 import { useState } from "react";
 import { Link } from "react-router-dom";
 import { Button } from "@/components/ui/button";
@@ -22,7 +23,7 @@ const Login = ({ setIsLoggedIn, setUserUID }: LoginProps) => {
     try {
       console.log(`Fetching user profile for UID: ${uid}`);
 
-      const response = await fetch(`${config.URL}${config.ENDPOINTS.GET_PROFILE}?uid=${uid}`, {
+      const response = await fetch(`${config.URL}${config.ENDPOINTS.GET_PROFILE}/${uid}`, {
         method: 'GET',
       });
 
