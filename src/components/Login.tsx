@@ -1,3 +1,4 @@
+
 import { useState } from "react";
 import { Link } from "react-router-dom";
 import { Button } from "@/components/ui/button";
@@ -58,27 +59,36 @@ const Login = ({ setIsLoggedIn, setUserUID }: LoginProps) => {
       });
 
       const data = await response.json();
+      console.log('Login response:', data);
       
-      if (response.ok && data.LOGIN !== "UNSUCCESSFUL") {
+      if (response.ok && data.LOGIN === "SUCCESSFUL") {
         // Fetch user profile after successful login
         const profileData = await fetchUserProfile(data.UID);
         
-        // Store both login data and profile data
-        const combinedUserData = {
-          ...data,
-          profile: profileData
+        // Transform the backend data structure to match the frontend expectations
+        const transformedUserData = {
+          UID: data.UID,
+          LOGIN: data.LOGIN,
+          ERROR: data.ERROR,
+          profile: profileData,
+          matches: data.MATCHED || [],
+          recommendations: data.RECOMMENDATIONS || [],
+          notifications: data.NOTIFICATIONS || [],
+          awaiting: data.AWAITING || []
         };
+
+        console.log('Transformed user data:', transformedUserData);
 
         setUserUID(data.UID);
         localStorage.setItem('userUID', data.UID);
-        localStorage.setItem('userData', JSON.stringify(combinedUserData));
+        localStorage.setItem('userData', JSON.stringify(transformedUserData));
         setIsLoggedIn(true);
       } else {
         // Handle unsuccessful login response
-        if (data.LOGIN === "UNSUCCESSFUL") {
-          setError('Invalid email or password. Please try again.');
+        if (data.LOGIN === "UNSUCCESSFUL" || data.ERROR !== "OK") {
+          setError(data.ERROR || 'Invalid email or password. Please try again.');
         } else {
-          setError(data.message || 'Login failed');
+          setError('Login failed');
         }
       }
     } catch (error) {
