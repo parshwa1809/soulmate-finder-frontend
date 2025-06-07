@@ -1,4 +1,3 @@
-
 import { useState, useEffect } from "react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
@@ -44,62 +43,59 @@ const Profile = ({ onEdit }: ProfileProps) => {
     console.log('Converting base64 data:', typeof base64Data, base64Data);
     
     // Handle null/undefined
-    if (base64Data === null || base64Data === undefined) {
+    if (!base64Data) {
+      console.log('No base64 data provided');
       return '';
     }
 
-    // If it's an object, try to extract the base64 string
+    let base64String = '';
+
+    // If it's an object, extract base64 string
     if (typeof base64Data === 'object') {
-      // Try common object properties that might contain base64 data
-      const possibleBase64 = base64Data.data || base64Data.base64 || base64Data.content || base64Data.image;
-      if (possibleBase64 && typeof possibleBase64 === 'string') {
-        base64Data = possibleBase64;
-      } else {
-        // If object doesn't have expected properties, try to stringify and see if it's valid
+      // Try common object properties
+      base64String = base64Data.data || base64Data.base64 || base64Data.content || base64Data.image || '';
+      
+      // If still no string found, stringify and look for base64 pattern
+      if (!base64String) {
         try {
           const stringified = JSON.stringify(base64Data);
-          if (stringified && stringified !== '{}' && stringified !== 'null') {
-            console.log('Object converted to string:', stringified);
-            // If the stringified object looks like it might contain base64, extract it
-            const base64Match = stringified.match(/"([A-Za-z0-9+/=]{20,})"/);
-            if (base64Match) {
-              base64Data = base64Match[1];
-            } else {
-              return '';
-            }
-          } else {
-            return '';
+          const base64Match = stringified.match(/"([A-Za-z0-9+/=]{50,})"/);
+          if (base64Match) {
+            base64String = base64Match[1];
           }
         } catch {
+          console.log('Failed to extract base64 from object');
           return '';
         }
       }
+    } else {
+      base64String = String(base64Data);
     }
 
-    // Ensure we have a string
-    if (typeof base64Data !== 'string') {
-      base64Data = String(base64Data);
-    }
-
+    // Clean the string
+    base64String = base64String.trim();
+    
     // Check if it's already a data URL
-    if (base64Data.startsWith('data:')) {
-      return base64Data;
+    if (base64String.startsWith('data:')) {
+      console.log('Already a data URL');
+      return base64String;
     }
     
     // Check if it's a regular URL
-    if (base64Data.startsWith('http://') || base64Data.startsWith('https://')) {
-      return base64Data;
+    if (base64String.startsWith('http://') || base64String.startsWith('https://')) {
+      console.log('Regular URL detected');
+      return base64String;
     }
     
-    // Remove any whitespace and check if it looks like base64
-    base64Data = base64Data.trim();
-    if (base64Data.length === 0) {
-      return '';
+    // Check if it looks like valid base64
+    if (base64String.length > 20 && /^[A-Za-z0-9+/=]+$/.test(base64String)) {
+      const dataUrl = `data:image/jpeg;base64,${base64String}`;
+      console.log('Created data URL from base64:', dataUrl.substring(0, 50) + '...');
+      return dataUrl;
     }
     
-    // Assume it's a base64 string and convert to data URL
-    // Default to JPEG if no format is specified
-    return `data:image/jpeg;base64,${base64Data}`;
+    console.log('Invalid base64 data format');
+    return '';
   };
 
   const transformUserData = (apiData: any): ProfileData => {
@@ -152,14 +148,16 @@ const Profile = ({ onEdit }: ProfileProps) => {
                 images = parsedImages.map(img => convertBase64ToDataUrl(img)).filter(Boolean);
               } else {
                 // Single image as base64 string
-                images = [convertBase64ToDataUrl(imagesData)];
+                const converted = convertBase64ToDataUrl(imagesData);
+                if (converted) images = [converted];
               }
             } catch {
               // If not JSON, treat as comma-separated base64 strings or single base64
               if (imagesData.includes(',')) {
                 images = imagesData.split(',').map((img: string) => convertBase64ToDataUrl(img.trim())).filter(Boolean);
               } else {
-                images = [convertBase64ToDataUrl(imagesData)];
+                const converted = convertBase64ToDataUrl(imagesData);
+                if (converted) images = [converted];
               }
             }
           } else if (Array.isArray(imagesData)) {
@@ -175,7 +173,7 @@ const Profile = ({ onEdit }: ProfileProps) => {
       }
     }
     
-    console.log('Parsed and converted images:', images);
+    console.log('Final processed images:', images);
 
     return {
       uid: apiData.UID || apiData.uid || '',
@@ -420,23 +418,23 @@ const Profile = ({ onEdit }: ProfileProps) => {
           {profileData?.images && profileData.images.length > 0 ? (
             <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
               {profileData.images.map((image, index) => {
-                const processedImageUrl = convertBase64ToDataUrl(image);
-                console.log(`Processing image ${index + 1}:`, processedImageUrl.substring(0, 50) + '...');
+                console.log(`Rendering image ${index + 1}:`, image.substring(0, 50) + '...');
                 
-                if (!processedImageUrl) {
+                if (!image) {
                   console.warn(`Skipping empty image at index ${index}`);
                   return null;
                 }
                 
                 return (
-                  <div key={index} className="aspect-square overflow-hidden rounded-lg border border-gray-200 shadow-sm">
+                  <div key={index} className="aspect-square overflow-hidden rounded-lg border-2 border-gray-200 shadow-md bg-gray-50">
                     <img
-                      src={processedImageUrl}
+                      src={image}
                       alt={`Profile photo ${index + 1}`}
                       className="w-full h-full object-cover hover:scale-105 transition-transform duration-200 cursor-pointer"
+                      style={{ backgroundColor: '#f9fafb' }}
                       onError={(e) => {
-                        console.error(`Failed to load image ${index + 1}:`, processedImageUrl.substring(0, 100));
-                        e.currentTarget.style.display = 'none';
+                        console.error(`Failed to load image ${index + 1}:`, image.substring(0, 100));
+                        e.currentTarget.src = 'data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMjQiIGhlaWdodD0iMjQiIHZpZXdCb3g9IjAgMCAyNCAyNCIgZmlsbD0ibm9uZSIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj4KPHJlY3Qgd2lkdGg9IjI0IiBoZWlnaHQ9IjI0IiBmaWxsPSIjZjNmNGY2Ii8+CjxwYXRoIGQ9Im0xNSAxMi0zIDNtMCAwLTMtM20zIDN2LTZhMyAzIDAgMSAwLTYgMHYxOGEzIDMgMCAwIDAgNiAwdi02WiIgc3Ryb2tlPSIjOWNhM2FmIiBzdHJva2Utd2lkdGg9IjIiIHN0cm9rZS1saW5lY2FwPSJyb3VuZCIgc3Ryb2tlLWxpbmVqb2luPSJyb3VuZCIvPgo8L3N2Zz4K';
                       }}
                       onLoad={() => {
                         console.log(`Successfully loaded image ${index + 1}`);
