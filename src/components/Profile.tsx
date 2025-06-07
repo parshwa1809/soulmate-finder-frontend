@@ -1,3 +1,4 @@
+
 import { useState, useEffect } from "react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
@@ -417,24 +418,33 @@ const Profile = ({ onEdit }: ProfileProps) => {
         </CardHeader>
         <CardContent>
           {profileData?.images && profileData.images.length > 0 ? (
-            <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
-              {profileData.images.map((image, index) => (
-                <div key={index} className="aspect-square overflow-hidden rounded-lg">
-                  <img
-                    src={image}
-                    alt={`Profile ${index + 1}`}
-                    className="w-full h-full object-cover hover:scale-105 transition-transform duration-200"
-                    onError={(e) => {
-                      console.error(`Failed to load image ${index + 1}:`, image);
-                      // Show a placeholder or hide the image
-                      e.currentTarget.style.display = 'none';
-                    }}
-                    onLoad={() => {
-                      console.log(`Successfully loaded image ${index + 1}:`, image);
-                    }}
-                  />
-                </div>
-              ))}
+            <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
+              {profileData.images.map((image, index) => {
+                const processedImageUrl = convertBase64ToDataUrl(image);
+                console.log(`Processing image ${index + 1}:`, processedImageUrl.substring(0, 50) + '...');
+                
+                if (!processedImageUrl) {
+                  console.warn(`Skipping empty image at index ${index}`);
+                  return null;
+                }
+                
+                return (
+                  <div key={index} className="aspect-square overflow-hidden rounded-lg border border-gray-200 shadow-sm">
+                    <img
+                      src={processedImageUrl}
+                      alt={`Profile photo ${index + 1}`}
+                      className="w-full h-full object-cover hover:scale-105 transition-transform duration-200 cursor-pointer"
+                      onError={(e) => {
+                        console.error(`Failed to load image ${index + 1}:`, processedImageUrl.substring(0, 100));
+                        e.currentTarget.style.display = 'none';
+                      }}
+                      onLoad={() => {
+                        console.log(`Successfully loaded image ${index + 1}`);
+                      }}
+                    />
+                  </div>
+                );
+              })}
             </div>
           ) : (
             <div className="text-center py-8">
