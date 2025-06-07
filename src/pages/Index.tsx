@@ -1,5 +1,6 @@
+
 import { Routes, Route, Navigate } from "react-router-dom";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import Login from "../components/Login";
 import Register from "../components/Register";
 import Dashboard from "../components/Dashboard";
@@ -12,6 +13,25 @@ import ProfilePage from "./Profile";
 const Index = () => {
   const [isLoggedIn, setIsLoggedIn] = useState(false);
   const [userUID, setUserUID] = useState<string | null>(null);
+  const [isLoading, setIsLoading] = useState(true);
+
+  useEffect(() => {
+    // Check for existing login state on app load
+    const storedUID = localStorage.getItem('userUID');
+    if (storedUID) {
+      setUserUID(storedUID);
+      setIsLoggedIn(true);
+    }
+    setIsLoading(false);
+  }, []);
+
+  if (isLoading) {
+    return (
+      <div className="min-h-screen bg-gradient-to-br from-yellow-50 via-orange-50 to-yellow-100 flex items-center justify-center">
+        <div className="text-center">Loading...</div>
+      </div>
+    );
+  }
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-yellow-50 via-orange-50 to-yellow-100">

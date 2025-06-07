@@ -7,6 +7,7 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/com
 import { Label } from "@/components/ui/label";
 import { Mail, Heart, Lock, Eye, EyeOff } from "lucide-react";
 import { config } from "../config/api";
+import { useToast } from "@/components/ui/use-toast";
 
 interface LoginProps {
   setIsLoggedIn: (value: boolean) => void;
@@ -19,6 +20,7 @@ const Login = ({ setIsLoggedIn, setUserUID }: LoginProps) => {
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState("");
   const [showPassword, setShowPassword] = useState(false);
+  const { toast } = useToast();
 
   const fetchUserProfile = async (uid: string) => {
     try {
@@ -42,59 +44,67 @@ const Login = ({ setIsLoggedIn, setUserUID }: LoginProps) => {
     }
   };
 
+  const safeSetLocalStorage = (key: string, value: string) => {
+    try {
+      localStorage.setItem(key, value);
+      return true;
+    } catch (error) {
+      console.error('LocalStorage quota exceeded:', error);
+      toast({
+        title: "Storage Warning",
+        description: "Unable to cache user data. You may need to login again after closing the browser.",
+        variant: "destructive"
+      });
+      return false;
+    }
+  };
+
   const handleLogin = async (e: React.FormEvent) => {
     e.preventDefault();
     setIsLoading(true);
     setError("");
 
     try {
+      console.log('Attempting login with email:', email);
+      
       const formData = new FormData();
       formData.append('metadata', JSON.stringify({ email, password }));
 
+      console.log('Sending login request to:', `${config.URL}/account:login`);
+      
       const response = await fetch(`${config.URL}/account:login`, {
         method: 'POST',
         body: formData,
       });
 
+      console.log('Login response status:', response.status);
+      
       const data = await response.json();
-      console.log('Login response:', data);
+      console.log('Login response data:', data);
       
       if (response.ok && data.LOGIN === "SUCCESSFUL") {
-        // Fetch user profile after successful login
-        const profileData = await fetchUserProfile(data.UID);
+        console.log('Login successful for UID:', data.UID);
         
-        // Extract UIDs from recommendations (first item in each array)
-        const recommendationUIDs = data.RECOMMENDATIONS?.map((rec: any[]) => rec[0]) || [];
-        console.log('Extracted recommendation UIDs:', recommendationUIDs);
-        
-        // Fetch profiles for each recommendation UID
-        const recommendationProfiles = await Promise.all(
-          recommendationUIDs.map((uid: string) => fetchUserProfile(uid))
-        );
-        
-        // Filter out null responses
-        const validRecommendations = recommendationProfiles.filter(profile => profile !== null);
-        console.log('Fetched recommendation profiles:', validRecommendations);
-
-        // Transform the backend data structure to match the frontend expectations
-        const transformedUserData = {
-          UID: data.UID,
-          LOGIN: data.LOGIN,
-          ERROR: data.ERROR,
-          profile: profileData,
-          matches: data.MATCHED || [],
-          recommendations: validRecommendations,
-          notifications: data.NOTIFICATIONS || [],
-          awaiting: data.AWAITING || []
-        };
-
-        console.log('Transformed user data:', transformedUserData);
-
+        // Store essential data only
         setUserUID(data.UID);
-        localStorage.setItem('userUID', data.UID);
-        localStorage.setItem('userData', JSON.stringify(transformedUserData));
+        safeSetLocalStorage('userUID', data.UID);
+        
+        // Store minimal user data to avoid quota issues
+        const essentialData = {
+          UID: data.UID,
+          LOGIN: data.LOGIN
+        };
+        safeSetLocalStorage('userData', JSON.stringify(essentialData));
+        
         setIsLoggedIn(true);
+        
+        toast({
+          title: "Login Successful",
+          description: "Welcome back!",
+        });
+        
       } else {
+        console.error('Login failed:', data);
         // Handle unsuccessful login response
         if (data.LOGIN === "UNSUCCESSFUL" || data.ERROR !== "OK") {
           setError(data.ERROR || 'Invalid email or password. Please try again.');
@@ -103,8 +113,8 @@ const Login = ({ setIsLoggedIn, setUserUID }: LoginProps) => {
         }
       }
     } catch (error) {
-      setError('Network error. Please try again.');
       console.error('Login error:', error);
+      setError('Network error. Please check your connection and try again.');
     } finally {
       setIsLoading(false);
     }
