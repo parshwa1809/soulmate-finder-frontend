@@ -1,26 +1,13 @@
 
 import { useState, useEffect } from "react";
-import { useForm } from "react-hook-form";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { Textarea } from "@/components/ui/textarea";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
-import { User, Save, X } from "lucide-react";
+import { User, Save, X, Camera } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
 import { config } from "../config/api";
 import ImageUpload from "./ImageUpload";
-
-interface ProfileFormData {
-  name: string;
-  email: string;
-  city?: string;
-  country?: string;
-  profession?: string;
-  bio?: string;
-  gender?: string;
-}
 
 interface EditProfileProps {
   onCancel: () => void;
@@ -33,8 +20,6 @@ const EditProfile = ({ onCancel, onSave }: EditProfileProps) => {
   const [newImages, setNewImages] = useState<File[]>([]);
   const [existingImages, setExistingImages] = useState<any[]>([]);
   const { toast } = useToast();
-  
-  const { register, handleSubmit, setValue, formState: { errors } } = useForm<ProfileFormData>();
 
   useEffect(() => {
     const userData = localStorage.getItem('userData');
@@ -46,20 +31,11 @@ const EditProfile = ({ onCancel, onSave }: EditProfileProps) => {
         // Set existing images
         const images = parsedData.IMAGES || parsedData.images || [];
         setExistingImages(images);
-        
-        // Set form values
-        setValue('name', parsedData.NAME || parsedData.name || '');
-        setValue('email', parsedData.EMAIL || parsedData.email || '');
-        setValue('city', parsedData.CITY || parsedData.city || '');
-        setValue('country', parsedData.COUNTRY || parsedData.country || '');
-        setValue('profession', parsedData.PROFESSION || parsedData.profession || '');
-        setValue('bio', parsedData.bio || '');
-        setValue('gender', parsedData.GENDER || parsedData.gender || '');
       } catch (error) {
         console.error('Error parsing user data:', error);
       }
     }
-  }, [setValue]);
+  }, []);
 
   const convertFilesToBase64 = async (files: File[]): Promise<string[]> => {
     const base64Images: string[] = [];
@@ -91,27 +67,20 @@ const EditProfile = ({ onCancel, onSave }: EditProfileProps) => {
     return base64Images;
   };
 
-  const updateProfileAPI = async (profileData: any, imageData: string[]) => {
+  const updateProfileAPI = async (imageData: string[]) => {
     try {
       const userUID = localStorage.getItem('userUID');
       if (!userUID) {
         throw new Error('User UID not found');
       }
 
-      // Prepare the data for API - only send new images
+      // Only send the new images to API
       const apiData = {
         UID: userUID,
-        NAME: profileData.name,
-        EMAIL: profileData.email,
-        CITY: profileData.city || '',
-        COUNTRY: profileData.country || '',
-        PROFESSION: profileData.profession || '',
-        GENDER: profileData.gender || '',
-        bio: profileData.bio || '',
         IMAGES: imageData.length > 0 ? imageData.map(img => ({ data: img })) : []
       };
 
-      console.log('Sending profile update to API (only new images):', apiData);
+      console.log('Sending new photos to API:', apiData);
 
       const response = await fetch(`${config.URL}/update:profile`, {
         method: 'POST',
@@ -126,64 +95,57 @@ const EditProfile = ({ onCancel, onSave }: EditProfileProps) => {
       }
 
       const result = await response.json();
-      console.log('Profile update response:', result);
+      console.log('Photos update response:', result);
       
       return result;
     } catch (error) {
-      console.error('Error updating profile via API:', error);
+      console.error('Error updating photos via API:', error);
       throw error;
     }
   };
 
-  const onSubmit = async (data: ProfileFormData) => {
+  const handleSave = async () => {
+    if (newImages.length === 0) {
+      toast({
+        title: "No Changes",
+        description: "No new photos to upload.",
+        variant: "default",
+      });
+      onCancel();
+      return;
+    }
+
     setIsLoading(true);
     try {
       // Convert only new images to base64
       const newImageData = await convertFilesToBase64(newImages);
       
       // Update profile via API with only new images
-      await updateProfileAPI(data, newImageData);
+      await updateProfileAPI(newImageData);
       
-      // Update localStorage with new data - append new images to existing ones
+      // Update localStorage - append new images to existing ones
       const currentUserData = JSON.parse(localStorage.getItem('userData') || '{}');
+      const allImages = [...existingImages, ...newImageData.map(img => ({ data: img }))];
       const updatedProfile = {
         ...currentUserData,
-        NAME: data.name,
-        name: data.name,
-        EMAIL: data.email,
-        email: data.email,
-        CITY: data.city,
-        city: data.city,
-        COUNTRY: data.country,
-        country: data.country,
-        PROFESSION: data.profession,
-        profession: data.profession,
-        bio: data.bio,
-        GENDER: data.gender,
-        gender: data.gender
+        IMAGES: allImages,
+        images: allImages
       };
-      
-      // Append new images to existing images in localStorage
-      if (newImageData.length > 0) {
-        const allImages = [...existingImages, ...newImageData.map(img => ({ data: img }))];
-        updatedProfile.IMAGES = allImages;
-        updatedProfile.images = allImages;
-      }
       
       localStorage.setItem('userData', JSON.stringify(updatedProfile));
       
       toast({
         title: "Success",
-        description: "Profile updated successfully!",
+        description: "Photos uploaded successfully!",
       });
       
-      console.log('Profile updated successfully');
+      console.log('Photos updated successfully');
       onSave();
     } catch (error) {
-      console.error('Error updating profile:', error);
+      console.error('Error updating photos:', error);
       toast({
         title: "Error",
-        description: "Failed to update profile. Please try again.",
+        description: "Failed to upload photos. Please try again.",
         variant: "destructive",
       });
     } finally {
@@ -212,12 +174,12 @@ const EditProfile = ({ onCancel, onSave }: EditProfileProps) => {
       <Card className="bg-white/80 backdrop-blur-sm border-0 shadow-lg">
         <CardHeader>
           <CardTitle className="flex items-center text-gray-900">
-            <User className="w-5 h-5 mr-2 text-orange-500" />
-            Edit Profile
+            <Camera className="w-5 h-5 mr-2 text-orange-500" />
+            Upload Photos
           </CardTitle>
         </CardHeader>
         <CardContent>
-          <form onSubmit={handleSubmit(onSubmit)} className="space-y-6">
+          <div className="space-y-6">
             {/* Profile Picture */}
             <div className="flex justify-center mb-6">
               <Avatar className="w-24 h-24">
@@ -252,82 +214,6 @@ const EditProfile = ({ onCancel, onSave }: EditProfileProps) => {
               <ImageUpload images={newImages} onImagesChange={handleNewImagesChange} />
             </div>
 
-            {/* Basic Information */}
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-              <div>
-                <Label htmlFor="name">Full Name *</Label>
-                <Input
-                  id="name"
-                  {...register('name', { required: 'Name is required' })}
-                  className="mt-1"
-                />
-                {errors.name && (
-                  <p className="text-red-500 text-sm mt-1">{errors.name.message}</p>
-                )}
-              </div>
-
-              <div>
-                <Label htmlFor="email">Email *</Label>
-                <Input
-                  id="email"
-                  type="email"
-                  {...register('email', { required: 'Email is required' })}
-                  className="mt-1"
-                />
-                {errors.email && (
-                  <p className="text-red-500 text-sm mt-1">{errors.email.message}</p>
-                )}
-              </div>
-
-              <div>
-                <Label htmlFor="city">City</Label>
-                <Input
-                  id="city"
-                  {...register('city')}
-                  className="mt-1"
-                />
-              </div>
-
-              <div>
-                <Label htmlFor="country">Country</Label>
-                <Input
-                  id="country"
-                  {...register('country')}
-                  className="mt-1"
-                />
-              </div>
-
-              <div>
-                <Label htmlFor="profession">Profession</Label>
-                <Input
-                  id="profession"
-                  {...register('profession')}
-                  className="mt-1"
-                />
-              </div>
-
-              <div>
-                <Label htmlFor="gender">Gender</Label>
-                <Input
-                  id="gender"
-                  {...register('gender')}
-                  className="mt-1"
-                />
-              </div>
-            </div>
-
-            {/* Bio */}
-            <div>
-              <Label htmlFor="bio">Bio</Label>
-              <Textarea
-                id="bio"
-                {...register('bio')}
-                className="mt-1"
-                rows={4}
-                placeholder="Tell us about yourself..."
-              />
-            </div>
-
             {/* Action Buttons */}
             <div className="flex gap-4 justify-end">
               <Button
@@ -340,15 +226,16 @@ const EditProfile = ({ onCancel, onSave }: EditProfileProps) => {
                 Cancel
               </Button>
               <Button
-                type="submit"
-                disabled={isLoading}
+                type="button"
+                onClick={handleSave}
+                disabled={isLoading || newImages.length === 0}
                 className="bg-orange-500 hover:bg-orange-600 text-white"
               >
                 <Save className="w-4 h-4 mr-2" />
-                {isLoading ? 'Saving...' : 'Save Changes'}
+                {isLoading ? 'Uploading...' : 'Upload Photos'}
               </Button>
             </div>
-          </form>
+          </div>
         </CardContent>
       </Card>
     </div>
