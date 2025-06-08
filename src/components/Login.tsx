@@ -1,3 +1,4 @@
+
 import { useState } from "react";
 import { Link } from "react-router-dom";
 import { Button } from "@/components/ui/button";
@@ -79,7 +80,8 @@ const Login = ({ setIsLoggedIn, setUserUID }: LoginProps) => {
       console.log('Login response status:', response.status);
       
       const data = await response.json();
-      console.log('Login response data:', data);
+      console.log('=== FULL LOGIN RESPONSE ===');
+      console.log('Complete login response data:', JSON.stringify(data, null, 2));
       
       if (response.ok && data.LOGIN === "SUCCESSFUL") {
         console.log('Login successful for UID:', data.UID);
@@ -98,7 +100,11 @@ const Login = ({ setIsLoggedIn, setUserUID }: LoginProps) => {
           awaiting: data.AWAITING || []
         };
         
-        console.log('Storing user data:', userData);
+        console.log('=== PROCESSED USER DATA FOR STORAGE ===');
+        console.log('Storing user data:', JSON.stringify(userData, null, 2));
+        console.log('Recommendations detailed:', userData.recommendations);
+        console.log('Matches detailed:', userData.matches);
+        
         safeSetLocalStorage('userData', JSON.stringify(userData));
         
         setIsLoggedIn(true);

@@ -104,7 +104,7 @@ const Dashboard = ({ userUID, setIsLoggedIn }: DashboardProps) => {
       }
     }
 
-    return {
+    const userData = {
       UID: apiData.UID,
       name: apiData.NAME || 'Unknown User',
       email: apiData.EMAIL,
@@ -118,6 +118,11 @@ const Dashboard = ({ userUID, setIsLoggedIn }: DashboardProps) => {
       images: images,
       kundliScore: kundliScore
     };
+
+    // Log the transformed user data with kundliScore
+    console.log(`Transformed user ${apiData.UID} with kundliScore:`, kundliScore, userData);
+    
+    return userData;
   };
 
   const loadUserData = async () => {
@@ -125,27 +130,28 @@ const Dashboard = ({ userUID, setIsLoggedIn }: DashboardProps) => {
       const userData = localStorage.getItem('userData');
       if (userData) {
         const parsedData = JSON.parse(userData);
-        console.log('Loading user data from localStorage:', parsedData);
+        console.log('=== LOADING USER DATA FROM LOCALSTORAGE ===');
+        console.log('Full parsed data:', parsedData);
         
         // Process the data arrays from the API response
         if (parsedData.recommendations && Array.isArray(parsedData.recommendations)) {
-          console.log('Processing recommendations:', parsedData.recommendations);
-          await loadUsersForCategory(parsedData.recommendations, setRecommendations);
+          console.log('Raw recommendations array:', parsedData.recommendations);
+          await loadUsersForCategory(parsedData.recommendations, setRecommendations, 'recommendations');
         }
         
         if (parsedData.matches && Array.isArray(parsedData.matches)) {
-          console.log('Processing matches:', parsedData.matches);
-          await loadUsersForCategory(parsedData.matches, setMatches);
+          console.log('Raw matches array:', parsedData.matches);
+          await loadUsersForCategory(parsedData.matches, setMatches, 'matches');
         }
         
         if (parsedData.notifications && Array.isArray(parsedData.notifications)) {
-          console.log('Processing notifications:', parsedData.notifications);
-          await loadUsersForCategory(parsedData.notifications, setNotifications);
+          console.log('Raw notifications array:', parsedData.notifications);
+          await loadUsersForCategory(parsedData.notifications, setNotifications, 'notifications');
         }
         
         if (parsedData.awaiting && Array.isArray(parsedData.awaiting)) {
-          console.log('Processing awaiting:', parsedData.awaiting);
-          await loadUsersForCategory(parsedData.awaiting, setAwaiting);
+          console.log('Raw awaiting array:', parsedData.awaiting);
+          await loadUsersForCategory(parsedData.awaiting, setAwaiting, 'awaiting');
         }
       }
     } catch (error) {
@@ -155,15 +161,23 @@ const Dashboard = ({ userUID, setIsLoggedIn }: DashboardProps) => {
     }
   };
 
-  const loadUsersForCategory = async (userList: any[], setter: (users: User[]) => void) => {
+  const loadUsersForCategory = async (userList: any[], setter: (users: User[]) => void, categoryName: string) => {
     try {
-      console.log('Loading users for category:', userList);
+      console.log(`=== LOADING USERS FOR CATEGORY: ${categoryName.toUpperCase()} ===`);
+      console.log(`User list for ${categoryName}:`, userList);
       
-      const userPromises = userList.map(async (item) => {
+      const userPromises = userList.map(async (item, index) => {
         // Handle both array format [UID, score, date, ...] and object format
         const uid = Array.isArray(item) ? item[0] : (item.UID || item);
         const kundliScore = Array.isArray(item) && item.length > 1 ? item[1] : undefined;
-        console.log(`Fetching user data for UID: ${uid}, Kundli Score: ${kundliScore}`);
+        
+        console.log(`${categoryName}[${index}]:`, {
+          rawItem: item,
+          extractedUID: uid,
+          extractedKundliScore: kundliScore,
+          isArray: Array.isArray(item),
+          itemLength: Array.isArray(item) ? item.length : 'not array'
+        });
         
         const response = await fetch(`${config.URL}${config.ENDPOINTS.GET_PROFILE}/${uid}`, {
           method: 'GET',
@@ -184,10 +198,10 @@ const Dashboard = ({ userUID, setIsLoggedIn }: DashboardProps) => {
       });
 
       const users = (await Promise.all(userPromises)).filter(Boolean);
-      console.log(`Setting ${users.length} users for category`);
+      console.log(`Final processed users for ${categoryName}:`, users.map(u => ({ UID: u.UID, name: u.name, kundliScore: u.kundliScore })));
       setter(users);
     } catch (error) {
-      console.error('Error fetching users:', error);
+      console.error(`Error fetching users for ${categoryName}:`, error);
       setter([]);
     }
   };
