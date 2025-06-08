@@ -5,83 +5,83 @@
 
 @layer base {
   :root {
-    --background: 139 92 246;
-    --foreground: 255 255 255;
+    --background: 15 23 42;
+    --foreground: 248 250 252;
 
-    --card: 255 255 255;
-    --card-foreground: 51 51 51;
+    --card: 30 41 59;
+    --card-foreground: 248 250 252;
 
-    --popover: 255 255 255;
-    --popover-foreground: 51 51 51;
+    --popover: 30 41 59;
+    --popover-foreground: 248 250 252;
 
-    --primary: 124 58 237;
+    --primary: 139 92 246;
     --primary-foreground: 255 255 255;
 
-    --secondary: 196 181 253;
-    --secondary-foreground: 51 51 51;
+    --secondary: 51 65 85;
+    --secondary-foreground: 248 250 252;
 
-    --muted: 196 181 253;
-    --muted-foreground: 107 114 128;
+    --muted: 51 65 85;
+    --muted-foreground: 148 163 184;
 
-    --accent: 168 85 247;
-    --accent-foreground: 255 255 255;
+    --accent: 124 58 237;
+    --accent-foreground: 248 250 252;
 
     --destructive: 239 68 68;
-    --destructive-foreground: 255 255 255;
+    --destructive-foreground: 248 250 252;
 
-    --border: 196 181 253;
-    --input: 229 231 235;
-    --ring: 124 58 237;
+    --border: 51 65 85;
+    --input: 51 65 85;
+    --ring: 139 92 246;
 
-    --radius: 0.5rem;
+    --radius: 0.75rem;
 
-    --sidebar-background: 139 92 246;
-    --sidebar-foreground: 255 255 255;
-    --sidebar-primary: 124 58 237;
+    --sidebar-background: 15 23 42;
+    --sidebar-foreground: 248 250 252;
+    --sidebar-primary: 139 92 246;
     --sidebar-primary-foreground: 255 255 255;
-    --sidebar-accent: 196 181 253;
-    --sidebar-accent-foreground: 51 51 51;
-    --sidebar-border: 196 181 253;
-    --sidebar-ring: 124 58 237;
+    --sidebar-accent: 51 65 85;
+    --sidebar-accent-foreground: 248 250 252;
+    --sidebar-border: 51 65 85;
+    --sidebar-ring: 139 92 246;
   }
 
   .dark {
-    --background: 88 28 135;
-    --foreground: 250 250 250;
+    --background: 15 23 42;
+    --foreground: 248 250 252;
 
-    --card: 124 58 237;
-    --card-foreground: 250 250 250;
+    --card: 30 41 59;
+    --card-foreground: 248 250 252;
 
-    --popover: 124 58 237;
-    --popover-foreground: 250 250 250;
+    --popover: 30 41 59;
+    --popover-foreground: 248 250 252;
 
-    --primary: 168 85 247;
+    --primary: 139 92 246;
     --primary-foreground: 255 255 255;
 
-    --secondary: 88 28 135;
-    --secondary-foreground: 250 250 250;
+    --secondary: 51 65 85;
+    --secondary-foreground: 248 250 252;
 
-    --muted: 88 28 135;
-    --muted-foreground: 196 181 253;
+    --muted: 51 65 85;
+    --muted-foreground: 148 163 184;
 
-    --accent: 147 51 234;
-    --accent-foreground: 250 250 250;
+    --accent: 124 58 237;
+    --accent-foreground: 248 250 252;
 
     --destructive: 239 68 68;
-    --destructive-foreground: 250 250 250;
+    --destructive-foreground: 248 250 252;
 
-    --border: 124 58 237;
-    --input: 88 28 135;
-    --ring: 168 85 247;
+    --border: 51 65 85;
+    --input: 51 65 85;
+    --ring: 139 92 246;
     
-    --sidebar-background: 88 28 135;
-    --sidebar-foreground: 250 250 250;
-    --sidebar-primary: 168 85 247;
+    --sidebar-background: 15 23 42;
+    --sidebar-foreground: 248 250 252;
+    --sidebar-primary: 139 92 246;
     --sidebar-primary-foreground: 255 255 255;
-    --sidebar-accent: 124 58 237;
-    --sidebar-accent-foreground: 250 250 250;
-    --sidebar-border: 124 58 237;
-    --sidebar-ring: 168 85 247;
+    --sidebar-accent: 51 65 85;
+    --sidebar-accent-foreground: 248 250 252;
+    --sidebar-border: 51 65 85;
+    --sidebar-ring: 139 92 246;
   }
 }
 
@@ -92,52 +92,89 @@
 
   html {
     background: linear-gradient(135deg, 
-      rgb(124, 58, 237) 0%, 
-      rgb(147, 51, 234) 25%, 
-      rgb(168, 85, 247) 50%, 
-      rgb(196, 181, 253) 100%
+      rgb(15, 23, 42) 0%, 
+      rgb(88, 28, 135) 25%, 
+      rgb(15, 23, 42) 50%, 
+      rgb(30, 41, 59) 100%
     );
     min-height: 100vh;
   }
 
   body {
     background: linear-gradient(135deg, 
-      rgb(124, 58, 237) 0%, 
-      rgb(147, 51, 234) 25%, 
-      rgb(168, 85, 247) 50%, 
-      rgb(196, 181, 253) 100%
+      rgb(15, 23, 42) 0%, 
+      rgb(88, 28, 135) 25%, 
+      rgb(15, 23, 42) 50%, 
+      rgb(30, 41, 59) 100%
     );
     min-height: 100vh;
     color: hsl(var(--foreground));
+    font-family: system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
   }
 
   #root {
     background: linear-gradient(135deg, 
-      rgb(124, 58, 237) 0%, 
-      rgb(147, 51, 234) 25%, 
-      rgb(168, 85, 247) 50%, 
-      rgb(196, 181, 253) 100%
+      rgb(15, 23, 42) 0%, 
+      rgb(88, 28, 135) 25%, 
+      rgb(15, 23, 42) 50%, 
+      rgb(30, 41, 59) 100%
     );
     min-height: 100vh;
   }
 }
 
-/* Add purple gradient effects for cards and components */
+/* Nebula theme components */
 @layer components {
-  .gradient-card {
+  .nebula-card {
     background: linear-gradient(135deg, 
-      rgba(255, 255, 255, 0.95) 0%, 
-      rgba(196, 181, 253, 0.1) 100%
+      rgba(255, 255, 255, 0.05) 0%, 
+      rgba(255, 255, 255, 0.02) 100%
     );
-    border: 1px solid rgba(124, 58, 237, 0.2);
-    backdrop-filter: blur(10px);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    backdrop-filter: blur(20px);
+    border-radius: 1rem;
   }
   
-  .gradient-primary {
+  .nebula-glass {
+    background: rgba(255, 255, 255, 0.05);
+    backdrop-filter: blur(20px);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+  }
+
+  .nebula-gradient-primary {
     background: linear-gradient(135deg, 
-      rgb(124, 58, 237) 0%, 
-      rgb(147, 51, 234) 50%, 
-      rgb(168, 85, 247) 100%
+      rgb(139, 92, 246) 0%, 
+      rgb(124, 58, 237) 50%, 
+      rgb(88, 28, 135) 100%
     );
   }
+
+  .nebula-glow {
+    box-shadow: 
+      0 0 20px rgba(139, 92, 246, 0.3),
+      0 0 40px rgba(139, 92, 246, 0.1);
+  }
+
+  .nebula-text-glow {
+    text-shadow: 0 0 20px rgba(139, 92, 246, 0.5);
+  }
+}
+
+/* Custom scrollbar */
+::-webkit-scrollbar {
+  width: 8px;
+}
+
+::-webkit-scrollbar-track {
+  background: rgba(255, 255, 255, 0.05);
+  border-radius: 4px;
+}
+
+::-webkit-scrollbar-thumb {
+  background: rgba(139, 92, 246, 0.3);
+  border-radius: 4px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: rgba(139, 92, 246, 0.5);
 }

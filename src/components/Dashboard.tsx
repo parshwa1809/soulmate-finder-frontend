@@ -179,34 +179,42 @@ const Dashboard = ({ userUID, setIsLoggedIn }: DashboardProps) => {
   };
 
   const UserCard = ({ user, showActions = false }: { user: User; showActions?: boolean }) => (
-    <Card className="group hover:shadow-lg transition-all duration-300 cursor-pointer hover:border-white/40">
-      <CardContent className="p-6" onClick={() => handleUserClick(user)}>
+    <Card className="group relative overflow-hidden bg-white/5 backdrop-blur-xl border border-white/10 hover:border-white/20 transition-all duration-500 hover:scale-[1.02] shadow-xl hover:shadow-2xl cursor-pointer">
+      <div className="absolute inset-0 bg-gradient-to-br from-white/5 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-500"></div>
+      <CardContent className="p-6 relative z-10" onClick={() => handleUserClick(user)}>
         <div className="flex items-start space-x-4">
-          <Avatar className="w-16 h-16 ring-2 ring-white/20 group-hover:ring-white/40 transition-all">
-            <AvatarImage src={user.profilePicture} />
-            <AvatarFallback className="bg-gradient-to-r from-violet-500 to-purple-500 text-white">
-              {user.name?.charAt(0) || <User className="w-6 h-6" />}
-            </AvatarFallback>
-          </Avatar>
+          <div className="relative">
+            <Avatar className="w-16 h-16 ring-2 ring-white/20 group-hover:ring-white/40 transition-all duration-300">
+              <AvatarImage src={user.profilePicture} />
+              <AvatarFallback className="bg-gradient-to-br from-violet-500 to-purple-500 text-white font-semibold">
+                {user.name?.charAt(0) || <User className="w-6 h-6" />}
+              </AvatarFallback>
+            </Avatar>
+            <div className="absolute -inset-1 bg-gradient-to-br from-violet-400 to-purple-400 rounded-full blur opacity-0 group-hover:opacity-30 transition-opacity duration-300"></div>
+          </div>
           <div className="flex-1 min-w-0">
-            <h3 className="font-semibold text-lg text-white truncate group-hover:text-violet-200 transition-colors">
+            <h3 className="font-semibold text-lg text-white/90 truncate group-hover:text-white transition-colors mb-1">
               {user.name || 'Unknown User'}
             </h3>
             {user.city && user.country && (
-              <p className="text-sm text-white/70 truncate">
-                {user.city}, {user.country}
+              <p className="text-sm text-white/60 truncate mb-1">
+                📍 {user.city}, {user.country}
               </p>
             )}
             {user.age && (
-              <p className="text-sm text-white/70">
-                {user.age} years old
+              <p className="text-sm text-white/60 mb-3">
+                🎂 {user.age} years old
               </p>
             )}
             {user.hobbies && (
-              <div className="mt-3">
-                <div className="flex flex-wrap gap-1">
+              <div className="space-y-2">
+                <div className="flex flex-wrap gap-1.5">
                   {user.hobbies.split(',').slice(0, 3).map((hobby, index) => (
-                    <Badge key={index} variant="secondary" className="text-xs bg-white/20 text-white">
+                    <Badge 
+                      key={index} 
+                      variant="secondary" 
+                      className="text-xs bg-white/10 text-white/80 border-white/20 hover:bg-white/20 transition-colors px-2 py-1"
+                    >
                       {hobby.trim()}
                     </Badge>
                   ))}
@@ -216,7 +224,7 @@ const Dashboard = ({ userUID, setIsLoggedIn }: DashboardProps) => {
           </div>
         </div>
         {showActions && (
-          <div onClick={(e) => e.stopPropagation()}>
+          <div onClick={(e) => e.stopPropagation()} className="mt-4">
             <UserActions 
               userUID={user.UID} 
               currentUserUID={userUID}
@@ -233,18 +241,21 @@ const Dashboard = ({ userUID, setIsLoggedIn }: DashboardProps) => {
     title: string; 
     description: string; 
   }) => (
-    <div className="text-center py-16">
-      <div className="w-16 h-16 mx-auto mb-6 bg-white/10 backdrop-blur-sm rounded-full flex items-center justify-center">
-        <Icon className="w-8 h-8 text-white/70" />
+    <div className="text-center py-20">
+      <div className="relative mx-auto mb-6 w-20 h-20">
+        <div className="absolute inset-0 bg-gradient-to-br from-violet-500/20 to-purple-500/20 rounded-full blur-xl"></div>
+        <div className="relative w-20 h-20 bg-white/5 backdrop-blur-xl rounded-full flex items-center justify-center border border-white/10">
+          <Icon className="w-8 h-8 text-white/60" />
+        </div>
       </div>
-      <h3 className="text-xl font-semibold text-white mb-2">{title}</h3>
-      <p className="text-white/70 max-w-md mx-auto">{description}</p>
+      <h3 className="text-xl font-semibold text-white/90 mb-3">{title}</h3>
+      <p className="text-white/60 max-w-md mx-auto leading-relaxed">{description}</p>
     </div>
   );
 
   if (selectedUser) {
     return (
-      <div className="min-h-screen bg-gradient-to-br from-purple-600 via-violet-600 to-purple-800">
+      <div className="min-h-screen bg-gradient-to-br from-slate-900 via-purple-900 to-slate-900">
         <div className="max-w-4xl mx-auto px-6 py-8">
           <ProfileView user={selectedUser} onBack={handleBackToList}>
             <UserActions 
@@ -260,28 +271,42 @@ const Dashboard = ({ userUID, setIsLoggedIn }: DashboardProps) => {
 
   if (isLoading) {
     return (
-      <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-purple-600 via-violet-600 to-purple-800">
+      <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-slate-900 via-purple-900 to-slate-900">
         <div className="text-center">
-          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-white mx-auto"></div>
-          <p className="mt-4 text-white/70">Loading your matches...</p>
+          <div className="relative w-16 h-16 mx-auto mb-6">
+            <div className="absolute inset-0 bg-gradient-to-br from-violet-500 to-purple-500 rounded-full blur-lg opacity-50"></div>
+            <div className="relative w-16 h-16 bg-white/10 backdrop-blur-xl rounded-full border border-white/20 flex items-center justify-center">
+              <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-white/70"></div>
+            </div>
+          </div>
+          <p className="text-white/70 font-medium">Discovering your perfect matches...</p>
         </div>
       </div>
     );
   }
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-purple-600 via-violet-600 to-purple-800">
-      <div className="border-b border-white/20 bg-white/10 backdrop-blur-md sticky top-0 z-50">
-        <div className="max-w-7xl mx-auto px-6 py-4 flex items-center justify-between">
-          <div>
-            <h1 className="text-2xl font-semibold text-white">Lovable Dating</h1>
-            <p className="text-white/70 mt-1">Discover your perfect matches</p>
+    <div className="min-h-screen bg-gradient-to-br from-slate-900 via-purple-900 to-slate-900">
+      {/* Modern Header */}
+      <div className="border-b border-white/10 bg-white/5 backdrop-blur-2xl sticky top-0 z-50">
+        <div className="max-w-7xl mx-auto px-6 py-6 flex items-center justify-between">
+          <div className="flex items-center space-x-4">
+            <div className="relative">
+              <div className="absolute -inset-1 bg-gradient-to-r from-violet-500 to-purple-500 rounded-lg blur opacity-30"></div>
+              <div className="relative w-10 h-10 bg-white/10 backdrop-blur-xl rounded-lg border border-white/20 flex items-center justify-center">
+                <Heart className="w-5 h-5 text-violet-300" />
+              </div>
+            </div>
+            <div>
+              <h1 className="text-2xl font-bold text-white tracking-tight">Lovable</h1>
+              <p className="text-white/60 text-sm font-medium">Discover meaningful connections</p>
+            </div>
           </div>
           <div className="flex gap-3">
             <Button 
               onClick={handleViewProfile}
               variant="outline"
-              className="border-white/30 text-white hover:bg-white/20 bg-white/10 backdrop-blur-sm"
+              className="border-white/20 bg-white/5 backdrop-blur-xl text-white/90 hover:bg-white/10 hover:border-white/30 transition-all duration-300 font-medium"
             >
               <User className="w-4 h-4 mr-2" />
               Profile
@@ -289,7 +314,7 @@ const Dashboard = ({ userUID, setIsLoggedIn }: DashboardProps) => {
             <Button 
               onClick={handleLogout}
               variant="outline"
-              className="border-red-300/30 text-red-100 hover:bg-red-500/20 bg-red-500/10 backdrop-blur-sm"
+              className="border-red-400/30 bg-red-500/10 backdrop-blur-xl text-red-200 hover:bg-red-500/20 hover:border-red-400/40 transition-all duration-300 font-medium"
             >
               <LogOut className="w-4 h-4 mr-2" />
               Logout
@@ -299,44 +324,71 @@ const Dashboard = ({ userUID, setIsLoggedIn }: DashboardProps) => {
       </div>
 
       <div className="max-w-7xl mx-auto px-6 py-8">
-        <Tabs defaultValue="recommendations" className="space-y-6">
-          <TabsList className="grid w-full grid-cols-4 bg-white/10 backdrop-blur-md border-white/20">
-            <TabsTrigger value="recommendations" className="flex items-center gap-2 text-white/70 data-[state=active]:bg-white/20 data-[state=active]:text-white">
+        <Tabs defaultValue="recommendations" className="space-y-8">
+          <TabsList className="grid w-full grid-cols-4 bg-white/5 backdrop-blur-xl border border-white/10 p-1 rounded-2xl">
+            <TabsTrigger 
+              value="recommendations" 
+              className="flex items-center gap-2 text-white/70 data-[state=active]:bg-white/10 data-[state=active]:text-white font-medium rounded-xl transition-all duration-300 py-3"
+            >
               <Users className="w-4 h-4" />
-              Discover ({recommendations.length})
+              <span className="hidden sm:inline">Discover</span>
+              <Badge variant="secondary" className="bg-white/20 text-white/80 text-xs">
+                {recommendations.length}
+              </Badge>
             </TabsTrigger>
-            <TabsTrigger value="matches" className="flex items-center gap-2 text-white/70 data-[state=active]:bg-white/20 data-[state=active]:text-white">
+            <TabsTrigger 
+              value="matches" 
+              className="flex items-center gap-2 text-white/70 data-[state=active]:bg-white/10 data-[state=active]:text-white font-medium rounded-xl transition-all duration-300 py-3"
+            >
               <Heart className="w-4 h-4" />
-              Matches ({matches.length})
+              <span className="hidden sm:inline">Matches</span>
+              <Badge variant="secondary" className="bg-white/20 text-white/80 text-xs">
+                {matches.length}
+              </Badge>
             </TabsTrigger>
-            <TabsTrigger value="notifications" className="flex items-center gap-2 text-white/70 data-[state=active]:bg-white/20 data-[state=active]:text-white">
+            <TabsTrigger 
+              value="notifications" 
+              className="flex items-center gap-2 text-white/70 data-[state=active]:bg-white/10 data-[state=active]:text-white font-medium rounded-xl transition-all duration-300 py-3"
+            >
               <Bell className="w-4 h-4" />
-              Notifications ({notifications.length})
+              <span className="hidden sm:inline">Activity</span>
+              <Badge variant="secondary" className="bg-white/20 text-white/80 text-xs">
+                {notifications.length}
+              </Badge>
             </TabsTrigger>
-            <TabsTrigger value="awaiting" className="flex items-center gap-2 text-white/70 data-[state=active]:bg-white/20 data-[state=active]:text-white">
+            <TabsTrigger 
+              value="awaiting" 
+              className="flex items-center gap-2 text-white/70 data-[state=active]:bg-white/10 data-[state=active]:text-white font-medium rounded-xl transition-all duration-300 py-3"
+            >
               <Clock className="w-4 h-4" />
-              Awaiting ({awaiting.length})
+              <span className="hidden sm:inline">Pending</span>
+              <Badge variant="secondary" className="bg-white/20 text-white/80 text-xs">
+                {awaiting.length}
+              </Badge>
             </TabsTrigger>
           </TabsList>
 
           <TabsContent value="recommendations" className="space-y-6">
-            <Card className="bg-white/10 backdrop-blur-md border-white/20 shadow-lg">
-              <CardHeader className="pb-4">
-                <div className="flex items-center gap-3">
-                  <div className="w-8 h-8 bg-white/10 backdrop-blur-sm rounded-lg flex items-center justify-center">
-                    <Users className="w-4 h-4 text-violet-300" />
+            <Card className="bg-white/5 backdrop-blur-xl border border-white/10 shadow-2xl overflow-hidden">
+              <CardHeader className="pb-6 bg-gradient-to-r from-violet-500/10 to-purple-500/10">
+                <div className="flex items-center gap-4">
+                  <div className="relative">
+                    <div className="absolute -inset-1 bg-gradient-to-r from-violet-500 to-purple-500 rounded-xl blur opacity-30"></div>
+                    <div className="relative w-12 h-12 bg-white/10 backdrop-blur-xl rounded-xl border border-white/20 flex items-center justify-center">
+                      <Users className="w-6 h-6 text-violet-300" />
+                    </div>
                   </div>
                   <div>
-                    <CardTitle className="text-white">Discover New People</CardTitle>
-                    <CardDescription className="text-white/70">
-                      Profiles our algorithm thinks you'll love
+                    <CardTitle className="text-white text-xl font-bold">Discover New People</CardTitle>
+                    <CardDescription className="text-white/60 font-medium mt-1">
+                      Curated profiles that match your interests
                     </CardDescription>
                   </div>
                 </div>
               </CardHeader>
-              <CardContent>
+              <CardContent className="p-6">
                 {recommendations.length > 0 ? (
-                  <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
+                  <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
                     {recommendations.map((user) => (
                       <UserCard key={user.UID} user={user} showActions={true} />
                     ))}
@@ -344,8 +396,8 @@ const Dashboard = ({ userUID, setIsLoggedIn }: DashboardProps) => {
                 ) : (
                   <EmptyState
                     icon={Users}
-                    title="No recommendations"
-                    description="We're finding the perfect people for you!"
+                    title="No new discoveries"
+                    description="We're finding amazing people for you to connect with!"
                   />
                 )}
               </CardContent>
@@ -353,23 +405,26 @@ const Dashboard = ({ userUID, setIsLoggedIn }: DashboardProps) => {
           </TabsContent>
 
           <TabsContent value="matches" className="space-y-6">
-            <Card className="bg-white/10 backdrop-blur-md border-white/20 shadow-lg">
-              <CardHeader className="pb-4">
-                <div className="flex items-center gap-3">
-                  <div className="w-8 h-8 bg-white/10 backdrop-blur-sm rounded-lg flex items-center justify-center">
-                    <Heart className="w-4 h-4 text-violet-300" />
+            <Card className="bg-white/5 backdrop-blur-xl border border-white/10 shadow-2xl overflow-hidden">
+              <CardHeader className="pb-6 bg-gradient-to-r from-emerald-500/10 to-green-500/10">
+                <div className="flex items-center gap-4">
+                  <div className="relative">
+                    <div className="absolute -inset-1 bg-gradient-to-r from-emerald-500 to-green-500 rounded-xl blur opacity-30"></div>
+                    <div className="relative w-12 h-12 bg-white/10 backdrop-blur-xl rounded-xl border border-white/20 flex items-center justify-center">
+                      <Heart className="w-6 h-6 text-emerald-300" />
+                    </div>
                   </div>
                   <div>
-                    <CardTitle className="text-white">Your Matches</CardTitle>
-                    <CardDescription className="text-white/70">
-                      People who liked you back - it's a match!
+                    <CardTitle className="text-white text-xl font-bold">Your Matches</CardTitle>
+                    <CardDescription className="text-white/60 font-medium mt-1">
+                      People who liked you back - start a conversation!
                     </CardDescription>
                   </div>
                 </div>
               </CardHeader>
-              <CardContent>
+              <CardContent className="p-6">
                 {matches.length > 0 ? (
-                  <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
+                  <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
                     {matches.map((user) => (
                       <UserCard key={user.UID} user={user} />
                     ))}
@@ -378,7 +433,7 @@ const Dashboard = ({ userUID, setIsLoggedIn }: DashboardProps) => {
                   <EmptyState
                     icon={Heart}
                     title="No matches yet"
-                    description="Keep swiping to find your perfect match!"
+                    description="Keep exploring to find your perfect match!"
                   />
                 )}
               </CardContent>
@@ -386,23 +441,26 @@ const Dashboard = ({ userUID, setIsLoggedIn }: DashboardProps) => {
           </TabsContent>
 
           <TabsContent value="notifications" className="space-y-6">
-            <Card className="bg-white/10 backdrop-blur-md border-white/20 shadow-lg">
-              <CardHeader className="pb-4">
-                <div className="flex items-center gap-3">
-                  <div className="w-8 h-8 bg-white/10 backdrop-blur-sm rounded-lg flex items-center justify-center">
-                    <Bell className="w-4 h-4 text-violet-300" />
+            <Card className="bg-white/5 backdrop-blur-xl border border-white/10 shadow-2xl overflow-hidden">
+              <CardHeader className="pb-6 bg-gradient-to-r from-blue-500/10 to-cyan-500/10">
+                <div className="flex items-center gap-4">
+                  <div className="relative">
+                    <div className="absolute -inset-1 bg-gradient-to-r from-blue-500 to-cyan-500 rounded-xl blur opacity-30"></div>
+                    <div className="relative w-12 h-12 bg-white/10 backdrop-blur-xl rounded-xl border border-white/20 flex items-center justify-center">
+                      <Bell className="w-6 h-6 text-blue-300" />
+                    </div>
                   </div>
                   <div>
-                    <CardTitle className="text-white">Notifications</CardTitle>
-                    <CardDescription className="text-white/70">
-                      Recent activity and updates
+                    <CardTitle className="text-white text-xl font-bold">Recent Activity</CardTitle>
+                    <CardDescription className="text-white/60 font-medium mt-1">
+                      Stay updated with your latest interactions
                     </CardDescription>
                   </div>
                 </div>
               </CardHeader>
-              <CardContent>
+              <CardContent className="p-6">
                 {notifications.length > 0 ? (
-                  <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
+                  <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
                     {notifications.map((user) => (
                       <UserCard key={user.UID} user={user} />
                     ))}
@@ -410,8 +468,8 @@ const Dashboard = ({ userUID, setIsLoggedIn }: DashboardProps) => {
                 ) : (
                   <EmptyState
                     icon={Bell}
-                    title="No notifications"
-                    description="You're all caught up!"
+                    title="All caught up"
+                    description="You're up to date with all your activity!"
                   />
                 )}
               </CardContent>
@@ -419,23 +477,26 @@ const Dashboard = ({ userUID, setIsLoggedIn }: DashboardProps) => {
           </TabsContent>
 
           <TabsContent value="awaiting" className="space-y-6">
-            <Card className="bg-white/10 backdrop-blur-md border-white/20 shadow-lg">
-              <CardHeader className="pb-4">
-                <div className="flex items-center gap-3">
-                  <div className="w-8 h-8 bg-white/10 backdrop-blur-sm rounded-lg flex items-center justify-center">
-                    <Clock className="w-4 h-4 text-violet-300" />
+            <Card className="bg-white/5 backdrop-blur-xl border border-white/10 shadow-2xl overflow-hidden">
+              <CardHeader className="pb-6 bg-gradient-to-r from-amber-500/10 to-orange-500/10">
+                <div className="flex items-center gap-4">
+                  <div className="relative">
+                    <div className="absolute -inset-1 bg-gradient-to-r from-amber-500 to-orange-500 rounded-xl blur opacity-30"></div>
+                    <div className="relative w-12 h-12 bg-white/10 backdrop-blur-xl rounded-xl border border-white/20 flex items-center justify-center">
+                      <Clock className="w-6 h-6 text-amber-300" />
+                    </div>
                   </div>
                   <div>
-                    <CardTitle className="text-white">Awaiting Response</CardTitle>
-                    <CardDescription className="text-white/70">
-                      People waiting for your response
+                    <CardTitle className="text-white text-xl font-bold">Awaiting Response</CardTitle>
+                    <CardDescription className="text-white/60 font-medium mt-1">
+                      People waiting for your decision
                     </CardDescription>
                   </div>
                 </div>
               </CardHeader>
-              <CardContent>
+              <CardContent className="p-6">
                 {awaiting.length > 0 ? (
-                  <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
+                  <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
                     {awaiting.map((user) => (
                       <UserCard key={user.UID} user={user} />
                     ))}
@@ -444,7 +505,7 @@ const Dashboard = ({ userUID, setIsLoggedIn }: DashboardProps) => {
                   <EmptyState
                     icon={Clock}
                     title="No pending responses"
-                    description="You're all up to date with your responses!"
+                    description="You're all caught up with your responses!"
                   />
                 )}
               </CardContent>
