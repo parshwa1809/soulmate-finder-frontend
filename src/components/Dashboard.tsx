@@ -250,7 +250,7 @@ const Dashboard = ({ userUID, setIsLoggedIn }: DashboardProps) => {
               <div className="flex items-center mb-2">
                 <Star className="w-4 h-4 text-yellow-400 mr-1" />
                 <span className="text-sm text-white/70 font-medium">
-                  Compatibility: {user.kundliScore}%
+                  Compatibility: {user.kundliScore}/36
                 </span>
               </div>
             )}

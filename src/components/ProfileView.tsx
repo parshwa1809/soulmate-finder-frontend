@@ -71,7 +71,7 @@ const ProfileView = ({ user, onBack, children }: ProfileViewProps) => {
               {user.kundliScore !== undefined && (
                 <div className="flex items-center bg-gradient-to-r from-yellow-500/20 to-orange-500/20 backdrop-blur-xl rounded-full px-4 py-2 border border-yellow-500/30">
                   <Star className="w-4 h-4 mr-2 text-yellow-400" />
-                  <span className="font-medium text-yellow-200">Compatibility: {user.kundliScore}%</span>
+                  <span className="font-medium text-yellow-200">Compatibility: {user.kundliScore}/36</span>
                 </div>
               )}
             </div>
