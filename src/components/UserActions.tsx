@@ -50,9 +50,9 @@ const UserActions = ({ userUID, currentUserUID, onActionComplete }: UserActionsP
           variant="outline"
           size="lg"
           disabled={isLoading}
-          className="relative w-20 h-20 rounded-full bg-white/5 backdrop-blur-xl border-2 border-white/10 hover:border-red-400/50 text-white/80 hover:text-red-300 transition-all duration-300 hover:scale-110 shadow-2xl hover:shadow-red-500/25 group-hover:bg-gradient-to-r group-hover:from-red-500/10 group-hover:to-pink-500/10"
+          className="relative w-16 h-16 rounded-full bg-white/5 backdrop-blur-xl border-2 border-white/10 hover:border-red-400/50 text-white/80 hover:text-red-300 transition-all duration-300 hover:scale-110 shadow-2xl hover:shadow-red-500/25 group-hover:bg-gradient-to-r group-hover:from-red-500/10 group-hover:to-pink-500/10"
         >
-          <X className="w-8 h-8 group-hover:rotate-90 transition-transform duration-300" />
+          <X className="w-6 h-6 group-hover:rotate-90 transition-transform duration-300" />
         </Button>
         <span className="absolute -bottom-8 left-1/2 transform -translate-x-1/2 text-sm text-white/60 font-medium">
           Skip
@@ -67,9 +67,9 @@ const UserActions = ({ userUID, currentUserUID, onActionComplete }: UserActionsP
           variant="outline"
           size="lg"
           disabled={isLoading}
-          className="relative w-20 h-20 rounded-full bg-white/5 backdrop-blur-xl border-2 border-white/10 hover:border-emerald-400/50 text-white/80 hover:text-emerald-300 transition-all duration-300 hover:scale-110 shadow-2xl hover:shadow-emerald-500/25 group-hover:bg-gradient-to-r group-hover:from-emerald-500/10 group-hover:to-green-500/10"
+          className="relative w-16 h-16 rounded-full bg-white/5 backdrop-blur-xl border-2 border-white/10 hover:border-emerald-400/50 text-white/80 hover:text-emerald-300 transition-all duration-300 hover:scale-110 shadow-2xl hover:shadow-emerald-500/25 group-hover:bg-gradient-to-r group-hover:from-emerald-500/10 group-hover:to-green-500/10"
         >
-          <Heart className="w-8 h-8 group-hover:scale-110 group-hover:fill-current transition-all duration-300" />
+          <Heart className="w-6 h-6 group-hover:scale-110 group-hover:fill-current transition-all duration-300" />
         </Button>
         <span className="absolute -bottom-8 left-1/2 transform -translate-x-1/2 text-sm text-white/60 font-medium">
           Like
