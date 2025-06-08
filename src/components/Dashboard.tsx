@@ -1,4 +1,3 @@
-
 import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { Button } from "@/components/ui/button";
@@ -207,7 +206,7 @@ const Dashboard = ({ userUID, setIsLoggedIn }: DashboardProps) => {
               <div className="mt-3">
                 <div className="flex flex-wrap gap-1">
                   {user.hobbies.split(',').slice(0, 3).map((hobby, index) => (
-                    <Badge key={index} variant="secondary" className="text-xs bg-white/20 text-white/80">
+                    <Badge key={index} variant="secondary" className="text-xs bg-white/20 text-white">
                       {hobby.trim()}
                     </Badge>
                   ))}
@@ -275,14 +274,14 @@ const Dashboard = ({ userUID, setIsLoggedIn }: DashboardProps) => {
       <div className="border-b border-white/20 bg-white/10 backdrop-blur-md sticky top-0 z-50">
         <div className="max-w-7xl mx-auto px-6 py-4 flex items-center justify-between">
           <div>
-            <h1 className="text-2xl font-semibold text-white">Dashboard</h1>
+            <h1 className="text-2xl font-semibold text-white">Lovable Dating</h1>
             <p className="text-white/70 mt-1">Discover your perfect matches</p>
           </div>
           <div className="flex gap-3">
             <Button 
               onClick={handleViewProfile}
               variant="outline"
-              className="border-white/30 text-white hover:bg-white/20"
+              className="border-white/30 text-white hover:bg-white/20 bg-white/10 backdrop-blur-sm"
             >
               <User className="w-4 h-4 mr-2" />
               Profile
@@ -290,7 +289,7 @@ const Dashboard = ({ userUID, setIsLoggedIn }: DashboardProps) => {
             <Button 
               onClick={handleLogout}
               variant="outline"
-              className="border-red-300/30 text-red-100 hover:bg-red-500/20"
+              className="border-red-300/30 text-red-100 hover:bg-red-500/20 bg-red-500/10 backdrop-blur-sm"
             >
               <LogOut className="w-4 h-4 mr-2" />
               Logout
