@@ -89,26 +89,26 @@ const Recommendations = () => {
   };
 
   const UserCard = ({ user }: { user: User }) => (
-    <Card className="group hover:shadow-lg transition-all duration-300 bg-card border-border cursor-pointer hover:border-primary/20">
+    <Card className="group hover:shadow-lg transition-all duration-300 cursor-pointer hover:border-white/40">
       <CardContent className="p-6" onClick={() => handleUserClick(user)}>
         <div className="flex items-start space-x-4">
-          <Avatar className="w-16 h-16 ring-2 ring-border group-hover:ring-primary/20 transition-all">
+          <Avatar className="w-16 h-16 ring-2 ring-white/20 group-hover:ring-white/40 transition-all">
             <AvatarImage src={user.profilePicture} />
-            <AvatarFallback className="bg-primary text-primary-foreground">
+            <AvatarFallback className="bg-gradient-to-r from-violet-500 to-purple-500 text-white">
               {user.name?.charAt(0) || <User className="w-6 h-6" />}
             </AvatarFallback>
           </Avatar>
           <div className="flex-1 min-w-0">
-            <h3 className="font-semibold text-lg text-foreground truncate group-hover:text-primary transition-colors">
+            <h3 className="font-semibold text-lg text-white truncate group-hover:text-violet-200 transition-colors">
               {user.name || 'Unknown User'}
             </h3>
             {user.city && user.country && (
-              <p className="text-sm text-muted-foreground truncate">
+              <p className="text-sm text-white/70 truncate">
                 {user.city}, {user.country}
               </p>
             )}
             {user.age && (
-              <p className="text-sm text-muted-foreground">
+              <p className="text-sm text-white/70">
                 {user.age} years old
               </p>
             )}
@@ -116,7 +116,7 @@ const Recommendations = () => {
               <div className="mt-3">
                 <div className="flex flex-wrap gap-1">
                   {user.hobbies.split(',').slice(0, 3).map((hobby, index) => (
-                    <Badge key={index} variant="secondary" className="text-xs bg-muted text-muted-foreground">
+                    <Badge key={index} variant="secondary" className="text-xs bg-white/20 text-white/80">
                       {hobby.trim()}
                     </Badge>
                   ))}
@@ -131,17 +131,17 @@ const Recommendations = () => {
 
   const EmptyState = () => (
     <div className="text-center py-16">
-      <div className="w-16 h-16 mx-auto mb-6 bg-muted rounded-full flex items-center justify-center">
-        <Users className="w-8 h-8 text-muted-foreground" />
+      <div className="w-16 h-16 mx-auto mb-6 bg-white/10 backdrop-blur-sm rounded-full flex items-center justify-center">
+        <Users className="w-8 h-8 text-white/70" />
       </div>
-      <h3 className="text-xl font-semibold text-foreground mb-2">No recommendations</h3>
-      <p className="text-muted-foreground max-w-md mx-auto">We're finding the perfect people for you! Check back soon for new recommendations.</p>
+      <h3 className="text-xl font-semibold text-white mb-2">No recommendations</h3>
+      <p className="text-white/70 max-w-md mx-auto">We're finding the perfect people for you! Check back soon for new recommendations.</p>
     </div>
   );
 
   if (selectedUser) {
     return (
-      <div className="min-h-screen bg-background">
+      <div className="min-h-screen bg-gradient-to-br from-purple-600 via-violet-600 to-purple-800">
         <div className="max-w-4xl mx-auto px-6 py-8">
           <ProfileView user={selectedUser} onBack={handleBackToList}>
             <UserActions 
@@ -157,30 +157,30 @@ const Recommendations = () => {
 
   if (isLoading) {
     return (
-      <div className="min-h-screen flex items-center justify-center bg-background">
+      <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-purple-600 via-violet-600 to-purple-800">
         <div className="text-center">
-          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-primary mx-auto"></div>
-          <p className="mt-4 text-muted-foreground">Loading recommendations...</p>
+          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-white mx-auto"></div>
+          <p className="mt-4 text-white/70">Loading recommendations...</p>
         </div>
       </div>
     );
   }
 
   return (
-    <div className="min-h-screen bg-background">
+    <div className="min-h-screen bg-gradient-to-br from-purple-600 via-violet-600 to-purple-800">
       {/* Header */}
-      <div className="border-b border-border bg-card/50 backdrop-blur-sm sticky top-0 z-50">
+      <div className="border-b border-white/20 bg-white/10 backdrop-blur-md sticky top-0 z-50">
         <div className="max-w-7xl mx-auto px-6 py-4 flex items-center justify-between">
           <Button 
             onClick={handleBackToDashboard}
             variant="ghost" 
-            className="text-muted-foreground hover:text-foreground"
+            className="text-white hover:bg-white/10"
           >
             <ArrowLeft className="w-4 h-4 mr-2" />
             Back to Dashboard
           </Button>
           
-          <h1 className="text-xl font-semibold text-foreground">Discover</h1>
+          <h1 className="text-xl font-semibold text-white">Discover</h1>
           <div className="w-24"></div>
         </div>
       </div>
@@ -189,12 +189,12 @@ const Recommendations = () => {
       <div className="max-w-7xl mx-auto px-6 py-8">
         <div className="mb-8">
           <div className="flex items-center gap-3 mb-2">
-            <div className="w-8 h-8 bg-primary/10 rounded-lg flex items-center justify-center">
-              <Users className="w-4 h-4 text-primary" />
+            <div className="w-8 h-8 bg-white/10 backdrop-blur-sm rounded-lg flex items-center justify-center">
+              <Users className="w-4 h-4 text-violet-300" />
             </div>
-            <h2 className="text-2xl font-bold text-foreground">Discover New People</h2>
+            <h2 className="text-2xl font-bold text-white">Discover New People</h2>
           </div>
-          <p className="text-muted-foreground">Profiles our algorithm thinks you'll love</p>
+          <p className="text-white/70">Profiles our algorithm thinks you'll love</p>
         </div>
 
         {recommendations.length > 0 ? (
