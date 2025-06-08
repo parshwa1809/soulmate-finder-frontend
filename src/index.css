@@ -6,81 +6,81 @@
 @layer base {
   :root {
     --background: 248 250 252;
-    --foreground: 30 27 75;
+    --foreground: 51 51 51;
 
     --card: 255 255 255;
-    --card-foreground: 30 27 75;
+    --card-foreground: 51 51 51;
 
     --popover: 255 255 255;
-    --popover-foreground: 30 27 75;
+    --popover-foreground: 51 51 51;
 
-    --primary: 139 92 246;
+    --primary: 124 58 237;
     --primary-foreground: 255 255 255;
 
-    --secondary: 245 243 255;
-    --secondary-foreground: 30 27 75;
+    --secondary: 243 244 246;
+    --secondary-foreground: 51 51 51;
 
-    --muted: 245 243 255;
-    --muted-foreground: 100 116 139;
+    --muted: 243 244 246;
+    --muted-foreground: 107 114 128;
 
     --accent: 196 181 253;
-    --accent-foreground: 30 27 75;
+    --accent-foreground: 51 51 51;
 
     --destructive: 239 68 68;
     --destructive-foreground: 255 255 255;
 
-    --border: 226 232 240;
-    --input: 226 232 240;
-    --ring: 139 92 246;
+    --border: 229 231 235;
+    --input: 229 231 235;
+    --ring: 124 58 237;
 
     --radius: 0.5rem;
 
     --sidebar-background: 248 250 252;
-    --sidebar-foreground: 30 27 75;
-    --sidebar-primary: 139 92 246;
+    --sidebar-foreground: 51 51 51;
+    --sidebar-primary: 124 58 237;
     --sidebar-primary-foreground: 255 255 255;
-    --sidebar-accent: 245 243 255;
-    --sidebar-accent-foreground: 30 27 75;
-    --sidebar-border: 226 232 240;
-    --sidebar-ring: 139 92 246;
+    --sidebar-accent: 243 244 246;
+    --sidebar-accent-foreground: 51 51 51;
+    --sidebar-border: 229 231 235;
+    --sidebar-ring: 124 58 237;
   }
 
   .dark {
-    --background: 15 23 42;
-    --foreground: 248 250 252;
+    --background: 24 24 27;
+    --foreground: 250 250 250;
 
-    --card: 30 41 59;
-    --card-foreground: 248 250 252;
+    --card: 39 39 42;
+    --card-foreground: 250 250 250;
 
-    --popover: 30 41 59;
-    --popover-foreground: 248 250 252;
+    --popover: 39 39 42;
+    --popover-foreground: 250 250 250;
 
     --primary: 147 51 234;
     --primary-foreground: 255 255 255;
 
-    --secondary: 51 65 85;
-    --secondary-foreground: 248 250 252;
+    --secondary: 63 63 70;
+    --secondary-foreground: 250 250 250;
 
-    --muted: 51 65 85;
-    --muted-foreground: 148 163 184;
+    --muted: 63 63 70;
+    --muted-foreground: 161 161 170;
 
-    --accent: 109 40 217;
-    --accent-foreground: 248 250 252;
+    --accent: 124 58 237;
+    --accent-foreground: 250 250 250;
 
-    --destructive: 220 38 38;
-    --destructive-foreground: 248 250 252;
+    --destructive: 239 68 68;
+    --destructive-foreground: 250 250 250;
 
-    --border: 51 65 85;
-    --input: 51 65 85;
+    --border: 63 63 70;
+    --input: 63 63 70;
     --ring: 147 51 234;
     
-    --sidebar-background: 15 23 42;
-    --sidebar-foreground: 248 250 252;
+    --sidebar-background: 24 24 27;
+    --sidebar-foreground: 250 250 250;
     --sidebar-primary: 147 51 234;
     --sidebar-primary-foreground: 255 255 255;
-    --sidebar-accent: 51 65 85;
-    --sidebar-accent-foreground: 248 250 252;
-    --sidebar-border: 51 65 85;
+    --sidebar-accent: 63 63 70;
+    --sidebar-accent-foreground: 250 250 250;
+    --sidebar-border: 63 63 70;
     --sidebar-ring: 147 51 234;
   }
 }
@@ -92,19 +92,32 @@
 
   body {
     @apply bg-background text-foreground;
-    background: linear-gradient(135deg, hsl(var(--background)) 0%, hsl(248 250 252) 50%, hsl(245 243 255) 100%);
+    background: linear-gradient(135deg, 
+      rgb(124, 58, 237) 0%, 
+      rgb(147, 51, 234) 25%, 
+      rgb(168, 85, 247) 50%, 
+      rgb(196, 181, 253) 100%
+    );
     min-height: 100vh;
   }
 }
 
-/* Add some gradient effects for cards and components */
+/* Add purple gradient effects for cards and components */
 @layer components {
   .gradient-card {
-    background: linear-gradient(135deg, hsl(var(--card)) 0%, hsl(245 243 255) 100%);
-    border: 1px solid hsl(var(--border));
+    background: linear-gradient(135deg, 
+      rgba(255, 255, 255, 0.95) 0%, 
+      rgba(196, 181, 253, 0.1) 100%
+    );
+    border: 1px solid rgba(124, 58, 237, 0.2);
+    backdrop-filter: blur(10px);
   }
   
   .gradient-primary {
-    background: linear-gradient(135deg, hsl(139 92 246) 0%, hsl(124 58 237) 50%, hsl(147 51 234) 100%);
+    background: linear-gradient(135deg, 
+      rgb(124, 58, 237) 0%, 
+      rgb(147, 51, 234) 50%, 
+      rgb(168, 85, 247) 100%
+    );
   }
 }

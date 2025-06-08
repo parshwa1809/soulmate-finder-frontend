@@ -65,8 +65,9 @@ export default {
 				}
 			},
 			backgroundImage: {
-				'gradient-primary': 'linear-gradient(135deg, hsl(139 92 246) 0%, hsl(124 58 237) 50%, hsl(147 51 234) 100%)',
-				'gradient-card': 'linear-gradient(135deg, hsl(var(--card)) 0%, hsl(245 243 255) 100%)',
+				'gradient-primary': 'linear-gradient(135deg, rgb(124, 58, 237) 0%, rgb(147, 51, 234) 50%, rgb(168, 85, 247) 100%)',
+				'gradient-card': 'linear-gradient(135deg, rgba(255, 255, 255, 0.95) 0%, rgba(196, 181, 253, 0.1) 100%)',
+				'gradient-purple': 'linear-gradient(135deg, rgb(124, 58, 237) 0%, rgb(147, 51, 234) 25%, rgb(168, 85, 247) 50%, rgb(196, 181, 253) 100%)',
 			},
 			borderRadius: {
 				lg: 'var(--radius)',
