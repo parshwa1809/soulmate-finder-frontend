@@ -62,19 +62,22 @@ const Dashboard = ({ userUID, setIsLoggedIn }: DashboardProps) => {
       try {
         const parsedImages = JSON.parse(apiData.IMAGES);
         if (Array.isArray(parsedImages)) {
-          images = parsedImages;
-          profilePicture = parsedImages[0] || ''; // Use first image as profile picture
+          // Convert base64 data to proper image URLs
+          images = parsedImages.map((img: any) => {
+            if (img.data) {
+              return `data:image/jpeg;base64,${img.data}`;
+            }
+            return img;
+          });
+          profilePicture = images[0] || ''; // Use first image as profile picture
         }
       } catch {
         // If parsing fails, try to use IMAGES as a single image
-        images = [apiData.IMAGES];
-        profilePicture = apiData.IMAGES;
+        if (typeof apiData.IMAGES === 'string') {
+          profilePicture = `data:image/jpeg;base64,${apiData.IMAGES}`;
+          images = [profilePicture];
+        }
       }
-    }
-
-    // Fallback to existing profilePicture if no images found
-    if (!profilePicture && apiData.profilePicture) {
-      profilePicture = apiData.profilePicture;
     }
 
     // Calculate age from DOB if available
@@ -209,10 +212,16 @@ const Dashboard = ({ userUID, setIsLoggedIn }: DashboardProps) => {
       <CardContent className="p-6 relative z-10" onClick={() => handleUserClick(user)}>
         <div className="flex items-start space-x-4">
           <div className="relative">
-            <Avatar className="w-20 h-20 ring-2 ring-white/20 group-hover:ring-white/40 transition-all duration-300">
-              <AvatarImage src={user.profilePicture} className="object-cover" />
-              <AvatarFallback className="bg-gradient-to-br from-violet-500 to-purple-500 text-white font-semibold text-lg">
-                {user.name?.charAt(0) || <User className="w-8 h-8" />}
+            <Avatar className="w-24 h-24 ring-2 ring-white/20 group-hover:ring-white/40 transition-all duration-300">
+              <AvatarImage 
+                src={user.profilePicture} 
+                className="object-cover w-full h-full"
+                onError={(e) => {
+                  console.log('Image failed to load for user:', user.name, 'URL:', user.profilePicture);
+                }}
+              />
+              <AvatarFallback className="bg-gradient-to-br from-violet-500 to-purple-500 text-white font-semibold text-xl">
+                {user.name?.charAt(0) || <User className="w-10 h-10" />}
               </AvatarFallback>
             </Avatar>
             <div className="absolute -inset-1 bg-gradient-to-br from-violet-400 to-purple-400 rounded-full blur opacity-0 group-hover:opacity-30 transition-opacity duration-300"></div>
@@ -250,35 +259,11 @@ const Dashboard = ({ userUID, setIsLoggedIn }: DashboardProps) => {
         </div>
         {showActions && (
           <div onClick={(e) => e.stopPropagation()} className="mt-4">
-            <div className="flex justify-center items-center gap-4">
-              {/* Skip Button - Smaller */}
-              <div className="relative group">
-                <div className="absolute -inset-0.5 bg-gradient-to-r from-red-500 to-pink-500 rounded-full blur opacity-20 group-hover:opacity-40 transition duration-500"></div>
-                <Button
-                  onClick={() => {/* handle skip action */}}
-                  variant="outline"
-                  size="sm"
-                  className="relative w-14 h-14 rounded-full bg-white/5 backdrop-blur-xl border-2 border-white/10 hover:border-red-400/50 text-white/80 hover:text-red-300 transition-all duration-300 hover:scale-110 shadow-2xl hover:shadow-red-500/25 group-hover:bg-gradient-to-r group-hover:from-red-500/10 group-hover:to-pink-500/10"
-                >
-                  <svg className="w-6 h-6 group-hover:rotate-90 transition-transform duration-300" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
-                  </svg>
-                </Button>
-              </div>
-
-              {/* Like Button - Smaller */}
-              <div className="relative group">
-                <div className="absolute -inset-0.5 bg-gradient-to-r from-emerald-500 to-green-500 rounded-full blur opacity-20 group-hover:opacity-40 transition duration-500"></div>
-                <Button
-                  onClick={() => {/* handle like action */}}
-                  variant="outline"
-                  size="sm"
-                  className="relative w-14 h-14 rounded-full bg-white/5 backdrop-blur-xl border-2 border-white/10 hover:border-emerald-400/50 text-white/80 hover:text-emerald-300 transition-all duration-300 hover:scale-110 shadow-2xl hover:shadow-emerald-500/25 group-hover:bg-gradient-to-r group-hover:from-emerald-500/10 group-hover:to-green-500/10"
-                >
-                  <Heart className="w-6 h-6 group-hover:scale-110 group-hover:fill-current transition-all duration-300" />
-                </Button>
-              </div>
-            </div>
+            <UserActions 
+              userUID={user.UID} 
+              currentUserUID={userUID}
+              onActionComplete={handleActionComplete}
+            />
           </div>
         )}
       </CardContent>
@@ -293,7 +278,7 @@ const Dashboard = ({ userUID, setIsLoggedIn }: DashboardProps) => {
     <div className="text-center py-20">
       <div className="relative mx-auto mb-6 w-20 h-20">
         <div className="absolute inset-0 bg-gradient-to-br from-violet-500/20 to-purple-500/20 rounded-full blur-xl"></div>
-        <div className="relative w-20 h-20 bg-white/5 backdrop-blur-xl rounded-full flex items-center justify-center border border-white/10">
+        <div className="relative w-20 h-20 bg-white/10 backdrop-blur-xl rounded-full flex items-center justify-center border border-white/20">
           <Icon className="w-8 h-8 text-white/60" />
         </div>
       </div>
