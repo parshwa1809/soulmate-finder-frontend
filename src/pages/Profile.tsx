@@ -33,14 +33,16 @@ const ProfilePage = () => {
   };
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-purple-600 via-violet-600 to-purple-800">
+    <div className="min-h-screen bg-gradient-to-br from-slate-900 via-purple-900 to-slate-900">
+      <div className="absolute inset-0 bg-[radial-gradient(circle_at_50%_50%,rgba(139,92,246,0.1),transparent_50%)]"></div>
+      
       {/* Header */}
-      <div className="border-b border-white/20 bg-white/10 backdrop-blur-md sticky top-0 z-50">
-        <div className="max-w-7xl mx-auto px-6 py-4 flex items-center justify-between">
+      <div className="relative z-10 border-b border-white/10 bg-white/5 backdrop-blur-2xl sticky top-0">
+        <div className="max-w-7xl mx-auto px-6 py-6 flex items-center justify-between">
           <Button 
             onClick={handleBack}
             variant="ghost" 
-            className="text-white hover:bg-white/10"
+            className="text-white/80 hover:text-white hover:bg-white/10"
           >
             <ArrowLeft className="w-4 h-4 mr-2" />
             Back to Dashboard
@@ -53,7 +55,7 @@ const ProfilePage = () => {
           <Button 
             onClick={handleLogout}
             variant="outline"
-            className="border-red-300/30 text-red-100 hover:bg-red-500/20"
+            className="border-red-400/30 bg-red-500/10 text-red-200 hover:bg-red-500/20"
           >
             <LogOut className="w-4 h-4 mr-2" />
             Logout
@@ -62,7 +64,7 @@ const ProfilePage = () => {
       </div>
 
       {/* Profile Content */}
-      <div className="max-w-7xl mx-auto px-6 py-8">
+      <div className="relative z-10 max-w-7xl mx-auto px-6 py-8">
         {isEditing ? (
           <EditProfile onCancel={handleCancelEdit} onSave={handleSaveEdit} />
         ) : (

@@ -125,60 +125,67 @@ const Login = ({ setIsLoggedIn, setUserUID }: LoginProps) => {
   };
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-purple-600 via-violet-600 to-purple-800 flex items-center justify-center p-4">
-      <Card className="w-full max-w-md bg-white/10 backdrop-blur-md shadow-2xl border-white/20">
-        <CardHeader className="text-center space-y-4">
-          <div className="mx-auto w-12 h-12 bg-gradient-to-r from-violet-500 to-purple-500 rounded-full flex items-center justify-center">
-            <Heart className="w-6 h-6 text-white" />
+    <div className="min-h-screen bg-gradient-to-br from-slate-900 via-purple-900 to-slate-900 flex items-center justify-center p-4">
+      <div className="absolute inset-0 bg-gradient-to-br from-slate-900 via-purple-900 to-slate-900">
+        <div className="absolute inset-0 bg-[radial-gradient(circle_at_50%_50%,rgba(139,92,246,0.1),transparent_50%)]"></div>
+      </div>
+      
+      <Card className="relative z-10 w-full max-w-md">
+        <CardHeader className="text-center space-y-6">
+          <div className="relative mx-auto">
+            <div className="absolute -inset-2 bg-gradient-to-r from-violet-500 to-purple-500 rounded-full blur opacity-30"></div>
+            <div className="relative w-16 h-16 bg-gradient-to-r from-violet-500 to-purple-500 rounded-full flex items-center justify-center shadow-2xl">
+              <Heart className="w-8 h-8 text-white" />
+            </div>
           </div>
           <div>
-            <CardTitle className="text-2xl font-semibold text-white">
+            <CardTitle className="text-3xl font-bold text-white mb-2">
               Welcome Back
             </CardTitle>
-            <CardDescription className="text-white/70 mt-2">
+            <CardDescription className="text-white/60 font-medium">
               Sign in to find your perfect match
             </CardDescription>
           </div>
         </CardHeader>
         <CardContent className="space-y-6">
-          <form onSubmit={handleLogin} className="space-y-4">
-            <div className="space-y-2">
-              <Label htmlFor="email" className="text-sm font-medium text-white">
+          <form onSubmit={handleLogin} className="space-y-6">
+            <div className="space-y-3">
+              <Label htmlFor="email" className="text-sm font-medium text-white/90">
                 Email Address
               </Label>
               <div className="relative">
-                <Mail className="absolute left-3 top-3 h-4 w-4 text-white/60" />
+                <Mail className="absolute left-4 top-1/2 transform -translate-y-1/2 h-4 w-4 text-white/50" />
                 <Input
                   id="email"
                   type="email"
                   placeholder="Enter your email"
                   value={email}
                   onChange={(e) => setEmail(e.target.value)}
-                  className="pl-10 h-11"
+                  className="pl-12"
                   required
                 />
               </div>
             </div>
 
-            <div className="space-y-2">
-              <Label htmlFor="password" className="text-sm font-medium text-white">
+            <div className="space-y-3">
+              <Label htmlFor="password" className="text-sm font-medium text-white/90">
                 Password
               </Label>
               <div className="relative">
-                <Lock className="absolute left-3 top-3 h-4 w-4 text-white/60" />
+                <Lock className="absolute left-4 top-1/2 transform -translate-y-1/2 h-4 w-4 text-white/50" />
                 <Input
                   id="password"
                   type={showPassword ? "text" : "password"}
                   placeholder="Enter your password"
                   value={password}
                   onChange={(e) => setPassword(e.target.value)}
-                  className="pl-10 pr-10 h-11"
+                  className="pl-12 pr-12"
                   required
                 />
                 <button
                   type="button"
                   onClick={() => setShowPassword(!showPassword)}
-                  className="absolute right-3 top-3 text-white/60 hover:text-white"
+                  className="absolute right-4 top-1/2 transform -translate-y-1/2 text-white/50 hover:text-white/80 transition-colors"
                 >
                   {showPassword ? <EyeOff className="h-4 w-4" /> : <Eye className="h-4 w-4" />}
                 </button>
@@ -186,7 +193,7 @@ const Login = ({ setIsLoggedIn, setUserUID }: LoginProps) => {
             </div>
 
             {error && (
-              <div className="text-red-200 text-sm text-center bg-red-500/20 p-3 rounded-md border border-red-300/30">
+              <div className="bg-red-500/10 border border-red-500/20 text-red-200 text-sm p-4 rounded-xl backdrop-blur-xl">
                 {error}
               </div>
             )}
@@ -194,16 +201,16 @@ const Login = ({ setIsLoggedIn, setUserUID }: LoginProps) => {
             <Button
               type="submit"
               disabled={isLoading}
-              className="w-full h-11 bg-gradient-to-r from-violet-500 to-purple-500 hover:from-violet-600 hover:to-purple-600 text-white font-medium"
+              className="w-full h-12 text-base font-semibold"
             >
               {isLoading ? "Signing In..." : "Sign In"}
             </Button>
 
-            <div className="text-center">
-              <span className="text-white/70">Don't have an account? </span>
+            <div className="text-center pt-4">
+              <span className="text-white/60 font-medium">Don't have an account? </span>
               <Link 
                 to="/register" 
-                className="text-violet-200 hover:text-white font-medium transition-colors"
+                className="text-violet-300 hover:text-violet-200 font-semibold transition-colors hover:underline"
               >
                 Sign up
               </Link>
