@@ -5,7 +5,7 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/com
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Badge } from "@/components/ui/badge";
-import { Heart, Bell, Clock, Users, User, LogOut } from "lucide-react";
+import { Heart, Bell, Clock, Users, User, LogOut, Star } from "lucide-react";
 import { config } from "../config/api";
 import UserActions from "./UserActions";
 import ProfileView from "./ProfileView";
@@ -22,6 +22,7 @@ interface User {
   profilePicture?: string;
   bio?: string;
   images?: string[];
+  kundliScore?: number;
 }
 
 interface DashboardProps {
@@ -42,7 +43,7 @@ const Dashboard = ({ userUID, setIsLoggedIn }: DashboardProps) => {
     loadUserData();
   }, []);
 
-  const transformUserData = (apiData: any): User => {
+  const transformUserData = (apiData: any, kundliScore?: number): User => {
     // Parse hobbies if it's a JSON string
     let hobbies = '';
     if (apiData.HOBBIES) {
@@ -114,7 +115,8 @@ const Dashboard = ({ userUID, setIsLoggedIn }: DashboardProps) => {
       hobbies: hobbies,
       profilePicture: profilePicture,
       bio: apiData.BIO || apiData.bio,
-      images: images
+      images: images,
+      kundliScore: kundliScore
     };
   };
 
@@ -160,7 +162,8 @@ const Dashboard = ({ userUID, setIsLoggedIn }: DashboardProps) => {
       const userPromises = userList.map(async (item) => {
         // Handle both array format [UID, score, date, ...] and object format
         const uid = Array.isArray(item) ? item[0] : (item.UID || item);
-        console.log(`Fetching user data for UID: ${uid}`);
+        const kundliScore = Array.isArray(item) && item.length > 1 ? item[1] : undefined;
+        console.log(`Fetching user data for UID: ${uid}, Kundli Score: ${kundliScore}`);
         
         const response = await fetch(`${config.URL}${config.ENDPOINTS.GET_PROFILE}/${uid}`, {
           method: 'GET',
@@ -173,7 +176,7 @@ const Dashboard = ({ userUID, setIsLoggedIn }: DashboardProps) => {
         if (response.ok) {
           const userData = await response.json();
           console.log(`Successfully fetched user data for ${uid}:`, userData);
-          return transformUserData(userData);
+          return transformUserData(userData, kundliScore);
         } else {
           console.error(`Failed to fetch user ${uid}, status: ${response.status}`);
         }
@@ -239,9 +242,17 @@ const Dashboard = ({ userUID, setIsLoggedIn }: DashboardProps) => {
               </p>
             )}
             {user.age && (
-              <p className="text-sm text-white/60 mb-3">
+              <p className="text-sm text-white/60 mb-1">
                 🎂 {user.age} years old
               </p>
+            )}
+            {user.kundliScore !== undefined && (
+              <div className="flex items-center mb-2">
+                <Star className="w-4 h-4 text-yellow-400 mr-1" />
+                <span className="text-sm text-white/70 font-medium">
+                  Compatibility: {user.kundliScore}%
+                </span>
+              </div>
             )}
             {user.hobbies && (
               <div className="space-y-2">
@@ -335,8 +346,8 @@ const Dashboard = ({ userUID, setIsLoggedIn }: DashboardProps) => {
               </div>
             </div>
             <div>
-              <h1 className="text-2xl font-bold text-white tracking-tight">Lovable</h1>
-              <p className="text-white/60 text-sm font-medium">Discover meaningful connections</p>
+              <h1 className="text-2xl font-bold text-white tracking-tight">Align</h1>
+              <p className="text-white/60 text-sm font-medium">Where cosmic compatibility meets modern connection</p>
             </div>
           </div>
           <div className="flex gap-3">
@@ -418,7 +429,7 @@ const Dashboard = ({ userUID, setIsLoggedIn }: DashboardProps) => {
                   <div>
                     <CardTitle className="text-white text-xl font-bold">Discover New People</CardTitle>
                     <CardDescription className="text-white/60 font-medium mt-1">
-                      Curated profiles that match your interests
+                      Curated profiles that match your cosmic compatibility
                     </CardDescription>
                   </div>
                 </div>

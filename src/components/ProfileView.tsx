@@ -1,10 +1,9 @@
-
 import { Card, CardContent } from "@/components/ui/card";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Carousel, CarouselContent, CarouselItem, CarouselNext, CarouselPrevious } from "@/components/ui/carousel";
-import { User, MapPin, Calendar, ArrowLeft, Camera } from "lucide-react";
+import { User, MapPin, Calendar, ArrowLeft, Camera, Star } from "lucide-react";
 
 interface User {
   UID: string;
@@ -18,6 +17,7 @@ interface User {
   profilePicture?: string;
   bio?: string;
   images?: string[];
+  kundliScore?: number;
 }
 
 interface ProfileViewProps {
@@ -66,6 +66,12 @@ const ProfileView = ({ user, onBack, children }: ProfileViewProps) => {
                 <div className="flex items-center bg-white/10 backdrop-blur-xl rounded-full px-4 py-2 border border-white/20">
                   <MapPin className="w-4 h-4 mr-2" />
                   <span className="font-medium">{user.city}, {user.country}</span>
+                </div>
+              )}
+              {user.kundliScore !== undefined && (
+                <div className="flex items-center bg-gradient-to-r from-yellow-500/20 to-orange-500/20 backdrop-blur-xl rounded-full px-4 py-2 border border-yellow-500/30">
+                  <Star className="w-4 h-4 mr-2 text-yellow-400" />
+                  <span className="font-medium text-yellow-200">Compatibility: {user.kundliScore}%</span>
                 </div>
               )}
             </div>
