@@ -33,27 +33,27 @@ const ProfilePage = () => {
   };
 
   return (
-    <div className="min-h-screen bg-background">
+    <div className="min-h-screen bg-gradient-to-br from-purple-600 via-violet-600 to-purple-800">
       {/* Header */}
-      <div className="border-b border-border bg-card/50 backdrop-blur-sm sticky top-0 z-50">
+      <div className="border-b border-white/20 bg-white/10 backdrop-blur-md sticky top-0 z-50">
         <div className="max-w-7xl mx-auto px-6 py-4 flex items-center justify-between">
           <Button 
             onClick={handleBack}
             variant="ghost" 
-            className="text-muted-foreground hover:text-foreground"
+            className="text-white hover:bg-white/10"
           >
             <ArrowLeft className="w-4 h-4 mr-2" />
             Back to Dashboard
           </Button>
           
-          <h1 className="text-xl font-semibold text-foreground">
+          <h1 className="text-xl font-semibold text-white">
             {isEditing ? 'Edit Profile' : 'My Profile'}
           </h1>
           
           <Button 
             onClick={handleLogout}
             variant="outline"
-            className="border-destructive/20 text-destructive hover:bg-destructive/10"
+            className="border-red-300/30 text-red-100 hover:bg-red-500/20"
           >
             <LogOut className="w-4 h-4 mr-2" />
             Logout

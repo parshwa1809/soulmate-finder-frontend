@@ -1,4 +1,3 @@
-
 import { useState, useEffect } from "react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
@@ -162,8 +161,8 @@ const EditProfile = ({ onCancel, onSave }: EditProfileProps) => {
     return (
       <div className="flex items-center justify-center min-h-screen">
         <div className="text-center">
-          <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-orange-500 mx-auto mb-4"></div>
-          <p className="text-gray-600">Loading profile...</p>
+          <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-white mx-auto mb-4"></div>
+          <p className="text-white/80">Loading profile...</p>
         </div>
       </div>
     );
@@ -171,10 +170,10 @@ const EditProfile = ({ onCancel, onSave }: EditProfileProps) => {
 
   return (
     <div className="max-w-4xl mx-auto p-4">
-      <Card className="bg-white/80 backdrop-blur-sm border-0 shadow-lg">
+      <Card className="bg-white/10 backdrop-blur-md border-white/20 shadow-2xl">
         <CardHeader>
-          <CardTitle className="flex items-center text-gray-900">
-            <Camera className="w-5 h-5 mr-2 text-orange-500" />
+          <CardTitle className="flex items-center text-white">
+            <Camera className="w-5 h-5 mr-2 text-violet-300" />
             Upload Photos
           </CardTitle>
         </CardHeader>
@@ -182,9 +181,9 @@ const EditProfile = ({ onCancel, onSave }: EditProfileProps) => {
           <div className="space-y-6">
             {/* Profile Picture */}
             <div className="flex justify-center mb-6">
-              <Avatar className="w-24 h-24">
+              <Avatar className="w-24 h-24 ring-4 ring-white/20">
                 <AvatarImage src={existingImages?.[0]?.data ? `data:image/jpeg;base64,${existingImages[0].data}` : profileData.images?.[0]} />
-                <AvatarFallback className="bg-gradient-to-r from-orange-500 to-yellow-500 text-white text-2xl">
+                <AvatarFallback className="bg-gradient-to-r from-violet-500 to-purple-500 text-white text-2xl">
                   {profileData.NAME?.charAt(0) || profileData.name?.charAt(0) || <User className="w-8 h-8" />}
                 </AvatarFallback>
               </Avatar>
@@ -193,14 +192,14 @@ const EditProfile = ({ onCancel, onSave }: EditProfileProps) => {
             {/* Display existing images */}
             {existingImages.length > 0 && (
               <div className="space-y-2">
-                <Label>Current Photos ({existingImages.length})</Label>
+                <Label className="text-white">Current Photos ({existingImages.length})</Label>
                 <div className="grid grid-cols-2 md:grid-cols-3 gap-4">
                   {existingImages.map((image, index) => (
                     <div key={index} className="aspect-square relative">
                       <img
                         src={`data:image/jpeg;base64,${image.data}`}
                         alt={`Current ${index + 1}`}
-                        className="w-full h-full object-cover rounded"
+                        className="w-full h-full object-cover rounded border-2 border-white/20"
                       />
                     </div>
                   ))}
@@ -210,7 +209,7 @@ const EditProfile = ({ onCancel, onSave }: EditProfileProps) => {
 
             {/* New Image Upload Section */}
             <div className="space-y-2">
-              <Label>Add New Photos</Label>
+              <Label className="text-white">Add New Photos</Label>
               <ImageUpload images={newImages} onImagesChange={handleNewImagesChange} />
             </div>
 
@@ -220,7 +219,7 @@ const EditProfile = ({ onCancel, onSave }: EditProfileProps) => {
                 type="button"
                 variant="outline"
                 onClick={onCancel}
-                className="border-gray-200 text-gray-600 hover:bg-gray-50"
+                className="border-white/30 text-white hover:bg-white/10"
               >
                 <X className="w-4 h-4 mr-2" />
                 Cancel
@@ -229,7 +228,7 @@ const EditProfile = ({ onCancel, onSave }: EditProfileProps) => {
                 type="button"
                 onClick={handleSave}
                 disabled={isLoading || newImages.length === 0}
-                className="bg-orange-500 hover:bg-orange-600 text-white"
+                className="bg-gradient-to-r from-violet-500 to-purple-500 hover:from-violet-600 hover:to-purple-600 text-white"
               >
                 <Save className="w-4 h-4 mr-2" />
                 {isLoading ? 'Uploading...' : 'Upload Photos'}
