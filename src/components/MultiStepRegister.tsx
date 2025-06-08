@@ -224,30 +224,30 @@ const MultiStepRegister = () => {
           <div className="space-y-6">
             <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
               <div className="space-y-2">
-                <Label htmlFor="name" className="text-sm font-medium text-foreground">Full Name *</Label>
+                <Label htmlFor="name" className="text-sm font-medium text-white">Full Name *</Label>
                 <Input
                   id="name"
                   value={formData.name}
                   onChange={(e) => handleInputChange('name', e.target.value)}
-                  className="h-11 bg-background border-border focus:border-primary"
+                  className="h-11 bg-white/10 backdrop-blur-sm border-white/30 text-white placeholder:text-white/60 focus:border-white/50"
                   required
                 />
               </div>
 
               <div className="space-y-2">
-                <Label htmlFor="phone" className="text-sm font-medium text-foreground">Phone Number *</Label>
+                <Label htmlFor="phone" className="text-sm font-medium text-white">Phone Number *</Label>
                 <Input
                   id="phone"
                   value={formData.phone}
                   onChange={(e) => handleInputChange('phone', e.target.value)}
-                  className="h-11 bg-background border-border focus:border-primary"
+                  className="h-11 bg-white/10 backdrop-blur-sm border-white/30 text-white placeholder:text-white/60 focus:border-white/50"
                   required
                 />
               </div>
             </div>
 
             <div className="space-y-2">
-              <Label htmlFor="email" className="text-sm font-medium text-foreground">Email Address *</Label>
+              <Label htmlFor="email" className="text-sm font-medium text-white">Email Address *</Label>
               <div className="relative">
                 <Input
                   id="email"
@@ -259,40 +259,40 @@ const MultiStepRegister = () => {
                       handleEmailVerification(e.target.value);
                     }
                   }}
-                  className="h-11 pr-10 bg-background border-border focus:border-primary"
+                  className="h-11 pr-10 bg-white/10 backdrop-blur-sm border-white/30 text-white placeholder:text-white/60 focus:border-white/50"
                   required
                 />
                 {emailChecking && (
                   <div className="absolute right-3 top-3">
-                    <div className="animate-spin rounded-full h-5 w-5 border-b-2 border-primary"></div>
+                    <div className="animate-spin rounded-full h-5 w-5 border-b-2 border-white"></div>
                   </div>
                 )}
                 {!emailChecking && formData.email && emailVerified && (
-                  <Check className="absolute right-3 top-3 h-5 w-5 text-green-600" />
+                  <Check className="absolute right-3 top-3 h-5 w-5 text-green-400" />
                 )}
                 {!emailChecking && formData.email && !emailVerified && (
-                  <X className="absolute right-3 top-3 h-5 w-5 text-destructive" />
+                  <X className="absolute right-3 top-3 h-5 w-5 text-red-400" />
                 )}
               </div>
             </div>
 
             <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
               <div className="space-y-2">
-                <Label htmlFor="password" className="text-sm font-medium text-foreground">Password *</Label>
+                <Label htmlFor="password" className="text-sm font-medium text-white">Password *</Label>
                 <div className="relative">
                   <Input
                     id="password"
                     type={showPassword ? "text" : "password"}
                     value={formData.password}
                     onChange={(e) => handleInputChange('password', e.target.value)}
-                    className="h-11 pr-10 bg-background border-border focus:border-primary"
+                    className="h-11 pr-10 bg-white/10 backdrop-blur-sm border-white/30 text-white placeholder:text-white/60 focus:border-white/50"
                     required
                     minLength={6}
                   />
                   <button
                     type="button"
                     onClick={() => setShowPassword(!showPassword)}
-                    className="absolute right-3 top-3 text-muted-foreground hover:text-foreground"
+                    className="absolute right-3 top-3 text-white/70 hover:text-white"
                   >
                     {showPassword ? <EyeOff className="h-5 w-5" /> : <Eye className="h-5 w-5" />}
                   </button>
@@ -300,33 +300,33 @@ const MultiStepRegister = () => {
               </div>
 
               <div className="space-y-2">
-                <Label htmlFor="confirmPassword" className="text-sm font-medium text-foreground">Confirm Password *</Label>
+                <Label htmlFor="confirmPassword" className="text-sm font-medium text-white">Confirm Password *</Label>
                 <div className="relative">
                   <Input
                     id="confirmPassword"
                     type={showConfirmPassword ? "text" : "password"}
                     value={formData.confirmPassword}
                     onChange={(e) => handleInputChange('confirmPassword', e.target.value)}
-                    className="h-11 pr-10 bg-background border-border focus:border-primary"
+                    className="h-11 pr-10 bg-white/10 backdrop-blur-sm border-white/30 text-white placeholder:text-white/60 focus:border-white/50"
                     required
                     minLength={6}
                   />
                   <button
                     type="button"
                     onClick={() => setShowConfirmPassword(!showConfirmPassword)}
-                    className="absolute right-3 top-3 text-muted-foreground hover:text-foreground"
+                    className="absolute right-3 top-3 text-white/70 hover:text-white"
                   >
                     {showConfirmPassword ? <EyeOff className="h-5 w-5" /> : <Eye className="h-5 w-5" />}
                   </button>
                   {formData.confirmPassword && (
                     <div className="absolute right-12 top-3">
-                      {passwordsMatch && <Check className="h-5 w-5 text-green-600" />}
-                      {passwordsDontMatch && <X className="h-5 w-5 text-destructive" />}
+                      {passwordsMatch && <Check className="h-5 w-5 text-green-400" />}
+                      {passwordsDontMatch && <X className="h-5 w-5 text-red-400" />}
                     </div>
                   )}
                 </div>
                 {passwordsDontMatch && (
-                  <p className="text-sm text-destructive">Passwords do not match</p>
+                  <p className="text-sm text-red-400">Passwords do not match</p>
                 )}
               </div>
             </div>
@@ -338,14 +338,14 @@ const MultiStepRegister = () => {
           <div className="space-y-6">
             <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
               <div className="space-y-2">
-                <Label htmlFor="country" className="text-sm font-medium text-foreground">Country *</Label>
+                <Label htmlFor="country" className="text-sm font-medium text-white">Country *</Label>
                 <Select value={formData.country} onValueChange={(value) => handleInputChange('country', value)}>
-                  <SelectTrigger className="h-11 bg-background border-border">
-                    <SelectValue placeholder="Select your country" />
+                  <SelectTrigger className="h-11 bg-white/10 backdrop-blur-sm border-white/30 text-white">
+                    <SelectValue placeholder="Select your country" className="text-white/60" />
                   </SelectTrigger>
-                  <SelectContent className="max-h-[200px] z-50 bg-card border-border">
+                  <SelectContent className="max-h-[200px] z-50 bg-purple-900/95 backdrop-blur-sm border-white/30">
                     {countries.map((country) => (
-                      <SelectItem key={country} value={country}>
+                      <SelectItem key={country} value={country} className="text-white hover:bg-white/10">
                         {country}
                       </SelectItem>
                     ))}
@@ -354,18 +354,18 @@ const MultiStepRegister = () => {
               </div>
 
               <div className="space-y-2">
-                <Label htmlFor="city" className="text-sm font-medium text-foreground">City *</Label>
+                <Label htmlFor="city" className="text-sm font-medium text-white">City *</Label>
                 <Select 
                   value={formData.city} 
                   onValueChange={(value) => handleInputChange('city', value)}
                   disabled={!formData.country}
                 >
-                  <SelectTrigger className="h-11 bg-background border-border">
-                    <SelectValue placeholder={formData.country ? "Select your city" : "Select country first"} />
+                  <SelectTrigger className="h-11 bg-white/10 backdrop-blur-sm border-white/30 text-white">
+                    <SelectValue placeholder={formData.country ? "Select your city" : "Select country first"} className="text-white/60" />
                   </SelectTrigger>
-                  <SelectContent className="max-h-[200px] z-50 bg-card border-border">
+                  <SelectContent className="max-h-[200px] z-50 bg-purple-900/95 backdrop-blur-sm border-white/30">
                     {availableCities.map((city) => (
-                      <SelectItem key={city} value={city}>
+                      <SelectItem key={city} value={city} className="text-white hover:bg-white/10">
                         {city}
                       </SelectItem>
                     ))}
@@ -375,12 +375,12 @@ const MultiStepRegister = () => {
             </div>
 
             <div className="space-y-2">
-              <Label htmlFor="profession" className="text-sm font-medium text-foreground">Profession *</Label>
+              <Label htmlFor="profession" className="text-sm font-medium text-white">Profession *</Label>
               <Input
                 id="profession"
                 value={formData.profession}
                 onChange={(e) => handleInputChange('profession', e.target.value)}
-                className="h-11 bg-background border-border focus:border-primary"
+                className="h-11 bg-white/10 backdrop-blur-sm border-white/30 text-white placeholder:text-white/60 focus:border-white/50"
                 placeholder="e.g., Software Engineer, Doctor, Teacher"
                 required
               />
@@ -393,14 +393,14 @@ const MultiStepRegister = () => {
           <div className="space-y-6">
             <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
               <div className="space-y-2">
-                <Label htmlFor="birth_country" className="text-sm font-medium text-foreground">Country of Birth *</Label>
+                <Label htmlFor="birth_country" className="text-sm font-medium text-white">Country of Birth *</Label>
                 <Select value={formData.birth_country} onValueChange={(value) => handleInputChange('birth_country', value)}>
-                  <SelectTrigger className="h-11 bg-background border-border">
-                    <SelectValue placeholder="Select country of birth" />
+                  <SelectTrigger className="h-11 bg-white/10 backdrop-blur-sm border-white/30 text-white">
+                    <SelectValue placeholder="Select country of birth" className="text-white/60" />
                   </SelectTrigger>
-                  <SelectContent className="max-h-[200px] z-50 bg-card border-border">
+                  <SelectContent className="max-h-[200px] z-50 bg-purple-900/95 backdrop-blur-sm border-white/30">
                     {countries.map((country) => (
-                      <SelectItem key={country} value={country}>
+                      <SelectItem key={country} value={country} className="text-white hover:bg-white/10">
                         {country}
                       </SelectItem>
                     ))}
@@ -409,18 +409,18 @@ const MultiStepRegister = () => {
               </div>
 
               <div className="space-y-2">
-                <Label htmlFor="birth_city" className="text-sm font-medium text-foreground">City of Birth *</Label>
+                <Label htmlFor="birth_city" className="text-sm font-medium text-white">City of Birth *</Label>
                 <Select 
                   value={formData.birth_city} 
                   onValueChange={(value) => handleInputChange('birth_city', value)}
                   disabled={!formData.birth_country}
                 >
-                  <SelectTrigger className="h-11 bg-background border-border">
-                    <SelectValue placeholder={formData.birth_country ? "Select city of birth" : "Select country first"} />
+                  <SelectTrigger className="h-11 bg-white/10 backdrop-blur-sm border-white/30 text-white">
+                    <SelectValue placeholder={formData.birth_country ? "Select city of birth" : "Select country first"} className="text-white/60" />
                   </SelectTrigger>
-                  <SelectContent className="max-h-[200px] z-50 bg-card border-border">
+                  <SelectContent className="max-h-[200px] z-50 bg-purple-900/95 backdrop-blur-sm border-white/30">
                     {availableBirthCities.map((city) => (
-                      <SelectItem key={city} value={city}>
+                      <SelectItem key={city} value={city} className="text-white hover:bg-white/10">
                         {city}
                       </SelectItem>
                     ))}
@@ -431,7 +431,7 @@ const MultiStepRegister = () => {
 
             <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
               <div className="space-y-2">
-                <Label className="text-sm font-medium text-foreground">Date of Birth *</Label>
+                <Label className="text-sm font-medium text-white">Date of Birth *</Label>
                 <DateRoller
                   value={formData.dob}
                   onChange={(date) => handleInputChange('dob', date)}
@@ -440,41 +440,41 @@ const MultiStepRegister = () => {
               </div>
 
               <div className="space-y-2">
-                <Label htmlFor="tob" className="text-sm font-medium text-foreground">Time of Birth *</Label>
+                <Label htmlFor="tob" className="text-sm font-medium text-white">Time of Birth *</Label>
                 <div className="relative">
                   <Input
                     id="tob"
                     type="time"
                     value={formData.tob}
                     onChange={(e) => handleInputChange('tob', e.target.value)}
-                    className="h-11 pr-10 bg-background border-border focus:border-primary"
+                    className="h-11 pr-10 bg-white/10 backdrop-blur-sm border-white/30 text-white placeholder:text-white/60 focus:border-white/50"
                     placeholder="14:30"
                     required
                   />
-                  <Clock className="absolute right-3 top-3 h-5 w-5 text-muted-foreground pointer-events-none" />
+                  <Clock className="absolute right-3 top-3 h-5 w-5 text-white/70 pointer-events-none" />
                 </div>
-                <p className="text-xs text-muted-foreground">Format: 24-hour time (e.g., 14:30 for 2:30 PM)</p>
+                <p className="text-xs text-white/70">Format: 24-hour time (e.g., 14:30 for 2:30 PM)</p>
               </div>
             </div>
 
             <div className="space-y-2">
-              <Label className="text-sm font-medium text-foreground">Gender *</Label>
+              <Label className="text-sm font-medium text-white">Gender *</Label>
               <RadioGroup
                 value={formData.gender}
                 onValueChange={(value) => handleInputChange('gender', value)}
                 className="flex flex-row space-x-6 mt-2"
               >
                 <div className="flex items-center space-x-2">
-                  <RadioGroupItem value="male" id="male" />
-                  <Label htmlFor="male" className="text-sm text-foreground">Male</Label>
+                  <RadioGroupItem value="male" id="male" className="border-white/30 text-white" />
+                  <Label htmlFor="male" className="text-sm text-white">Male</Label>
                 </div>
                 <div className="flex items-center space-x-2">
-                  <RadioGroupItem value="female" id="female" />
-                  <Label htmlFor="female" className="text-sm text-foreground">Female</Label>
+                  <RadioGroupItem value="female" id="female" className="border-white/30 text-white" />
+                  <Label htmlFor="female" className="text-sm text-white">Female</Label>
                 </div>
                 <div className="flex items-center space-x-2">
-                  <RadioGroupItem value="other" id="other" />
-                  <Label htmlFor="other" className="text-sm text-foreground">Other</Label>
+                  <RadioGroupItem value="other" id="other" className="border-white/30 text-white" />
+                  <Label htmlFor="other" className="text-sm text-white">Other</Label>
                 </div>
               </RadioGroup>
             </div>
@@ -485,9 +485,9 @@ const MultiStepRegister = () => {
         return (
           <div className="space-y-6">
             <div className="space-y-2">
-              <Label className="text-sm font-medium text-foreground">Hobbies & Interests *</Label>
-              <p className="text-sm text-muted-foreground">Select at least one hobby or interest</p>
-              <div className="grid grid-cols-2 lg:grid-cols-3 gap-2 max-h-64 overflow-y-auto p-3 border border-border rounded-md bg-background">
+              <Label className="text-sm font-medium text-white">Hobbies & Interests *</Label>
+              <p className="text-sm text-white/70">Select at least one hobby or interest</p>
+              <div className="grid grid-cols-2 lg:grid-cols-3 gap-2 max-h-64 overflow-y-auto p-3 border border-white/30 rounded-md bg-white/10 backdrop-blur-sm">
                 {hobbiesOptions.map((hobby) => (
                   <div key={hobby} className="flex items-center space-x-2">
                     <input
@@ -495,13 +495,13 @@ const MultiStepRegister = () => {
                       id={hobby}
                       checked={formData.hobbies.includes(hobby)}
                       onChange={() => handleHobbyToggle(hobby)}
-                      className="rounded border-border"
+                      className="rounded border-white/30 bg-white/10 text-violet-500"
                     />
-                    <Label htmlFor={hobby} className="text-sm text-foreground">{hobby}</Label>
+                    <Label htmlFor={hobby} className="text-sm text-white">{hobby}</Label>
                   </div>
                 ))}
               </div>
-              <p className="text-sm text-muted-foreground">Selected: {formData.hobbies.length} hobbies</p>
+              <p className="text-sm text-white/70">Selected: {formData.hobbies.length} hobbies</p>
             </div>
           </div>
         );
@@ -519,17 +519,17 @@ const MultiStepRegister = () => {
   };
 
   return (
-    <div className="min-h-screen bg-background flex items-center justify-center p-4">
-      <Card className="w-full max-w-4xl bg-card shadow-lg border-border">
+    <div className="min-h-screen bg-gradient-to-br from-purple-600 via-violet-600 to-purple-800 flex items-center justify-center p-4">
+      <Card className="w-full max-w-4xl bg-white/10 backdrop-blur-md shadow-lg border-white/20">
         <CardHeader className="text-center space-y-4 px-6">
-          <div className="mx-auto w-12 h-12 bg-primary rounded-full flex items-center justify-center">
-            <Heart className="w-6 h-6 text-primary-foreground" />
+          <div className="mx-auto w-12 h-12 bg-gradient-to-r from-violet-500 to-purple-500 rounded-full flex items-center justify-center">
+            <Heart className="w-6 h-6 text-white" />
           </div>
           <div>
-            <CardTitle className="text-2xl font-semibold text-foreground">
+            <CardTitle className="text-2xl font-semibold text-white">
               Join Love Bhagya
             </CardTitle>
-            <CardDescription className="text-muted-foreground mt-2">
+            <CardDescription className="text-white/70 mt-2">
               Create your profile and find your soulmate
             </CardDescription>
           </div>
@@ -543,8 +543,8 @@ const MultiStepRegister = () => {
                     className={cn(
                       "w-8 h-8 rounded-full flex items-center justify-center text-sm font-medium",
                       currentStep >= step.id
-                        ? "bg-primary text-primary-foreground"
-                        : "bg-muted text-muted-foreground"
+                        ? "bg-gradient-to-r from-violet-500 to-purple-500 text-white"
+                        : "bg-white/20 text-white/70"
                     )}
                   >
                     {currentStep > step.id ? <Check className="w-4 h-4" /> : step.id}
@@ -553,7 +553,7 @@ const MultiStepRegister = () => {
                     <div
                       className={cn(
                         "w-12 h-0.5 mx-2",
-                        currentStep > step.id ? "bg-primary" : "bg-muted"
+                        currentStep > step.id ? "bg-gradient-to-r from-violet-500 to-purple-500" : "bg-white/20"
                       )}
                     />
                   )}
@@ -563,8 +563,8 @@ const MultiStepRegister = () => {
           </div>
           
           <div className="text-center">
-            <h3 className="font-medium text-foreground">{steps[currentStep - 1].title}</h3>
-            <p className="text-sm text-muted-foreground">{steps[currentStep - 1].description}</p>
+            <h3 className="font-medium text-white">{steps[currentStep - 1].title}</h3>
+            <p className="text-sm text-white/70">{steps[currentStep - 1].description}</p>
           </div>
         </CardHeader>
         
@@ -573,7 +573,7 @@ const MultiStepRegister = () => {
             {renderStepContent()}
 
             {error && (
-              <div className="text-destructive text-sm text-center bg-destructive/10 p-3 rounded-md border border-destructive/20">
+              <div className="text-red-300 text-sm text-center bg-red-500/20 p-3 rounded-md border border-red-300/30">
                 {error}
               </div>
             )}
@@ -585,7 +585,7 @@ const MultiStepRegister = () => {
                 variant="outline"
                 onClick={prevStep}
                 disabled={currentStep === 1}
-                className="flex items-center gap-2"
+                className="flex items-center gap-2 border-white/30 bg-white/10 text-white hover:bg-white/20"
               >
                 <ChevronLeft className="w-4 h-4" />
                 Previous
@@ -596,7 +596,7 @@ const MultiStepRegister = () => {
                   type="button"
                   onClick={nextStep}
                   disabled={!validateStep(currentStep)}
-                  className="flex items-center gap-2"
+                  className="flex items-center gap-2 bg-gradient-to-r from-violet-500 to-purple-500 text-white hover:from-violet-600 hover:to-purple-600"
                 >
                   Next
                   <ChevronRight className="w-4 h-4" />
@@ -606,7 +606,7 @@ const MultiStepRegister = () => {
                   type="button"
                   onClick={handleSubmit}
                   disabled={isLoading || !validateStep(5)}
-                  className="bg-primary hover:bg-primary/90 text-primary-foreground font-medium"
+                  className="bg-gradient-to-r from-violet-500 to-purple-500 hover:from-violet-600 hover:to-purple-600 text-white font-medium"
                 >
                   {isLoading ? "Creating Account..." : "Create Account"}
                 </Button>
@@ -614,10 +614,10 @@ const MultiStepRegister = () => {
             </div>
 
             <div className="text-center pt-4">
-              <span className="text-muted-foreground">Already have an account? </span>
+              <span className="text-white/70">Already have an account? </span>
               <Link 
                 to="/login" 
-                className="text-primary hover:text-primary/80 font-medium transition-colors"
+                className="text-violet-300 hover:text-violet-200 font-medium transition-colors"
               >
                 Sign in
               </Link>
