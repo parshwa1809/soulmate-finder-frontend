@@ -1,4 +1,3 @@
-
 import { useState, useEffect } from "react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
@@ -444,7 +443,7 @@ const Profile = ({ onEdit }: ProfileProps) => {
           {/* Enhanced Main Content */}
           <div className="lg:col-span-2 space-y-8">
             {/* Enhanced Personal Information */}
-            <Card className="border-0 shadow-2xl bg-white/5 backdrop-blur-xl border border-white/10 hover:shadow-3xl transition-all duration-500 group">
+            <Card className="border-0 shadow-2xl bg-white/10 backdrop-blur-xl border border-white/20 hover:shadow-3xl transition-all duration-500 group">
               <CardHeader className="pb-6">
                 <CardTitle className="flex items-center text-2xl bg-gradient-to-r from-white to-violet-200 bg-clip-text text-transparent">
                   <div className="p-3 bg-violet-500/20 rounded-xl mr-4 group-hover:bg-violet-500/30 transition-colors">
@@ -455,39 +454,39 @@ const Profile = ({ onEdit }: ProfileProps) => {
               </CardHeader>
               <CardContent className="space-y-8">
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
-                  <div className="bg-white/5 backdrop-blur-xl rounded-xl p-6 border border-white/10 hover:bg-white/10 transition-all duration-300">
+                  <div className="bg-white/10 backdrop-blur-xl rounded-xl p-6 border border-white/20 hover:bg-white/15 transition-all duration-300">
                     <div className="flex items-center gap-3 mb-3">
                       <Mail className="w-5 h-5 text-violet-400" />
-                      <label className="text-sm font-bold text-violet-300 uppercase tracking-wider">Email</label>
+                      <label className="text-sm font-bold text-violet-200 uppercase tracking-wider">Email</label>
                     </div>
                     <p className="text-lg text-white font-medium">{profileData?.email}</p>
                   </div>
                   
                   {profileData?.gender && (
-                    <div className="bg-white/5 backdrop-blur-xl rounded-xl p-6 border border-white/10 hover:bg-white/10 transition-all duration-300">
+                    <div className="bg-white/10 backdrop-blur-xl rounded-xl p-6 border border-white/20 hover:bg-white/15 transition-all duration-300">
                       <div className="flex items-center gap-3 mb-3">
                         <User className="w-5 h-5 text-pink-400" />
-                        <label className="text-sm font-bold text-pink-300 uppercase tracking-wider">Gender</label>
+                        <label className="text-sm font-bold text-pink-200 uppercase tracking-wider">Gender</label>
                       </div>
                       <p className="text-lg text-white font-medium capitalize">{profileData.gender}</p>
                     </div>
                   )}
 
                   {profileData?.dob && (
-                    <div className="bg-white/5 backdrop-blur-xl rounded-xl p-6 border border-white/10 hover:bg-white/10 transition-all duration-300">
+                    <div className="bg-white/10 backdrop-blur-xl rounded-xl p-6 border border-white/20 hover:bg-white/15 transition-all duration-300">
                       <div className="flex items-center gap-3 mb-3">
                         <Calendar className="w-5 h-5 text-blue-400" />
-                        <label className="text-sm font-bold text-blue-300 uppercase tracking-wider">Date of Birth</label>
+                        <label className="text-sm font-bold text-blue-200 uppercase tracking-wider">Date of Birth</label>
                       </div>
                       <p className="text-lg text-white font-medium">{new Date(profileData.dob).toLocaleDateString()}</p>
                     </div>
                   )}
 
                   {profileData?.birth_city && profileData.birth_country && (
-                    <div className="bg-white/5 backdrop-blur-xl rounded-xl p-6 border border-white/10 hover:bg-white/10 transition-all duration-300">
+                    <div className="bg-white/10 backdrop-blur-xl rounded-xl p-6 border border-white/20 hover:bg-white/15 transition-all duration-300">
                       <div className="flex items-center gap-3 mb-3">
                         <Globe className="w-5 h-5 text-emerald-400" />
-                        <label className="text-sm font-bold text-emerald-300 uppercase tracking-wider">Birth Place</label>
+                        <label className="text-sm font-bold text-emerald-200 uppercase tracking-wider">Birth Place</label>
                       </div>
                       <p className="text-lg text-white font-medium">{profileData.birth_city}, {profileData.birth_country}</p>
                     </div>
@@ -496,8 +495,8 @@ const Profile = ({ onEdit }: ProfileProps) => {
               </CardContent>
             </Card>
 
-            {/* Enhanced Photo Gallery */}
-            <Card className="border-0 shadow-2xl bg-white/5 backdrop-blur-xl border border-white/10 hover:shadow-3xl transition-all duration-500 group">
+            {/* Enhanced Photo Gallery with Better Visibility */}
+            <Card className="border-0 shadow-2xl bg-white/10 backdrop-blur-xl border border-white/20 hover:shadow-3xl transition-all duration-500 group">
               <CardHeader className="pb-6">
                 <CardTitle className="flex items-center justify-between text-2xl bg-gradient-to-r from-white to-violet-200 bg-clip-text text-transparent">
                   <div className="flex items-center">
@@ -507,7 +506,7 @@ const Profile = ({ onEdit }: ProfileProps) => {
                     Photo Gallery
                   </div>
                   {profileData?.images && profileData.images.length > 0 && (
-                    <Badge variant="secondary" className="bg-gradient-to-r from-violet-500/20 to-purple-500/20 text-violet-200 border-violet-400/30">
+                    <Badge variant="secondary" className="bg-gradient-to-r from-violet-500/30 to-purple-500/30 text-white border-violet-400/50 font-semibold">
                       {profileData.images.length} photos
                     </Badge>
                   )}
@@ -520,8 +519,14 @@ const Profile = ({ onEdit }: ProfileProps) => {
                       if (!image || image.length === 0) return null;
                       
                       return (
-                        <div key={index} className="relative aspect-square overflow-hidden rounded-2xl bg-white/5 group cursor-pointer transform hover:scale-105 transition-all duration-500 shadow-lg hover:shadow-2xl">
-                          <div className="absolute inset-0 bg-gradient-to-br from-violet-500/20 to-purple-500/20 opacity-0 group-hover:opacity-100 transition-opacity duration-300 z-10"></div>
+                        <div key={index} className="relative aspect-square overflow-hidden rounded-2xl bg-slate-800/50 group cursor-pointer transform hover:scale-105 transition-all duration-500 shadow-xl hover:shadow-2xl border border-white/20">
+                          {/* Enhanced overlay for better visibility */}
+                          <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300 z-10"></div>
+                          <div className="absolute bottom-3 left-3 right-3 z-20 opacity-0 group-hover:opacity-100 transition-opacity duration-300">
+                            <p className="text-white text-sm font-semibold bg-black/30 backdrop-blur-sm rounded-lg px-3 py-1">
+                              Photo {index + 1}
+                            </p>
+                          </div>
                           <img
                             src={image}
                             alt={`Photo ${index + 1}`}
@@ -532,12 +537,13 @@ const Profile = ({ onEdit }: ProfileProps) => {
                               const parent = target.parentElement;
                               if (parent) {
                                 parent.innerHTML = `
-                                  <div class="w-full h-full flex items-center justify-center bg-white/10 text-white/60 border border-white/20 rounded-2xl">
-                                    <div class="text-center">
+                                  <div class="w-full h-full flex items-center justify-center bg-slate-800/70 text-white/80 border border-white/30 rounded-2xl backdrop-blur-xl">
+                                    <div class="text-center p-4">
                                       <svg class="w-12 h-12 mx-auto mb-3 text-violet-400" fill="currentColor" viewBox="0 0 20 20">
                                         <path fill-rule="evenodd" d="M4 3a2 2 0 00-2 2v10a2 2 0 002 2h12a2 2 0 002-2V5a2 2 0 00-2-2H4zm12 12H4l4-8 3 6 2-4 3 6z" clip-rule="evenodd" />
                                       </svg>
-                                      <p class="text-sm font-medium">Photo ${index + 1}</p>
+                                      <p class="text-sm font-semibold text-white">Photo ${index + 1}</p>
+                                      <p class="text-xs text-white/60 mt-1">Image unavailable</p>
                                     </div>
                                   </div>
                                 `;
@@ -561,51 +567,60 @@ const Profile = ({ onEdit }: ProfileProps) => {
             </Card>
           </div>
 
-          {/* Enhanced Sidebar */}
+          {/* Enhanced Sidebar with Better Interests Visibility */}
           <div className="space-y-8">
-            {/* Enhanced Interests & Hobbies */}
-            <Card className="border-0 shadow-2xl bg-white/5 backdrop-blur-xl border border-white/10 hover:shadow-3xl transition-all duration-500 group">
+            {/* Enhanced Interests & Hobbies with Improved Visibility */}
+            <Card className="border-0 shadow-2xl bg-white/10 backdrop-blur-xl border border-white/20 hover:shadow-3xl transition-all duration-500 group">
               <CardHeader className="pb-6">
                 <CardTitle className="flex items-center text-2xl bg-gradient-to-r from-white to-violet-200 bg-clip-text text-transparent">
                   <div className="p-3 bg-pink-500/20 rounded-xl mr-4 group-hover:bg-pink-500/30 transition-colors">
                     <Heart className="w-6 h-6 text-pink-300" />
                   </div>
-                  Interests
+                  Interests & Hobbies
                 </CardTitle>
               </CardHeader>
               <CardContent>
                 {profileData?.hobbies && profileData.hobbies.length > 0 ? (
-                  <div className="flex flex-wrap gap-3">
-                    {profileData.hobbies.map((hobby, index) => (
-                      <Badge 
-                        key={index} 
-                        className="px-4 py-2 rounded-full text-sm font-medium bg-gradient-to-r from-violet-500/20 to-purple-500/20 text-violet-200 border border-violet-400/30 hover:from-violet-500/30 hover:to-purple-500/30 hover:scale-105 transition-all duration-300 cursor-pointer"
-                      >
-                        {hobby}
-                      </Badge>
-                    ))}
+                  <div className="space-y-4">
+                    <div className="flex flex-wrap gap-3">
+                      {profileData.hobbies.map((hobby, index) => (
+                        <Badge 
+                          key={index} 
+                          className="px-4 py-3 rounded-full text-sm font-semibold bg-gradient-to-r from-violet-500/30 to-purple-500/30 text-white border-2 border-violet-400/50 hover:from-violet-500/40 hover:to-purple-500/40 hover:border-violet-400/70 hover:scale-105 transition-all duration-300 cursor-pointer shadow-lg backdrop-blur-xl"
+                        >
+                          {hobby}
+                        </Badge>
+                      ))}
+                    </div>
+                    <div className="mt-6 p-4 bg-gradient-to-r from-pink-500/10 to-purple-500/10 rounded-xl border border-pink-400/30">
+                      <div className="flex items-center gap-2 mb-2">
+                        <Heart className="w-4 h-4 text-pink-400" />
+                        <span className="text-sm font-semibold text-pink-200">Total Interests</span>
+                      </div>
+                      <p className="text-2xl font-bold text-white">{profileData.hobbies.length}</p>
+                    </div>
                   </div>
                 ) : (
                   <div className="text-center py-12">
                     <div className="w-16 h-16 mx-auto mb-4 rounded-full bg-gradient-to-br from-pink-500/20 to-purple-500/20 flex items-center justify-center border border-white/20">
                       <Heart className="w-8 h-8 text-pink-400" />
                     </div>
-                    <p className="text-white/70 font-medium">No interests listed</p>
-                    <p className="text-white/50 text-sm mt-1">Add some to let others know what you love</p>
+                    <p className="text-white/80 font-semibold text-lg">No interests listed</p>
+                    <p className="text-white/60 text-sm mt-2">Add some to let others know what you love</p>
                   </div>
                 )}
               </CardContent>
             </Card>
 
             {/* Enhanced Quick Actions */}
-            <Card className="border-0 shadow-2xl bg-white/5 backdrop-blur-xl border border-white/10 hover:shadow-3xl transition-all duration-500 group">
+            <Card className="border-0 shadow-2xl bg-white/10 backdrop-blur-xl border border-white/20 hover:shadow-3xl transition-all duration-500 group">
               <CardHeader className="pb-6">
                 <CardTitle className="text-2xl bg-gradient-to-r from-white to-violet-200 bg-clip-text text-transparent">Quick Actions</CardTitle>
               </CardHeader>
               <CardContent className="space-y-4">
                 <Button 
                   variant="outline" 
-                  className="w-full justify-start bg-gradient-to-r from-violet-500/10 to-purple-500/10 border-violet-400/30 text-violet-200 hover:from-violet-500/20 hover:to-purple-500/20 hover:border-violet-400/50 hover:scale-105 transition-all duration-300 shadow-lg"
+                  className="w-full justify-start bg-gradient-to-r from-violet-500/20 to-purple-500/20 border-2 border-violet-400/50 text-white hover:from-violet-500/30 hover:to-purple-500/30 hover:border-violet-400/70 hover:scale-105 transition-all duration-300 shadow-lg backdrop-blur-xl font-semibold"
                   onClick={handleUploadPhotos}
                 >
                   <Camera className="w-5 h-5 mr-3" />
