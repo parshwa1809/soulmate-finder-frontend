@@ -1,7 +1,7 @@
 
 import { useState } from "react";
 import { Button } from "@/components/ui/button";
-import { Heart, X, MessageCircle, Instagram, Phone } from "lucide-react";
+import { Heart, X } from "lucide-react";
 import { config } from "../config/api";
 
 interface UserActionsProps {
@@ -41,7 +41,7 @@ const UserActions = ({ userUID, currentUserUID, onActionComplete }: UserActionsP
   };
 
   return (
-    <div className="flex justify-center space-x-2 mt-4">
+    <div className="flex justify-center space-x-4 mt-4">
       <Button
         onClick={() => handleAction('reject')}
         variant="outline"
@@ -59,24 +59,6 @@ const UserActions = ({ userUID, currentUserUID, onActionComplete }: UserActionsP
         className="text-green-600 border-green-200 hover:bg-green-50"
       >
         <Heart className="w-4 h-4" />
-      </Button>
-      <Button
-        onClick={() => handleAction('whatsapp')}
-        variant="outline"
-        size="sm"
-        disabled={isLoading}
-        className="text-blue-600 border-blue-200 hover:bg-blue-50"
-      >
-        <Phone className="w-4 h-4" />
-      </Button>
-      <Button
-        onClick={() => handleAction('instagram')}
-        variant="outline"
-        size="sm"
-        disabled={isLoading}
-        className="text-purple-600 border-purple-200 hover:bg-purple-50"
-      >
-        <Instagram className="w-4 h-4" />
       </Button>
     </div>
   );
