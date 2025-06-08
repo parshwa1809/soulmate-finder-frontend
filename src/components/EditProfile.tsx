@@ -30,7 +30,8 @@ interface EditProfileProps {
 const EditProfile = ({ onCancel, onSave }: EditProfileProps) => {
   const [isLoading, setIsLoading] = useState(false);
   const [profileData, setProfileData] = useState<any>(null);
-  const [images, setImages] = useState<File[]>([]);
+  const [newImages, setNewImages] = useState<File[]>([]);
+  const [existingImages, setExistingImages] = useState<any[]>([]);
   const { toast } = useToast();
   
   const { register, handleSubmit, setValue, formState: { errors } } = useForm<ProfileFormData>();
@@ -41,6 +42,10 @@ const EditProfile = ({ onCancel, onSave }: EditProfileProps) => {
       try {
         const parsedData = JSON.parse(userData);
         setProfileData(parsedData);
+        
+        // Set existing images
+        const images = parsedData.IMAGES || parsedData.images || [];
+        setExistingImages(images);
         
         // Set form values
         setValue('name', parsedData.NAME || parsedData.name || '');
@@ -93,7 +98,7 @@ const EditProfile = ({ onCancel, onSave }: EditProfileProps) => {
         throw new Error('User UID not found');
       }
 
-      // Prepare the data for API
+      // Prepare the data for API - only send new images
       const apiData = {
         UID: userUID,
         NAME: profileData.name,
@@ -106,7 +111,7 @@ const EditProfile = ({ onCancel, onSave }: EditProfileProps) => {
         IMAGES: imageData.length > 0 ? imageData.map(img => ({ data: img })) : []
       };
 
-      console.log('Sending profile update to API:', apiData);
+      console.log('Sending profile update to API (only new images):', apiData);
 
       const response = await fetch(`${config.URL}/update:profile`, {
         method: 'POST',
@@ -133,13 +138,13 @@ const EditProfile = ({ onCancel, onSave }: EditProfileProps) => {
   const onSubmit = async (data: ProfileFormData) => {
     setIsLoading(true);
     try {
-      // Convert images to base64
-      const imageData = await convertFilesToBase64(images);
+      // Convert only new images to base64
+      const newImageData = await convertFilesToBase64(newImages);
       
-      // Update profile via API
-      await updateProfileAPI(data, imageData);
+      // Update profile via API with only new images
+      await updateProfileAPI(data, newImageData);
       
-      // Update localStorage with new data
+      // Update localStorage with new data - append new images to existing ones
       const currentUserData = JSON.parse(localStorage.getItem('userData') || '{}');
       const updatedProfile = {
         ...currentUserData,
@@ -158,10 +163,11 @@ const EditProfile = ({ onCancel, onSave }: EditProfileProps) => {
         gender: data.gender
       };
       
-      // Add images if they were uploaded
-      if (imageData.length > 0) {
-        updatedProfile.IMAGES = imageData.map(img => ({ data: img }));
-        updatedProfile.images = imageData.map(img => ({ data: img }));
+      // Append new images to existing images in localStorage
+      if (newImageData.length > 0) {
+        const allImages = [...existingImages, ...newImageData.map(img => ({ data: img }))];
+        updatedProfile.IMAGES = allImages;
+        updatedProfile.images = allImages;
       }
       
       localStorage.setItem('userData', JSON.stringify(updatedProfile));
@@ -185,9 +191,9 @@ const EditProfile = ({ onCancel, onSave }: EditProfileProps) => {
     }
   };
 
-  const handleImagesChange = (newImages: File[]) => {
-    setImages(newImages);
-    console.log('Images selected:', newImages.length);
+  const handleNewImagesChange = (images: File[]) => {
+    setNewImages(images);
+    console.log('New images selected:', images.length);
   };
 
   if (!profileData) {
@@ -215,15 +221,36 @@ const EditProfile = ({ onCancel, onSave }: EditProfileProps) => {
             {/* Profile Picture */}
             <div className="flex justify-center mb-6">
               <Avatar className="w-24 h-24">
-                <AvatarImage src={profileData.IMAGES?.[0]?.data ? `data:image/jpeg;base64,${profileData.IMAGES[0].data}` : profileData.images?.[0]} />
+                <AvatarImage src={existingImages?.[0]?.data ? `data:image/jpeg;base64,${existingImages[0].data}` : profileData.images?.[0]} />
                 <AvatarFallback className="bg-gradient-to-r from-orange-500 to-yellow-500 text-white text-2xl">
                   {profileData.NAME?.charAt(0) || profileData.name?.charAt(0) || <User className="w-8 h-8" />}
                 </AvatarFallback>
               </Avatar>
             </div>
 
-            {/* Image Upload Section */}
-            <ImageUpload images={images} onImagesChange={handleImagesChange} />
+            {/* Display existing images */}
+            {existingImages.length > 0 && (
+              <div className="space-y-2">
+                <Label>Current Photos ({existingImages.length})</Label>
+                <div className="grid grid-cols-2 md:grid-cols-3 gap-4">
+                  {existingImages.map((image, index) => (
+                    <div key={index} className="aspect-square relative">
+                      <img
+                        src={`data:image/jpeg;base64,${image.data}`}
+                        alt={`Current ${index + 1}`}
+                        className="w-full h-full object-cover rounded"
+                      />
+                    </div>
+                  ))}
+                </div>
+              </div>
+            )}
+
+            {/* New Image Upload Section */}
+            <div className="space-y-2">
+              <Label>Add New Photos</Label>
+              <ImageUpload images={newImages} onImagesChange={handleNewImagesChange} />
+            </div>
 
             {/* Basic Information */}
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
