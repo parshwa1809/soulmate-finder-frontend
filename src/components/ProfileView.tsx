@@ -101,12 +101,12 @@ const ProfileView = ({ user, onBack, children }: ProfileViewProps) => {
                 <Camera className="w-5 h-5 text-white" />
                 <h3 className="text-lg font-semibold text-white">Photos</h3>
               </div>
-              <div className="relative">
-                <Carousel className="w-full">
+              <div className="relative px-12">
+                <Carousel className="w-full max-w-md mx-auto">
                   <CarouselContent>
                     {user.images.map((image, index) => (
                       <CarouselItem key={index}>
-                        <div className="relative aspect-square overflow-hidden rounded-xl bg-white/5 backdrop-blur-xl border border-white/10">
+                        <div className="relative aspect-[3/4] overflow-hidden rounded-xl bg-white/5 backdrop-blur-xl border border-white/10">
                           <img
                             src={image}
                             alt={`Photo ${index + 1} of ${user.name}`}
@@ -122,8 +122,8 @@ const ProfileView = ({ user, onBack, children }: ProfileViewProps) => {
                   </CarouselContent>
                   {user.images.length > 1 && (
                     <>
-                      <CarouselPrevious className="bg-white/10 backdrop-blur-xl border-white/20 text-white hover:bg-white/20" />
-                      <CarouselNext className="bg-white/10 backdrop-blur-xl border-white/20 text-white hover:bg-white/20" />
+                      <CarouselPrevious className="bg-white/10 backdrop-blur-xl border-white/20 text-white hover:bg-white/20 -left-12" />
+                      <CarouselNext className="bg-white/10 backdrop-blur-xl border-white/20 text-white hover:bg-white/20 -right-12" />
                     </>
                   )}
                 </Carousel>
