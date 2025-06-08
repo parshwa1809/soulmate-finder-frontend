@@ -41,30 +41,40 @@ const UserActions = ({ userUID, currentUserUID, onActionComplete }: UserActionsP
   };
 
   return (
-    <div className="flex justify-center space-x-8 mt-8">
-      <Button
-        onClick={() => handleAction('reject')}
-        variant="outline"
-        size="lg"
-        disabled={isLoading}
-        className="group relative overflow-hidden bg-gradient-to-r from-red-500/10 to-pink-500/10 border-2 border-red-300/30 text-red-100 hover:border-red-400/50 hover:from-red-500/20 hover:to-pink-500/20 backdrop-blur-sm px-10 py-4 rounded-xl transition-all duration-300 hover:scale-105 shadow-lg hover:shadow-red-500/25"
-      >
-        <div className="absolute inset-0 bg-gradient-to-r from-red-500/0 to-red-500/0 group-hover:from-red-500/10 group-hover:to-pink-500/10 transition-all duration-300"></div>
-        <X className="w-6 h-6 mr-3 relative z-10 group-hover:rotate-90 transition-transform duration-300" />
-        <span className="relative z-10 font-semibold text-lg">Skip</span>
-      </Button>
-      
-      <Button
-        onClick={() => handleAction('like')}
-        variant="outline"
-        size="lg"
-        disabled={isLoading}
-        className="group relative overflow-hidden bg-gradient-to-r from-green-500/10 to-emerald-500/10 border-2 border-green-300/30 text-green-100 hover:border-green-400/50 hover:from-green-500/20 hover:to-emerald-500/20 backdrop-blur-sm px-10 py-4 rounded-xl transition-all duration-300 hover:scale-105 shadow-lg hover:shadow-green-500/25"
-      >
-        <div className="absolute inset-0 bg-gradient-to-r from-green-500/0 to-green-500/0 group-hover:from-green-500/10 group-hover:to-emerald-500/10 transition-all duration-300"></div>
-        <Heart className="w-6 h-6 mr-3 relative z-10 group-hover:scale-110 group-hover:fill-current transition-all duration-300" />
-        <span className="relative z-10 font-semibold text-lg">Like</span>
-      </Button>
+    <div className="flex justify-center items-center gap-6 mt-12 mb-8">
+      {/* Skip Button */}
+      <div className="relative group">
+        <div className="absolute -inset-1 bg-gradient-to-r from-red-500 to-pink-500 rounded-full blur opacity-20 group-hover:opacity-40 transition duration-500"></div>
+        <Button
+          onClick={() => handleAction('reject')}
+          variant="outline"
+          size="lg"
+          disabled={isLoading}
+          className="relative w-20 h-20 rounded-full bg-white/5 backdrop-blur-xl border-2 border-white/10 hover:border-red-400/50 text-white/80 hover:text-red-300 transition-all duration-300 hover:scale-110 shadow-2xl hover:shadow-red-500/25 group-hover:bg-gradient-to-r group-hover:from-red-500/10 group-hover:to-pink-500/10"
+        >
+          <X className="w-8 h-8 group-hover:rotate-90 transition-transform duration-300" />
+        </Button>
+        <span className="absolute -bottom-8 left-1/2 transform -translate-x-1/2 text-sm text-white/60 font-medium">
+          Skip
+        </span>
+      </div>
+
+      {/* Like Button */}
+      <div className="relative group">
+        <div className="absolute -inset-1 bg-gradient-to-r from-emerald-500 to-green-500 rounded-full blur opacity-20 group-hover:opacity-40 transition duration-500"></div>
+        <Button
+          onClick={() => handleAction('like')}
+          variant="outline"
+          size="lg"
+          disabled={isLoading}
+          className="relative w-20 h-20 rounded-full bg-white/5 backdrop-blur-xl border-2 border-white/10 hover:border-emerald-400/50 text-white/80 hover:text-emerald-300 transition-all duration-300 hover:scale-110 shadow-2xl hover:shadow-emerald-500/25 group-hover:bg-gradient-to-r group-hover:from-emerald-500/10 group-hover:to-green-500/10"
+        >
+          <Heart className="w-8 h-8 group-hover:scale-110 group-hover:fill-current transition-all duration-300" />
+        </Button>
+        <span className="absolute -bottom-8 left-1/2 transform -translate-x-1/2 text-sm text-white/60 font-medium">
+          Like
+        </span>
+      </div>
     </div>
   );
 };
