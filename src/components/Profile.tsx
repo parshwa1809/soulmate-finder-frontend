@@ -1,3 +1,4 @@
+
 import { useState, useEffect } from "react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
@@ -11,7 +12,11 @@ import {
   Briefcase, 
   Heart,
   Camera,
-  Edit
+  Edit,
+  Mail,
+  Globe,
+  Star,
+  Sparkles
 } from "lucide-react";
 import { config } from "../config/api";
 
@@ -266,8 +271,13 @@ const Profile = ({ onEdit }: ProfileProps) => {
     return (
       <div className="flex items-center justify-center min-h-screen bg-background">
         <div className="text-center">
-          <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary mx-auto mb-4"></div>
-          <p className="text-muted-foreground">Loading profile...</p>
+          <div className="relative w-16 h-16 mx-auto mb-6">
+            <div className="absolute inset-0 bg-gradient-to-br from-violet-500 to-purple-500 rounded-full blur-lg opacity-50 animate-pulse"></div>
+            <div className="relative w-16 h-16 bg-white/10 backdrop-blur-xl rounded-full border border-white/20 flex items-center justify-center">
+              <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-white/70"></div>
+            </div>
+          </div>
+          <p className="text-white/70 font-medium">Loading your amazing profile...</p>
         </div>
       </div>
     );
@@ -276,10 +286,10 @@ const Profile = ({ onEdit }: ProfileProps) => {
   if (!profileData) {
     return (
       <div className="flex items-center justify-center min-h-screen bg-background">
-        <Card className="max-w-md w-full">
+        <Card className="max-w-md w-full border-white/10 bg-white/5 backdrop-blur-xl">
           <CardContent className="p-6 text-center">
-            <User className="w-12 h-12 text-muted-foreground mx-auto mb-4" />
-            <p className="text-muted-foreground">No profile data available</p>
+            <User className="w-12 h-12 text-white/50 mx-auto mb-4" />
+            <p className="text-white/70">No profile data available</p>
           </CardContent>
         </Card>
       </div>
@@ -306,82 +316,121 @@ const Profile = ({ onEdit }: ProfileProps) => {
   };
 
   return (
-    <div className="min-h-screen bg-background">
+    <div className="min-h-screen bg-gradient-to-br from-slate-900 via-purple-900 to-slate-900">
       <div className="max-w-6xl mx-auto px-4 py-8">
-        {/* Hero Section */}
-        <div className="relative mb-12">
-          <div className="absolute inset-0 bg-gradient-to-r from-primary/5 to-primary/10 rounded-3xl"></div>
+        {/* Enhanced Hero Section */}
+        <div className="relative mb-12 overflow-hidden">
+          <div className="absolute inset-0 bg-gradient-to-r from-violet-600/20 via-purple-600/20 to-pink-600/20 rounded-3xl blur-xl"></div>
+          <div className="absolute inset-0 bg-gradient-to-br from-white/10 to-white/5 rounded-3xl backdrop-blur-3xl border border-white/20"></div>
+          
           <div className="relative p-8 md:p-12">
             <div className="flex flex-col md:flex-row items-center md:items-start gap-8">
-              {/* Profile Picture */}
-              <div className="relative">
-                <Avatar className="w-32 h-32 md:w-40 md:h-40 border-4 border-background shadow-2xl">
+              {/* Enhanced Profile Picture */}
+              <div className="relative group">
+                <div className="absolute -inset-4 bg-gradient-to-r from-violet-500 via-purple-500 to-pink-500 rounded-full blur-xl opacity-30 group-hover:opacity-50 transition-opacity duration-500"></div>
+                <div className="absolute -inset-2 bg-gradient-to-r from-violet-400 to-purple-400 rounded-full blur opacity-20"></div>
+                <Avatar className="relative w-36 h-36 md:w-44 md:h-44 ring-4 ring-white/30 shadow-2xl transform group-hover:scale-105 transition-all duration-500">
                   <AvatarImage 
                     src={profileData?.images?.[0]} 
                     className="object-cover"
                   />
-                  <AvatarFallback className="bg-primary text-primary-foreground text-4xl font-semibold">
+                  <AvatarFallback className="bg-gradient-to-br from-violet-500 via-purple-500 to-pink-500 text-white text-4xl font-bold">
                     {profileData?.name?.charAt(0) || <User className="w-20 h-20" />}
                   </AvatarFallback>
                 </Avatar>
                 {profileData?.images && profileData.images.length > 1 && (
-                  <Badge className="absolute -bottom-2 -right-2 bg-primary">
+                  <Badge className="absolute -bottom-2 -right-2 bg-gradient-to-r from-violet-500 to-purple-500 shadow-lg border-0">
                     <Camera className="w-3 h-3 mr-1" />
                     {profileData.images.length}
                   </Badge>
                 )}
+                <div className="absolute top-2 right-2 w-4 h-4 bg-green-400 rounded-full border-2 border-white shadow-lg animate-pulse"></div>
               </div>
 
-              {/* Profile Info */}
+              {/* Enhanced Profile Info */}
               <div className="flex-1 text-center md:text-left">
-                <div className="flex flex-col md:flex-row md:items-center md:justify-between mb-6">
+                <div className="flex flex-col md:flex-row md:items-start md:justify-between mb-8">
                   <div>
-                    <h1 className="text-4xl md:text-5xl font-bold text-foreground mb-2">
-                      {profileData?.name}
-                    </h1>
-                    <p className="text-xl text-muted-foreground">
-                      {profileData?.profession || 'Professional'}
-                    </p>
+                    <div className="flex items-center justify-center md:justify-start gap-3 mb-3">
+                      <h1 className="text-4xl md:text-6xl font-bold bg-gradient-to-r from-white via-violet-200 to-purple-200 bg-clip-text text-transparent">
+                        {profileData?.name}
+                      </h1>
+                      <Sparkles className="w-8 h-8 text-violet-400 animate-pulse" />
+                    </div>
+                    <div className="flex items-center justify-center md:justify-start gap-2 mb-4">
+                      <Star className="w-5 h-5 text-yellow-400" />
+                      <p className="text-xl text-white/80 font-medium">
+                        {profileData?.profession || 'Amazing Individual'}
+                      </p>
+                    </div>
                   </div>
                   {onEdit && (
                     <Button 
                       onClick={handleEditProfile} 
                       size="lg"
-                      className="mt-4 md:mt-0"
+                      className="mt-4 md:mt-0 bg-gradient-to-r from-violet-600 to-purple-600 hover:from-violet-700 hover:to-purple-700 shadow-xl hover:shadow-2xl transform hover:scale-105 transition-all duration-300"
                     >
-                      <Edit className="w-4 h-4 mr-2" />
+                      <Edit className="w-5 h-5 mr-2" />
                       Edit Profile
                     </Button>
                   )}
                 </div>
 
-                {/* Quick Stats */}
-                <div className="grid grid-cols-2 md:grid-cols-4 gap-4 text-center md:text-left">
+                {/* Enhanced Quick Stats */}
+                <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
                   {profileData?.dob && (
-                    <div className="flex items-center justify-center md:justify-start">
-                      <Calendar className="w-5 h-5 mr-2 text-primary" />
-                      <span className="text-sm font-medium">{calculateAge(profileData.dob)} years</span>
+                    <div className="bg-white/10 backdrop-blur-xl rounded-2xl p-4 border border-white/20 hover:bg-white/15 transition-all duration-300 group">
+                      <div className="flex items-center justify-center md:justify-start gap-3">
+                        <div className="p-2 bg-violet-500/20 rounded-full group-hover:bg-violet-500/30 transition-colors">
+                          <Calendar className="w-5 h-5 text-violet-300" />
+                        </div>
+                        <div>
+                          <p className="text-sm text-white/60 font-medium">Age</p>
+                          <p className="text-lg font-bold text-white">{calculateAge(profileData.dob)}</p>
+                        </div>
+                      </div>
                     </div>
                   )}
                   
                   {profileData?.city && profileData.country && (
-                    <div className="flex items-center justify-center md:justify-start">
-                      <MapPin className="w-5 h-5 mr-2 text-primary" />
-                      <span className="text-sm font-medium">{profileData.city}, {profileData.country}</span>
+                    <div className="bg-white/10 backdrop-blur-xl rounded-2xl p-4 border border-white/20 hover:bg-white/15 transition-all duration-300 group">
+                      <div className="flex items-center justify-center md:justify-start gap-3">
+                        <div className="p-2 bg-blue-500/20 rounded-full group-hover:bg-blue-500/30 transition-colors">
+                          <MapPin className="w-5 h-5 text-blue-300" />
+                        </div>
+                        <div>
+                          <p className="text-sm text-white/60 font-medium">Location</p>
+                          <p className="text-sm font-bold text-white">{profileData.city}</p>
+                        </div>
+                      </div>
                     </div>
                   )}
 
                   {profileData?.profession && (
-                    <div className="flex items-center justify-center md:justify-start">
-                      <Briefcase className="w-5 h-5 mr-2 text-primary" />
-                      <span className="text-sm font-medium">{profileData.profession}</span>
+                    <div className="bg-white/10 backdrop-blur-xl rounded-2xl p-4 border border-white/20 hover:bg-white/15 transition-all duration-300 group">
+                      <div className="flex items-center justify-center md:justify-start gap-3">
+                        <div className="p-2 bg-emerald-500/20 rounded-full group-hover:bg-emerald-500/30 transition-colors">
+                          <Briefcase className="w-5 h-5 text-emerald-300" />
+                        </div>
+                        <div>
+                          <p className="text-sm text-white/60 font-medium">Career</p>
+                          <p className="text-sm font-bold text-white">{profileData.profession}</p>
+                        </div>
+                      </div>
                     </div>
                   )}
 
                   {profileData?.tob && (
-                    <div className="flex items-center justify-center md:justify-start">
-                      <Clock className="w-5 h-5 mr-2 text-primary" />
-                      <span className="text-sm font-medium">{formatTime(profileData.tob)}</span>
+                    <div className="bg-white/10 backdrop-blur-xl rounded-2xl p-4 border border-white/20 hover:bg-white/15 transition-all duration-300 group">
+                      <div className="flex items-center justify-center md:justify-start gap-3">
+                        <div className="p-2 bg-pink-500/20 rounded-full group-hover:bg-pink-500/30 transition-colors">
+                          <Clock className="w-5 h-5 text-pink-300" />
+                        </div>
+                        <div>
+                          <p className="text-sm text-white/60 font-medium">Born</p>
+                          <p className="text-sm font-bold text-white">{formatTime(profileData.tob)}</p>
+                        </div>
+                      </div>
                     </div>
                   )}
                 </div>
@@ -390,57 +439,75 @@ const Profile = ({ onEdit }: ProfileProps) => {
           </div>
         </div>
 
-        {/* Content Grid */}
+        {/* Enhanced Content Grid */}
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
-          {/* Main Content */}
+          {/* Enhanced Main Content */}
           <div className="lg:col-span-2 space-y-8">
-            {/* Personal Information */}
-            <Card className="border-0 shadow-lg">
-              <CardHeader>
-                <CardTitle className="flex items-center text-xl">
-                  <User className="w-5 h-5 mr-3 text-primary" />
+            {/* Enhanced Personal Information */}
+            <Card className="border-0 shadow-2xl bg-white/5 backdrop-blur-xl border border-white/10 hover:shadow-3xl transition-all duration-500 group">
+              <CardHeader className="pb-6">
+                <CardTitle className="flex items-center text-2xl bg-gradient-to-r from-white to-violet-200 bg-clip-text text-transparent">
+                  <div className="p-3 bg-violet-500/20 rounded-xl mr-4 group-hover:bg-violet-500/30 transition-colors">
+                    <User className="w-6 h-6 text-violet-300" />
+                  </div>
                   Personal Information
                 </CardTitle>
               </CardHeader>
-              <CardContent className="space-y-6">
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                  <div>
-                    <label className="text-sm font-semibold text-muted-foreground uppercase tracking-wide">Email</label>
-                    <p className="text-lg text-foreground mt-1">{profileData?.email}</p>
+              <CardContent className="space-y-8">
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
+                  <div className="bg-white/5 backdrop-blur-xl rounded-xl p-6 border border-white/10 hover:bg-white/10 transition-all duration-300">
+                    <div className="flex items-center gap-3 mb-3">
+                      <Mail className="w-5 h-5 text-violet-400" />
+                      <label className="text-sm font-bold text-violet-300 uppercase tracking-wider">Email</label>
+                    </div>
+                    <p className="text-lg text-white font-medium">{profileData?.email}</p>
                   </div>
                   
                   {profileData?.gender && (
-                    <div>
-                      <label className="text-sm font-semibold text-muted-foreground uppercase tracking-wide">Gender</label>
-                      <p className="text-lg text-foreground mt-1 capitalize">{profileData.gender}</p>
+                    <div className="bg-white/5 backdrop-blur-xl rounded-xl p-6 border border-white/10 hover:bg-white/10 transition-all duration-300">
+                      <div className="flex items-center gap-3 mb-3">
+                        <User className="w-5 h-5 text-pink-400" />
+                        <label className="text-sm font-bold text-pink-300 uppercase tracking-wider">Gender</label>
+                      </div>
+                      <p className="text-lg text-white font-medium capitalize">{profileData.gender}</p>
                     </div>
                   )}
 
                   {profileData?.dob && (
-                    <div>
-                      <label className="text-sm font-semibold text-muted-foreground uppercase tracking-wide">Date of Birth</label>
-                      <p className="text-lg text-foreground mt-1">{new Date(profileData.dob).toLocaleDateString()}</p>
+                    <div className="bg-white/5 backdrop-blur-xl rounded-xl p-6 border border-white/10 hover:bg-white/10 transition-all duration-300">
+                      <div className="flex items-center gap-3 mb-3">
+                        <Calendar className="w-5 h-5 text-blue-400" />
+                        <label className="text-sm font-bold text-blue-300 uppercase tracking-wider">Date of Birth</label>
+                      </div>
+                      <p className="text-lg text-white font-medium">{new Date(profileData.dob).toLocaleDateString()}</p>
                     </div>
                   )}
 
                   {profileData?.birth_city && profileData.birth_country && (
-                    <div>
-                      <label className="text-sm font-semibold text-muted-foreground uppercase tracking-wide">Birth Place</label>
-                      <p className="text-lg text-foreground mt-1">{profileData.birth_city}, {profileData.birth_country}</p>
+                    <div className="bg-white/5 backdrop-blur-xl rounded-xl p-6 border border-white/10 hover:bg-white/10 transition-all duration-300">
+                      <div className="flex items-center gap-3 mb-3">
+                        <Globe className="w-5 h-5 text-emerald-400" />
+                        <label className="text-sm font-bold text-emerald-300 uppercase tracking-wider">Birth Place</label>
+                      </div>
+                      <p className="text-lg text-white font-medium">{profileData.birth_city}, {profileData.birth_country}</p>
                     </div>
                   )}
                 </div>
               </CardContent>
             </Card>
 
-            {/* Photo Gallery */}
-            <Card className="border-0 shadow-lg">
-              <CardHeader>
-                <CardTitle className="flex items-center text-xl">
-                  <Camera className="w-5 h-5 mr-3 text-primary" />
-                  Photo Gallery
+            {/* Enhanced Photo Gallery */}
+            <Card className="border-0 shadow-2xl bg-white/5 backdrop-blur-xl border border-white/10 hover:shadow-3xl transition-all duration-500 group">
+              <CardHeader className="pb-6">
+                <CardTitle className="flex items-center justify-between text-2xl bg-gradient-to-r from-white to-violet-200 bg-clip-text text-transparent">
+                  <div className="flex items-center">
+                    <div className="p-3 bg-violet-500/20 rounded-xl mr-4 group-hover:bg-violet-500/30 transition-colors">
+                      <Camera className="w-6 h-6 text-violet-300" />
+                    </div>
+                    Photo Gallery
+                  </div>
                   {profileData?.images && profileData.images.length > 0 && (
-                    <Badge variant="secondary" className="ml-3">
+                    <Badge variant="secondary" className="bg-gradient-to-r from-violet-500/20 to-purple-500/20 text-violet-200 border-violet-400/30">
                       {profileData.images.length} photos
                     </Badge>
                   )}
@@ -448,28 +515,29 @@ const Profile = ({ onEdit }: ProfileProps) => {
               </CardHeader>
               <CardContent>
                 {profileData?.images && profileData.images.length > 0 ? (
-                  <div className="grid grid-cols-2 md:grid-cols-3 gap-4">
+                  <div className="grid grid-cols-2 md:grid-cols-3 gap-6">
                     {profileData.images.map((image, index) => {
                       if (!image || image.length === 0) return null;
                       
                       return (
-                        <div key={index} className="aspect-square overflow-hidden rounded-xl bg-muted group cursor-pointer">
+                        <div key={index} className="relative aspect-square overflow-hidden rounded-2xl bg-white/5 group cursor-pointer transform hover:scale-105 transition-all duration-500 shadow-lg hover:shadow-2xl">
+                          <div className="absolute inset-0 bg-gradient-to-br from-violet-500/20 to-purple-500/20 opacity-0 group-hover:opacity-100 transition-opacity duration-300 z-10"></div>
                           <img
                             src={image}
                             alt={`Photo ${index + 1}`}
-                            className="w-full h-full object-cover transition-transform duration-300 group-hover:scale-110"
+                            className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-110"
                             onError={(e) => {
                               const target = e.currentTarget;
                               target.style.display = 'none';
                               const parent = target.parentElement;
                               if (parent) {
                                 parent.innerHTML = `
-                                  <div class="w-full h-full flex items-center justify-center bg-muted text-muted-foreground">
+                                  <div class="w-full h-full flex items-center justify-center bg-white/10 text-white/60 border border-white/20 rounded-2xl">
                                     <div class="text-center">
-                                      <svg class="w-8 h-8 mx-auto mb-2" fill="currentColor" viewBox="0 0 20 20">
+                                      <svg class="w-12 h-12 mx-auto mb-3 text-violet-400" fill="currentColor" viewBox="0 0 20 20">
                                         <path fill-rule="evenodd" d="M4 3a2 2 0 00-2 2v10a2 2 0 002 2h12a2 2 0 002-2V5a2 2 0 00-2-2H4zm12 12H4l4-8 3 6 2-4 3 6z" clip-rule="evenodd" />
                                       </svg>
-                                      <p class="text-xs">Photo ${index + 1}</p>
+                                      <p class="text-sm font-medium">Photo ${index + 1}</p>
                                     </div>
                                   </div>
                                 `;
@@ -481,61 +549,66 @@ const Profile = ({ onEdit }: ProfileProps) => {
                     })}
                   </div>
                 ) : (
-                  <div className="text-center py-12">
-                    <div className="w-16 h-16 mx-auto mb-4 rounded-full bg-muted flex items-center justify-center">
-                      <Camera className="w-8 h-8 text-muted-foreground" />
+                  <div className="text-center py-16">
+                    <div className="w-20 h-20 mx-auto mb-6 rounded-full bg-gradient-to-br from-violet-500/20 to-purple-500/20 flex items-center justify-center border border-white/20">
+                      <Camera className="w-10 h-10 text-violet-400" />
                     </div>
-                    <p className="text-muted-foreground">No photos uploaded yet</p>
+                    <p className="text-white/70 text-lg font-medium">No photos uploaded yet</p>
+                    <p className="text-white/50 text-sm mt-2">Share your moments with the world</p>
                   </div>
                 )}
               </CardContent>
             </Card>
           </div>
 
-          {/* Sidebar */}
+          {/* Enhanced Sidebar */}
           <div className="space-y-8">
-            {/* Interests & Hobbies */}
-            <Card className="border-0 shadow-lg">
-              <CardHeader>
-                <CardTitle className="flex items-center text-xl">
-                  <Heart className="w-5 h-5 mr-3 text-primary" />
+            {/* Enhanced Interests & Hobbies */}
+            <Card className="border-0 shadow-2xl bg-white/5 backdrop-blur-xl border border-white/10 hover:shadow-3xl transition-all duration-500 group">
+              <CardHeader className="pb-6">
+                <CardTitle className="flex items-center text-2xl bg-gradient-to-r from-white to-violet-200 bg-clip-text text-transparent">
+                  <div className="p-3 bg-pink-500/20 rounded-xl mr-4 group-hover:bg-pink-500/30 transition-colors">
+                    <Heart className="w-6 h-6 text-pink-300" />
+                  </div>
                   Interests
                 </CardTitle>
               </CardHeader>
               <CardContent>
                 {profileData?.hobbies && profileData.hobbies.length > 0 ? (
-                  <div className="flex flex-wrap gap-2">
+                  <div className="flex flex-wrap gap-3">
                     {profileData.hobbies.map((hobby, index) => (
                       <Badge 
                         key={index} 
-                        variant="secondary" 
-                        className="px-3 py-1 rounded-full text-sm"
+                        className="px-4 py-2 rounded-full text-sm font-medium bg-gradient-to-r from-violet-500/20 to-purple-500/20 text-violet-200 border border-violet-400/30 hover:from-violet-500/30 hover:to-purple-500/30 hover:scale-105 transition-all duration-300 cursor-pointer"
                       >
                         {hobby}
                       </Badge>
                     ))}
                   </div>
                 ) : (
-                  <div className="text-center py-8">
-                    <Heart className="w-8 h-8 text-muted-foreground mx-auto mb-2" />
-                    <p className="text-muted-foreground text-sm">No interests listed</p>
+                  <div className="text-center py-12">
+                    <div className="w-16 h-16 mx-auto mb-4 rounded-full bg-gradient-to-br from-pink-500/20 to-purple-500/20 flex items-center justify-center border border-white/20">
+                      <Heart className="w-8 h-8 text-pink-400" />
+                    </div>
+                    <p className="text-white/70 font-medium">No interests listed</p>
+                    <p className="text-white/50 text-sm mt-1">Add some to let others know what you love</p>
                   </div>
                 )}
               </CardContent>
             </Card>
 
-            {/* Quick Actions */}
-            <Card className="border-0 shadow-lg">
-              <CardHeader>
-                <CardTitle className="text-xl">Quick Actions</CardTitle>
+            {/* Enhanced Quick Actions */}
+            <Card className="border-0 shadow-2xl bg-white/5 backdrop-blur-xl border border-white/10 hover:shadow-3xl transition-all duration-500 group">
+              <CardHeader className="pb-6">
+                <CardTitle className="text-2xl bg-gradient-to-r from-white to-violet-200 bg-clip-text text-transparent">Quick Actions</CardTitle>
               </CardHeader>
-              <CardContent className="space-y-3">
+              <CardContent className="space-y-4">
                 <Button 
                   variant="outline" 
-                  className="w-full justify-start"
+                  className="w-full justify-start bg-gradient-to-r from-violet-500/10 to-purple-500/10 border-violet-400/30 text-violet-200 hover:from-violet-500/20 hover:to-purple-500/20 hover:border-violet-400/50 hover:scale-105 transition-all duration-300 shadow-lg"
                   onClick={handleUploadPhotos}
                 >
-                  <Camera className="w-4 h-4 mr-2" />
+                  <Camera className="w-5 h-5 mr-3" />
                   Upload Photos
                 </Button>
               </CardContent>
