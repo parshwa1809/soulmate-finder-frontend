@@ -60,7 +60,14 @@ const Dashboard = ({ userUID, setIsLoggedIn }: DashboardProps) => {
     
     if (apiData.IMAGES) {
       try {
-        const parsedImages = JSON.parse(apiData.IMAGES);
+        // Check if IMAGES is already an object/array or a JSON string
+        let parsedImages;
+        if (typeof apiData.IMAGES === 'string') {
+          parsedImages = JSON.parse(apiData.IMAGES);
+        } else {
+          parsedImages = apiData.IMAGES;
+        }
+        
         if (Array.isArray(parsedImages) && parsedImages.length > 0) {
           // Get the first image from the array
           const firstImage = parsedImages[0];
@@ -68,10 +75,12 @@ const Dashboard = ({ userUID, setIsLoggedIn }: DashboardProps) => {
             // The data field contains base64 encoded image
             profilePicture = `data:image/jpeg;base64,${firstImage.data}`;
             images = [profilePicture];
+            console.log('Successfully processed image for user:', apiData.UID);
           }
         }
       } catch (error) {
         console.error('Failed to parse images for user:', apiData.UID, error);
+        console.log('Raw IMAGES data:', apiData.IMAGES);
       }
     }
 
