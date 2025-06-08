@@ -1,3 +1,4 @@
+
 import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { Button } from "@/components/ui/button";
@@ -179,34 +180,34 @@ const Dashboard = ({ userUID, setIsLoggedIn }: DashboardProps) => {
   };
 
   const UserCard = ({ user, showActions = false }: { user: User; showActions?: boolean }) => (
-    <Card className="hover:shadow-lg transition-all duration-200 bg-card border-border cursor-pointer hover:border-primary/20">
+    <Card className="group hover:shadow-lg transition-all duration-300 cursor-pointer hover:border-white/40">
       <CardContent className="p-6" onClick={() => handleUserClick(user)}>
         <div className="flex items-start space-x-4">
-          <Avatar className="w-16 h-16 ring-2 ring-border">
+          <Avatar className="w-16 h-16 ring-2 ring-white/20 group-hover:ring-white/40 transition-all">
             <AvatarImage src={user.profilePicture} />
-            <AvatarFallback className="bg-primary text-primary-foreground">
+            <AvatarFallback className="bg-gradient-to-r from-violet-500 to-purple-500 text-white">
               {user.name?.charAt(0) || <User className="w-6 h-6" />}
             </AvatarFallback>
           </Avatar>
           <div className="flex-1 min-w-0">
-            <h3 className="font-semibold text-lg text-foreground truncate">
+            <h3 className="font-semibold text-lg text-white truncate group-hover:text-violet-200 transition-colors">
               {user.name || 'Unknown User'}
             </h3>
             {user.city && user.country && (
-              <p className="text-sm text-muted-foreground truncate">
+              <p className="text-sm text-white/70 truncate">
                 {user.city}, {user.country}
               </p>
             )}
             {user.age && (
-              <p className="text-sm text-muted-foreground">
+              <p className="text-sm text-white/70">
                 {user.age} years old
               </p>
             )}
             {user.hobbies && (
-              <div className="mt-2">
+              <div className="mt-3">
                 <div className="flex flex-wrap gap-1">
                   {user.hobbies.split(',').slice(0, 3).map((hobby, index) => (
-                    <Badge key={index} variant="secondary" className="text-xs bg-muted text-muted-foreground">
+                    <Badge key={index} variant="secondary" className="text-xs bg-white/20 text-white/80">
                       {hobby.trim()}
                     </Badge>
                   ))}
@@ -234,17 +235,17 @@ const Dashboard = ({ userUID, setIsLoggedIn }: DashboardProps) => {
     description: string; 
   }) => (
     <div className="text-center py-16">
-      <div className="w-16 h-16 mx-auto mb-6 bg-muted rounded-full flex items-center justify-center">
-        <Icon className="w-8 h-8 text-muted-foreground" />
+      <div className="w-16 h-16 mx-auto mb-6 bg-white/10 backdrop-blur-sm rounded-full flex items-center justify-center">
+        <Icon className="w-8 h-8 text-white/70" />
       </div>
-      <h3 className="text-xl font-semibold text-foreground mb-2">{title}</h3>
-      <p className="text-muted-foreground max-w-md mx-auto">{description}</p>
+      <h3 className="text-xl font-semibold text-white mb-2">{title}</h3>
+      <p className="text-white/70 max-w-md mx-auto">{description}</p>
     </div>
   );
 
   if (selectedUser) {
     return (
-      <div className="min-h-screen bg-background">
+      <div className="min-h-screen bg-gradient-to-br from-purple-600 via-violet-600 to-purple-800">
         <div className="max-w-4xl mx-auto px-6 py-8">
           <ProfileView user={selectedUser} onBack={handleBackToList}>
             <UserActions 
@@ -260,28 +261,28 @@ const Dashboard = ({ userUID, setIsLoggedIn }: DashboardProps) => {
 
   if (isLoading) {
     return (
-      <div className="min-h-screen flex items-center justify-center bg-background">
+      <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-purple-600 via-violet-600 to-purple-800">
         <div className="text-center">
-          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-primary mx-auto"></div>
-          <p className="mt-4 text-muted-foreground">Loading your matches...</p>
+          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-white mx-auto"></div>
+          <p className="mt-4 text-white/70">Loading your matches...</p>
         </div>
       </div>
     );
   }
 
   return (
-    <div className="min-h-screen bg-background">
-      <div className="border-b border-border bg-card/50 backdrop-blur-sm sticky top-0 z-50">
+    <div className="min-h-screen bg-gradient-to-br from-purple-600 via-violet-600 to-purple-800">
+      <div className="border-b border-white/20 bg-white/10 backdrop-blur-md sticky top-0 z-50">
         <div className="max-w-7xl mx-auto px-6 py-4 flex items-center justify-between">
           <div>
-            <h1 className="text-2xl font-semibold text-foreground">Dashboard</h1>
-            <p className="text-muted-foreground mt-1">Discover your perfect matches</p>
+            <h1 className="text-2xl font-semibold text-white">Dashboard</h1>
+            <p className="text-white/70 mt-1">Discover your perfect matches</p>
           </div>
           <div className="flex gap-3">
             <Button 
               onClick={handleViewProfile}
               variant="outline"
-              className="border-border text-foreground hover:bg-muted"
+              className="border-white/30 text-white hover:bg-white/20"
             >
               <User className="w-4 h-4 mr-2" />
               Profile
@@ -289,7 +290,7 @@ const Dashboard = ({ userUID, setIsLoggedIn }: DashboardProps) => {
             <Button 
               onClick={handleLogout}
               variant="outline"
-              className="border-destructive/20 text-destructive hover:bg-destructive/10"
+              className="border-red-300/30 text-red-100 hover:bg-red-500/20"
             >
               <LogOut className="w-4 h-4 mr-2" />
               Logout
@@ -300,35 +301,35 @@ const Dashboard = ({ userUID, setIsLoggedIn }: DashboardProps) => {
 
       <div className="max-w-7xl mx-auto px-6 py-8">
         <Tabs defaultValue="recommendations" className="space-y-6">
-          <TabsList className="grid w-full grid-cols-4 bg-card border-border">
-            <TabsTrigger value="recommendations" className="flex items-center gap-2 data-[state=active]:bg-primary data-[state=active]:text-primary-foreground">
+          <TabsList className="grid w-full grid-cols-4 bg-white/10 backdrop-blur-md border-white/20">
+            <TabsTrigger value="recommendations" className="flex items-center gap-2 text-white/70 data-[state=active]:bg-white/20 data-[state=active]:text-white">
               <Users className="w-4 h-4" />
               Discover ({recommendations.length})
             </TabsTrigger>
-            <TabsTrigger value="matches" className="flex items-center gap-2 data-[state=active]:bg-primary data-[state=active]:text-primary-foreground">
+            <TabsTrigger value="matches" className="flex items-center gap-2 text-white/70 data-[state=active]:bg-white/20 data-[state=active]:text-white">
               <Heart className="w-4 h-4" />
               Matches ({matches.length})
             </TabsTrigger>
-            <TabsTrigger value="notifications" className="flex items-center gap-2 data-[state=active]:bg-primary data-[state=active]:text-primary-foreground">
+            <TabsTrigger value="notifications" className="flex items-center gap-2 text-white/70 data-[state=active]:bg-white/20 data-[state=active]:text-white">
               <Bell className="w-4 h-4" />
               Notifications ({notifications.length})
             </TabsTrigger>
-            <TabsTrigger value="awaiting" className="flex items-center gap-2 data-[state=active]:bg-primary data-[state=active]:text-primary-foreground">
+            <TabsTrigger value="awaiting" className="flex items-center gap-2 text-white/70 data-[state=active]:bg-white/20 data-[state=active]:text-white">
               <Clock className="w-4 h-4" />
               Awaiting ({awaiting.length})
             </TabsTrigger>
           </TabsList>
 
           <TabsContent value="recommendations" className="space-y-6">
-            <Card className="bg-card border-border shadow-sm">
+            <Card className="bg-white/10 backdrop-blur-md border-white/20 shadow-lg">
               <CardHeader className="pb-4">
                 <div className="flex items-center gap-3">
-                  <div className="w-8 h-8 bg-primary/10 rounded-lg flex items-center justify-center">
-                    <Users className="w-4 h-4 text-primary" />
+                  <div className="w-8 h-8 bg-white/10 backdrop-blur-sm rounded-lg flex items-center justify-center">
+                    <Users className="w-4 h-4 text-violet-300" />
                   </div>
                   <div>
-                    <CardTitle className="text-foreground">Discover New People</CardTitle>
-                    <CardDescription className="text-muted-foreground">
+                    <CardTitle className="text-white">Discover New People</CardTitle>
+                    <CardDescription className="text-white/70">
                       Profiles our algorithm thinks you'll love
                     </CardDescription>
                   </div>
@@ -353,15 +354,15 @@ const Dashboard = ({ userUID, setIsLoggedIn }: DashboardProps) => {
           </TabsContent>
 
           <TabsContent value="matches" className="space-y-6">
-            <Card className="bg-card border-border shadow-sm">
+            <Card className="bg-white/10 backdrop-blur-md border-white/20 shadow-lg">
               <CardHeader className="pb-4">
                 <div className="flex items-center gap-3">
-                  <div className="w-8 h-8 bg-primary/10 rounded-lg flex items-center justify-center">
-                    <Heart className="w-4 h-4 text-primary" />
+                  <div className="w-8 h-8 bg-white/10 backdrop-blur-sm rounded-lg flex items-center justify-center">
+                    <Heart className="w-4 h-4 text-violet-300" />
                   </div>
                   <div>
-                    <CardTitle className="text-foreground">Your Matches</CardTitle>
-                    <CardDescription className="text-muted-foreground">
+                    <CardTitle className="text-white">Your Matches</CardTitle>
+                    <CardDescription className="text-white/70">
                       People who liked you back - it's a match!
                     </CardDescription>
                   </div>
@@ -386,15 +387,15 @@ const Dashboard = ({ userUID, setIsLoggedIn }: DashboardProps) => {
           </TabsContent>
 
           <TabsContent value="notifications" className="space-y-6">
-            <Card className="bg-card border-border shadow-sm">
+            <Card className="bg-white/10 backdrop-blur-md border-white/20 shadow-lg">
               <CardHeader className="pb-4">
                 <div className="flex items-center gap-3">
-                  <div className="w-8 h-8 bg-primary/10 rounded-lg flex items-center justify-center">
-                    <Bell className="w-4 h-4 text-primary" />
+                  <div className="w-8 h-8 bg-white/10 backdrop-blur-sm rounded-lg flex items-center justify-center">
+                    <Bell className="w-4 h-4 text-violet-300" />
                   </div>
                   <div>
-                    <CardTitle className="text-foreground">Notifications</CardTitle>
-                    <CardDescription className="text-muted-foreground">
+                    <CardTitle className="text-white">Notifications</CardTitle>
+                    <CardDescription className="text-white/70">
                       Recent activity and updates
                     </CardDescription>
                   </div>
@@ -419,15 +420,15 @@ const Dashboard = ({ userUID, setIsLoggedIn }: DashboardProps) => {
           </TabsContent>
 
           <TabsContent value="awaiting" className="space-y-6">
-            <Card className="bg-card border-border shadow-sm">
+            <Card className="bg-white/10 backdrop-blur-md border-white/20 shadow-lg">
               <CardHeader className="pb-4">
                 <div className="flex items-center gap-3">
-                  <div className="w-8 h-8 bg-primary/10 rounded-lg flex items-center justify-center">
-                    <Clock className="w-4 h-4 text-primary" />
+                  <div className="w-8 h-8 bg-white/10 backdrop-blur-sm rounded-lg flex items-center justify-center">
+                    <Clock className="w-4 h-4 text-violet-300" />
                   </div>
                   <div>
-                    <CardTitle className="text-foreground">Awaiting Response</CardTitle>
-                    <CardDescription className="text-muted-foreground">
+                    <CardTitle className="text-white">Awaiting Response</CardTitle>
+                    <CardDescription className="text-white/70">
                       People waiting for your response
                     </CardDescription>
                   </div>
