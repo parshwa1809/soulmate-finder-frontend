@@ -3,7 +3,8 @@ import { Card, CardContent } from "@/components/ui/card";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
-import { User, MapPin, Calendar, ArrowLeft } from "lucide-react";
+import { Carousel, CarouselContent, CarouselItem, CarouselNext, CarouselPrevious } from "@/components/ui/carousel";
+import { User, MapPin, Calendar, ArrowLeft, Camera } from "lucide-react";
 
 interface User {
   UID: string;
@@ -16,6 +17,7 @@ interface User {
   hobbies?: string;
   profilePicture?: string;
   bio?: string;
+  images?: string[];
 }
 
 interface ProfileViewProps {
@@ -89,6 +91,42 @@ const ProfileView = ({ user, onBack, children }: ProfileViewProps) => {
                     {hobby.trim()}
                   </Badge>
                 ))}
+              </div>
+            </div>
+          )}
+
+          {user.images && user.images.length > 0 && (
+            <div className="mb-8">
+              <div className="flex items-center gap-2 mb-4">
+                <Camera className="w-5 h-5 text-white" />
+                <h3 className="text-lg font-semibold text-white">Photos</h3>
+              </div>
+              <div className="relative">
+                <Carousel className="w-full">
+                  <CarouselContent>
+                    {user.images.map((image, index) => (
+                      <CarouselItem key={index}>
+                        <div className="relative aspect-square overflow-hidden rounded-xl bg-white/5 backdrop-blur-xl border border-white/10">
+                          <img
+                            src={image}
+                            alt={`Photo ${index + 1} of ${user.name}`}
+                            className="w-full h-full object-cover"
+                            onError={(e) => {
+                              console.error('Failed to load image:', image);
+                              e.currentTarget.style.display = 'none';
+                            }}
+                          />
+                        </div>
+                      </CarouselItem>
+                    ))}
+                  </CarouselContent>
+                  {user.images.length > 1 && (
+                    <>
+                      <CarouselPrevious className="bg-white/10 backdrop-blur-xl border-white/20 text-white hover:bg-white/20" />
+                      <CarouselNext className="bg-white/10 backdrop-blur-xl border-white/20 text-white hover:bg-white/20" />
+                    </>
+                  )}
+                </Carousel>
               </div>
             </div>
           )}

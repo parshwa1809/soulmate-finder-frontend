@@ -69,13 +69,15 @@ const Dashboard = ({ userUID, setIsLoggedIn }: DashboardProps) => {
         }
         
         if (Array.isArray(parsedImages) && parsedImages.length > 0) {
-          // Get the first image from the array
-          const firstImage = parsedImages[0];
-          if (firstImage && firstImage.data) {
-            // The data field contains base64 encoded image
-            profilePicture = `data:image/jpeg;base64,${firstImage.data}`;
-            images = [profilePicture];
-            console.log('Successfully processed image for user:', apiData.UID);
+          // Process all images, not just the first one
+          images = parsedImages
+            .filter(img => img && img.data) // Only include images with data
+            .map(img => `data:image/jpeg;base64,${img.data}`);
+          
+          // Set the first image as profile picture
+          if (images.length > 0) {
+            profilePicture = images[0];
+            console.log(`Successfully processed ${images.length} images for user:`, apiData.UID);
           }
         }
       } catch (error) {
