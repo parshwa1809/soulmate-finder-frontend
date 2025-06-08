@@ -54,7 +54,7 @@ const Dashboard = ({ userUID, setIsLoggedIn }: DashboardProps) => {
       }
     }
 
-    // Parse images if available
+    // Parse images if available - improved logic
     let images: string[] = [];
     let profilePicture = '';
     
@@ -64,17 +64,24 @@ const Dashboard = ({ userUID, setIsLoggedIn }: DashboardProps) => {
         if (Array.isArray(parsedImages)) {
           // Convert base64 data to proper image URLs
           images = parsedImages.map((img: any) => {
-            if (img.data) {
-              return `data:image/jpeg;base64,${img.data}`;
+            if (typeof img === 'object' && img.data) {
+              // Handle object format with data property
+              const base64Data = img.data.startsWith('data:') ? img.data : `data:image/jpeg;base64,${img.data}`;
+              return base64Data;
+            } else if (typeof img === 'string') {
+              // Handle string format
+              const base64Data = img.startsWith('data:') ? img : `data:image/jpeg;base64,${img}`;
+              return base64Data;
             }
             return img;
-          });
+          }).filter(Boolean);
           profilePicture = images[0] || ''; // Use first image as profile picture
         }
       } catch {
         // If parsing fails, try to use IMAGES as a single image
         if (typeof apiData.IMAGES === 'string') {
-          profilePicture = `data:image/jpeg;base64,${apiData.IMAGES}`;
+          const base64Data = apiData.IMAGES.startsWith('data:') ? apiData.IMAGES : `data:image/jpeg;base64,${apiData.IMAGES}`;
+          profilePicture = base64Data;
           images = [profilePicture];
         }
       }
@@ -96,6 +103,13 @@ const Dashboard = ({ userUID, setIsLoggedIn }: DashboardProps) => {
         // If DOB parsing fails, leave age undefined
       }
     }
+
+    console.log('Transformed user:', {
+      UID: apiData.UID,
+      name: apiData.NAME,
+      profilePicture: profilePicture ? 'Image available' : 'No image',
+      imagesCount: images.length
+    });
 
     return {
       UID: apiData.UID,
@@ -216,8 +230,13 @@ const Dashboard = ({ userUID, setIsLoggedIn }: DashboardProps) => {
               <AvatarImage 
                 src={user.profilePicture} 
                 className="object-cover w-full h-full"
+                onLoad={() => {
+                  console.log('Image loaded successfully for user:', user.name);
+                }}
                 onError={(e) => {
-                  console.log('Image failed to load for user:', user.name, 'URL:', user.profilePicture);
+                  console.log('Image failed to load for user:', user.name);
+                  console.log('Image URL:', user.profilePicture);
+                  console.log('Error event:', e);
                 }}
               />
               <AvatarFallback className="bg-gradient-to-br from-violet-500 to-purple-500 text-white font-semibold text-xl">
