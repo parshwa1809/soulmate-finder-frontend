@@ -226,49 +226,39 @@ const Awaiting = () => {
             </div>
           </div>
           
-          {/* Action buttons always visible at bottom of card */}
+          {/* Action buttons - show for ALL users in awaiting section */}
           <div className="mt-6 pt-4 border-t border-white/10">
-            {user.isReceived ? (
-              // Show align and skip buttons for received requests
-              <div className="flex justify-center items-center gap-4">
-                <div className="relative group">
-                  <Button
-                    onClick={(e) => {
-                      e.stopPropagation();
-                      handleAction('align', user);
-                    }}
-                    variant="outline"
-                    size="sm"
-                    disabled={actionLoading === user.UID}
-                    className="relative w-12 h-12 rounded-full bg-white/5 backdrop-blur-xl border-2 border-white/10 hover:border-emerald-400/50 text-white/80 hover:text-emerald-300 transition-all duration-300 hover:scale-110 shadow-2xl hover:shadow-emerald-500/25 group-hover:bg-gradient-to-r group-hover:from-emerald-500/10 group-hover:to-green-500/10"
-                  >
-                    <Heart className="w-5 h-5 group-hover:scale-110 group-hover:fill-current transition-all duration-300" />
-                  </Button>
-                </div>
-                
-                <div className="relative group">
-                  <Button
-                    onClick={(e) => {
-                      e.stopPropagation();
-                      handleAction('skip', user);
-                    }}
-                    variant="outline"
-                    size="sm"
-                    disabled={actionLoading === user.UID}
-                    className="relative w-12 h-12 rounded-full bg-white/5 backdrop-blur-xl border-2 border-white/10 hover:border-red-400/50 text-white/80 hover:text-red-300 transition-all duration-300 hover:scale-110 shadow-2xl hover:shadow-red-500/25 group-hover:bg-gradient-to-r group-hover:from-red-500/10 group-hover:to-pink-500/10"
-                  >
-                    <X className="w-5 h-5 group-hover:rotate-90 transition-transform duration-300" />
-                  </Button>
-                </div>
+            <div className="flex justify-center items-center gap-4">
+              <div className="relative group">
+                <Button
+                  onClick={(e) => {
+                    e.stopPropagation();
+                    handleAction('align', user);
+                  }}
+                  variant="outline"
+                  size="sm"
+                  disabled={actionLoading === user.UID}
+                  className="relative w-12 h-12 rounded-full bg-white/5 backdrop-blur-xl border-2 border-white/10 hover:border-emerald-400/50 text-white/80 hover:text-emerald-300 transition-all duration-300 hover:scale-110 shadow-2xl hover:shadow-emerald-500/25 group-hover:bg-gradient-to-r group-hover:from-emerald-500/10 group-hover:to-green-500/10"
+                >
+                  <Heart className="w-5 h-5 group-hover:scale-110 group-hover:fill-current transition-all duration-300" />
+                </Button>
               </div>
-            ) : (
-              // Show grey clock for sent requests (not clickable)
-              <div className="flex justify-center">
-                <div className="relative w-12 h-12 bg-white/5 backdrop-blur-xl border-2 border-white/10 rounded-full flex items-center justify-center">
-                  <Clock className="w-5 h-5 text-white/40" />
-                </div>
+              
+              <div className="relative group">
+                <Button
+                  onClick={(e) => {
+                    e.stopPropagation();
+                    handleAction('skip', user);
+                  }}
+                  variant="outline"
+                  size="sm"
+                  disabled={actionLoading === user.UID}
+                  className="relative w-12 h-12 rounded-full bg-white/5 backdrop-blur-xl border-2 border-white/10 hover:border-red-400/50 text-white/80 hover:text-red-300 transition-all duration-300 hover:scale-110 shadow-2xl hover:shadow-red-500/25 group-hover:bg-gradient-to-r group-hover:from-red-500/10 group-hover:to-pink-500/10"
+                >
+                  <X className="w-5 h-5 group-hover:rotate-90 transition-transform duration-300" />
+                </Button>
               </div>
-            )}
+            </div>
           </div>
         </CardContent>
       </Card>
@@ -279,7 +269,7 @@ const Awaiting = () => {
     <div className="text-center py-20">
       <div className="relative mx-auto mb-6 w-20 h-20">
         <div className="absolute inset-0 bg-gradient-to-br from-violet-500/20 to-purple-500/20 rounded-full blur-xl"></div>
-        <div className="relative w-20 h-20 bg-white/5 backdrop-blur-xl rounded-full flex items-center justify-center border border-white/10">
+        <div className="relative w-20 h-20 bg-white/5 backdrop-blur-xl rounded-full flex items-center justify-center">
           <Clock className="w-8 h-8 text-white/60" />
         </div>
       </div>
