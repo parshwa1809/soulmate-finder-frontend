@@ -426,163 +426,157 @@ const Dashboard = ({ userUID, setIsLoggedIn }: DashboardProps) => {
       <header className="relative z-10 bg-white/5 backdrop-blur-xl border-b border-white/10">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="flex justify-between items-center h-16">
-            <div className="flex items-center gap-3">
-              <Logo size="sm" showText={false} />
-              <span className="font-bold text-white text-2xl tracking-wide">
-                Aligned
-              </span>
-            </div>
+            <Logo size="sm" showText={true} />
             
-            <Popover open={isMatchesOpen} onOpenChange={setIsMatchesOpen}>
-              <PopoverTrigger asChild>
-                <div className="relative cursor-pointer">
-                  <div className="absolute -inset-1 bg-gradient-to-r from-violet-500 to-purple-500 rounded-xl blur opacity-30"></div>
-                  <img 
-                    src="/lovable-uploads/b01e8af5-640c-4d6b-a324-774afb9bbf88.png" 
-                    alt="Aligned Logo" 
-                    className="relative w-24 h-24 object-cover rounded-xl hover:scale-105 transition-transform duration-300"
-                  />
-                  {matches.length > 0 && (
-                    <Badge className="absolute -top-2 -right-2 h-6 w-6 p-0 flex items-center justify-center bg-red-500 text-white text-xs font-bold">
-                      {matches.length}
-                    </Badge>
-                  )}
-                </div>
-              </PopoverTrigger>
-              <PopoverContent className="w-80 p-0 bg-white/5 backdrop-blur-xl border border-white/10" align="start">
-                <div className="p-4 border-b border-white/10">
-                  <h3 className="font-semibold text-white text-lg">Your Matches</h3>
-                  <p className="text-white/60 text-sm">People who liked you back</p>
-                </div>
-                <div className="max-h-96 overflow-y-auto p-4">
-                  {matches.length > 0 ? (
-                    <div className="space-y-3">
-                      {matches.map((user) => (
-                        <div 
-                          key={user.UID} 
-                          className="flex items-center space-x-3 p-3 rounded-lg bg-white/5 hover:bg-white/10 cursor-pointer transition-colors"
-                          onClick={() => {
-                            handleUserClick(user);
-                            setIsMatchesOpen(false);
-                          }}
-                        >
-                          <Avatar className="w-12 h-12">
-                            <AvatarImage src={user.profilePicture} />
-                            <AvatarFallback className="bg-gradient-to-br from-violet-500 to-purple-500 text-white">
-                              {user.name?.charAt(0) || <User className="w-6 h-6" />}
-                            </AvatarFallback>
-                          </Avatar>
-                          <div className="flex-1 min-w-0">
-                            <p className="font-medium text-white truncate">{user.name}</p>
-                            {user.kundliScore !== undefined && (
-                              <div className="flex items-center">
-                                <Star className="w-3 h-3 text-yellow-400 mr-1" />
-                                <span className="text-xs text-white/70">
-                                  {user.kundliScore}/36
-                                </span>
-                              </div>
-                            )}
+            <div className="flex items-center gap-4">
+              <Popover open={isMatchesOpen} onOpenChange={setIsMatchesOpen}>
+                <PopoverTrigger asChild>
+                  <div className="relative cursor-pointer">
+                    <div className="absolute -inset-1 bg-gradient-to-r from-violet-500 to-purple-500 rounded-xl blur opacity-30"></div>
+                    <img 
+                      src="/lovable-uploads/b01e8af5-640c-4d6b-a324-774afb9bbf88.png" 
+                      alt="Aligned Logo" 
+                      className="relative w-12 h-12 object-cover rounded-xl hover:scale-105 transition-transform duration-300"
+                    />
+                    {matches.length > 0 && (
+                      <Badge className="absolute -top-2 -right-2 h-6 w-6 p-0 flex items-center justify-center bg-red-500 text-white text-xs font-bold">
+                        {matches.length}
+                      </Badge>
+                    )}
+                  </div>
+                </PopoverTrigger>
+                <PopoverContent className="w-80 p-0 bg-white/5 backdrop-blur-xl border border-white/10" align="start">
+                  <div className="p-4 border-b border-white/10">
+                    <h3 className="font-semibold text-white text-lg">Your Matches</h3>
+                    <p className="text-white/60 text-sm">People who liked you back</p>
+                  </div>
+                  <div className="max-h-96 overflow-y-auto p-4">
+                    {matches.length > 0 ? (
+                      <div className="space-y-3">
+                        {matches.map((user) => (
+                          <div 
+                            key={user.UID} 
+                            className="flex items-center space-x-3 p-3 rounded-lg bg-white/5 hover:bg-white/10 cursor-pointer transition-colors"
+                            onClick={() => {
+                              handleUserClick(user);
+                              setIsMatchesOpen(false);
+                            }}
+                          >
+                            <Avatar className="w-12 h-12">
+                              <AvatarImage src={user.profilePicture} />
+                              <AvatarFallback className="bg-gradient-to-br from-violet-500 to-purple-500 text-white">
+                                {user.name?.charAt(0) || <User className="w-6 h-6" />}
+                              </AvatarFallback>
+                            </Avatar>
+                            <div className="flex-1 min-w-0">
+                              <p className="font-medium text-white truncate">{user.name}</p>
+                              {user.kundliScore !== undefined && (
+                                <div className="flex items-center">
+                                  <Star className="w-3 h-3 text-yellow-400 mr-1" />
+                                  <span className="text-xs text-white/70">
+                                    {user.kundliScore}/36
+                                  </span>
+                                </div>
+                              )}
+                            </div>
                           </div>
-                        </div>
-                      ))}
-                    </div>
-                  ) : (
-                    <div className="text-center py-8">
-                      <Heart className="w-8 h-8 text-white/40 mx-auto mb-2" />
-                      <p className="text-white/60 text-sm">No matches yet</p>
-                    </div>
-                  )}
-                </div>
-              </PopoverContent>
-            </Popover>
-            <div>
-              <h1 className="text-2xl font-bold text-white tracking-tight amazon-font">Aligned</h1>
+                        ))}
+                      </div>
+                    ) : (
+                      <div className="text-center py-8">
+                        <Heart className="w-8 h-8 text-white/40 mx-auto mb-2" />
+                        <p className="text-white/60 text-sm">No matches yet</p>
+                      </div>
+                    )}
+                  </div>
+                </PopoverContent>
+              </Popover>
+
+              <Popover open={isNotificationsOpen} onOpenChange={setIsNotificationsOpen}>
+                <PopoverTrigger asChild>
+                  <Button 
+                    variant="outline"
+                    className="border-white/20 bg-white/5 backdrop-blur-xl text-white/90 hover:bg-white/10 hover:border-white/30 transition-all duration-300 font-medium"
+                  >
+                    <Bell className="w-4 h-4 mr-2" />
+                    Notifications
+                    {(notifications.length > 0 || messages.length > 0) && (
+                      <Badge className="ml-2 h-5 w-5 p-0 flex items-center justify-center bg-red-500 text-white text-xs">
+                        {notifications.length + messages.length}
+                      </Badge>
+                    )}
+                  </Button>
+                </PopoverTrigger>
+                <PopoverContent className="w-80 p-0 bg-white/5 backdrop-blur-xl border border-white/10" align="end">
+                  <div className="p-4 border-b border-white/10">
+                    <h3 className="font-semibold text-white text-lg">Notifications</h3>
+                    <p className="text-white/60 text-sm">Recent activity updates</p>
+                  </div>
+                  <div className="max-h-96 overflow-y-auto p-4">
+                    {(messages.length > 0 || notifications.length > 0) ? (
+                      <div className="space-y-3">
+                        {/* Show messages first */}
+                        {messages.map((message) => (
+                          <div key={message.id} className="p-3 rounded-lg bg-white/5 border border-white/10">
+                            <p className="text-white text-sm">{message.text}</p>
+                            {message.userName && (
+                              <p className="text-white/60 text-xs mt-1">From: {message.userName}</p>
+                            )}
+                            <p className="text-white/40 text-xs mt-1">
+                              {message.timestamp.toLocaleString()}
+                            </p>
+                          </div>
+                        ))}
+                        
+                        {/* Then show user notifications */}
+                        {notifications.map((user) => (
+                          <div 
+                            key={user.UID} 
+                            className="flex items-center space-x-3 p-3 rounded-lg bg-white/5 hover:bg-white/10 cursor-pointer transition-colors"
+                            onClick={() => {
+                              handleUserClick(user);
+                              setIsNotificationsOpen(false);
+                            }}
+                          >
+                            <Avatar className="w-12 h-12">
+                              <AvatarImage src={user.profilePicture} />
+                              <AvatarFallback className="bg-gradient-to-br from-blue-500 to-cyan-500 text-white">
+                                {user.name?.charAt(0) || <User className="w-6 h-6" />}
+                              </AvatarFallback>
+                            </Avatar>
+                            <div className="flex-1 min-w-0">
+                              <p className="font-medium text-white truncate">{user.name}</p>
+                              {user.kundliScore !== undefined && (
+                                <div className="flex items-center">
+                                  <Star className="w-3 h-3 text-yellow-400 mr-1" />
+                                  <span className="text-xs text-white/70">
+                                    {user.kundliScore}/36
+                                  </span>
+                                </div>
+                              )}
+                            </div>
+                          </div>
+                        ))}
+                      </div>
+                    ) : (
+                      <div className="text-center py-8">
+                        <Bell className="w-8 h-8 text-white/40 mx-auto mb-2" />
+                        <p className="text-white/60 text-sm">No notifications</p>
+                      </div>
+                    )}
+                  </div>
+                </PopoverContent>
+              </Popover>
+
+              <Button 
+                onClick={handleViewProfile}
+                variant="outline"
+                className="border-white/20 bg-white/5 backdrop-blur-xl text-white/90 hover:bg-white/10 hover:border-white/30 transition-all duration-300 font-medium"
+              >
+                <User className="w-4 h-4 mr-2" />
+                Profile
+              </Button>
             </div>
-          </div>
-          <div className="flex gap-3">
-            <Popover open={isNotificationsOpen} onOpenChange={setIsNotificationsOpen}>
-              <PopoverTrigger asChild>
-                <Button 
-                  variant="outline"
-                  className="border-white/20 bg-white/5 backdrop-blur-xl text-white/90 hover:bg-white/10 hover:border-white/30 transition-all duration-300 font-medium"
-                >
-                  <Bell className="w-4 h-4 mr-2" />
-                  Notifications
-                  {(notifications.length > 0 || messages.length > 0) && (
-                    <Badge className="ml-2 h-5 w-5 p-0 flex items-center justify-center bg-red-500 text-white text-xs">
-                      {notifications.length + messages.length}
-                    </Badge>
-                  )}
-                </Button>
-              </PopoverTrigger>
-              <PopoverContent className="w-80 p-0 bg-white/5 backdrop-blur-xl border border-white/10" align="end">
-                <div className="p-4 border-b border-white/10">
-                  <h3 className="font-semibold text-white text-lg">Notifications</h3>
-                  <p className="text-white/60 text-sm">Recent activity updates</p>
-                </div>
-                <div className="max-h-96 overflow-y-auto p-4">
-                  {(messages.length > 0 || notifications.length > 0) ? (
-                    <div className="space-y-3">
-                      {/* Show messages first */}
-                      {messages.map((message) => (
-                        <div key={message.id} className="p-3 rounded-lg bg-white/5 border border-white/10">
-                          <p className="text-white text-sm">{message.text}</p>
-                          {message.userName && (
-                            <p className="text-white/60 text-xs mt-1">From: {message.userName}</p>
-                          )}
-                          <p className="text-white/40 text-xs mt-1">
-                            {message.timestamp.toLocaleString()}
-                          </p>
-                        </div>
-                      ))}
-                      
-                      {/* Then show user notifications */}
-                      {notifications.map((user) => (
-                        <div 
-                          key={user.UID} 
-                          className="flex items-center space-x-3 p-3 rounded-lg bg-white/5 hover:bg-white/10 cursor-pointer transition-colors"
-                          onClick={() => {
-                            handleUserClick(user);
-                            setIsNotificationsOpen(false);
-                          }}
-                        >
-                          <Avatar className="w-12 h-12">
-                            <AvatarImage src={user.profilePicture} />
-                            <AvatarFallback className="bg-gradient-to-br from-blue-500 to-cyan-500 text-white">
-                              {user.name?.charAt(0) || <User className="w-6 h-6" />}
-                            </AvatarFallback>
-                          </Avatar>
-                          <div className="flex-1 min-w-0">
-                            <p className="font-medium text-white truncate">{user.name}</p>
-                            {user.kundliScore !== undefined && (
-                              <div className="flex items-center">
-                                <Star className="w-3 h-3 text-yellow-400 mr-1" />
-                                <span className="text-xs text-white/70">
-                                  {user.kundliScore}/36
-                                </span>
-                              </div>
-                            )}
-                          </div>
-                        </div>
-                      ))}
-                    </div>
-                  ) : (
-                    <div className="text-center py-8">
-                      <Bell className="w-8 h-8 text-white/40 mx-auto mb-2" />
-                      <p className="text-white/60 text-sm">No notifications</p>
-                    </div>
-                  )}
-                </div>
-              </PopoverContent>
-            </Popover>
-            <Button 
-              onClick={handleViewProfile}
-              variant="outline"
-              className="border-white/20 bg-white/5 backdrop-blur-xl text-white/90 hover:bg-white/10 hover:border-white/30 transition-all duration-300 font-medium"
-            >
-              <User className="w-4 h-4 mr-2" />
-              Profile
-            </Button>
           </div>
         </div>
       </header>
