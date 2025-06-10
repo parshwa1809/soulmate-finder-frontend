@@ -52,8 +52,8 @@ const ProfilePage = () => {
             variant="ghost" 
             className="text-white/80 hover:text-white hover:bg-white/10"
           >
-            <ArrowLeft className="w-4 h-4 mr-2" />
-            Back to Dashboard
+            <ArrowLeft className="w-4 h-4 sm:mr-2" />
+            <span className="hidden sm:inline">Back to Dashboard</span>
           </Button>
           
           <h1 className="text-xl font-semibold text-white amazon-font">
@@ -68,16 +68,16 @@ const ProfilePage = () => {
                   variant="outline"
                   className="border-blue-400/30 bg-blue-500/10 text-blue-200 hover:bg-blue-500/20"
                 >
-                  <RefreshCw className="w-4 h-4 mr-2" />
-                  Update
+                  <RefreshCw className="w-4 h-4 sm:mr-2" />
+                  <span className="hidden sm:inline">Update</span>
                 </Button>
                 <Button 
                   onClick={handleEdit}
                   variant="outline"
                   className="border-violet-400/30 bg-violet-500/10 text-violet-200 hover:bg-violet-500/20"
                 >
-                  <Edit className="w-4 h-4 mr-2" />
-                  Edit
+                  <Edit className="w-4 h-4 sm:mr-2" />
+                  <span className="hidden sm:inline">Edit</span>
                 </Button>
               </>
             )}
@@ -86,8 +86,8 @@ const ProfilePage = () => {
               variant="outline"
               className="border-red-400/30 bg-red-500/10 text-red-200 hover:bg-red-500/20"
             >
-              <LogOut className="w-4 h-4 mr-2" />
-              Logout
+              <LogOut className="w-4 h-4 sm:mr-2" />
+              <span className="hidden sm:inline">Logout</span>
             </Button>
           </div>
         </div>
