@@ -186,9 +186,9 @@ const Awaiting = () => {
     console.log('Rendering UserCard for user:', user.name, 'isReceived:', user.isReceived);
     
     return (
-      <Card className="group hover:shadow-2xl transition-all duration-500 cursor-pointer hover:scale-[1.02]">
-        <CardContent className="p-6" onClick={() => handleUserClick(user)}>
-          <div className="flex items-start space-x-4">
+      <Card className="group hover:shadow-2xl transition-all duration-500 hover:scale-[1.02] relative">
+        <CardContent className="p-6">
+          <div className="flex items-start space-x-4 cursor-pointer" onClick={() => handleUserClick(user)}>
             <div className="relative">
               <Avatar className="w-16 h-16 ring-2 ring-white/20 group-hover:ring-white/40 transition-all duration-300">
                 <AvatarImage src={user.profilePicture} />
@@ -226,14 +226,17 @@ const Awaiting = () => {
             </div>
           </div>
           
-          {/* Action buttons at bottom of card */}
-          <div className="mt-4 pt-4 border-t border-white/10" onClick={(e) => e.stopPropagation()}>
+          {/* Action buttons always visible at bottom of card */}
+          <div className="mt-6 pt-4 border-t border-white/10">
             {user.isReceived ? (
               // Show align and skip buttons for received requests
               <div className="flex justify-center items-center gap-4">
                 <div className="relative group">
                   <Button
-                    onClick={() => handleAction('align', user)}
+                    onClick={(e) => {
+                      e.stopPropagation();
+                      handleAction('align', user);
+                    }}
                     variant="outline"
                     size="sm"
                     disabled={actionLoading === user.UID}
@@ -245,7 +248,10 @@ const Awaiting = () => {
                 
                 <div className="relative group">
                   <Button
-                    onClick={() => handleAction('skip', user)}
+                    onClick={(e) => {
+                      e.stopPropagation();
+                      handleAction('skip', user);
+                    }}
                     variant="outline"
                     size="sm"
                     disabled={actionLoading === user.UID}
