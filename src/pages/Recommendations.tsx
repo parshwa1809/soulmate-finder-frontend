@@ -78,15 +78,41 @@ const Recommendations = () => {
     setSelectedUser(null);
   };
 
-  const handleActionComplete = (queue?: string, message?: string) => {
+  const handleActionComplete = (action: 'skip' | 'align', queue?: string, message?: string) => {
     if (!selectedUser) return;
+
+    console.log('Action completed:', { action, queue, message, userUID: selectedUser.UID });
 
     // Remove user from recommendations
     const userUID = selectedUser.UID;
     setRecommendations(prev => prev.filter(user => user.UID !== userUID));
 
-    // Note: For recommendations page, we don't add to other queues
-    // as this page only shows recommendations
+    // Add user to the appropriate queue based on the API response
+    if (queue) {
+      const userData = localStorage.getItem('userData');
+      if (userData) {
+        try {
+          const parsedData = JSON.parse(userData);
+          
+          // Add user to the specified queue
+          if (queue === 'AWAITING') {
+            const currentAwaiting = parsedData.awaiting || [];
+            parsedData.awaiting = [...currentAwaiting, selectedUser.UID];
+            console.log('Added user to awaiting queue:', selectedUser.UID);
+          } else if (queue === 'MATCHED') {
+            const currentMatches = parsedData.matches || [];
+            parsedData.matches = [...currentMatches, selectedUser.UID];
+            console.log('Added user to matches queue:', selectedUser.UID);
+          }
+          
+          // Update localStorage with the new queue data
+          localStorage.setItem('userData', JSON.stringify(parsedData));
+          console.log('Updated localStorage with new queue data');
+        } catch (error) {
+          console.error('Error updating queue data:', error);
+        }
+      }
+    }
 
     // Close the profile view
     setSelectedUser(null);
