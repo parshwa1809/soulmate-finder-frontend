@@ -13,13 +13,13 @@ import {
   CardTitle,
 } from "@/components/ui/card";
 import { Label } from "@/components/ui/label";
-import { Loader2 } from "lucide-react";
+import { Loader2, Mail, Lock, Eye, EyeOff } from "lucide-react";
 
 const Index = () => {
-  const [phoneNumber, setPhoneNumber] = useState("");
-  const [otp, setOtp] = useState("");
-  const [showOTPInput, setShowOTPInput] = useState(false);
+  const [email, setEmail] = useState("");
+  const [password, setPassword] = useState("");
   const [loading, setLoading] = useState(false);
+  const [showPassword, setShowPassword] = useState(false);
   const navigate = useNavigate();
   const { toast } = useToast();
 
@@ -31,43 +31,29 @@ const Index = () => {
     }
   }, [navigate]);
 
-  const sendOTP = async () => {
-    if (phoneNumber.length !== 10) {
+  const handleLogin = async (e: React.FormEvent) => {
+    e.preventDefault();
+    
+    if (!email || !password) {
       toast({
-        title: "Invalid phone number",
-        description: "Please enter a 10 digit phone number",
+        title: "Missing credentials",
+        description: "Please enter both email and password",
+        variant: "destructive",
       });
       return;
     }
-    setLoading(true);
-    // Simulate OTP sending
-    setTimeout(() => {
-      setShowOTPInput(true);
-      setLoading(false);
-      toast({
-        title: "OTP sent",
-        description: "Please enter the OTP sent to your phone number",
-      });
-    }, 1000);
-  };
 
-  const verifyOTP = async () => {
     setLoading(true);
-    // Simulate OTP verification
+    
+    // Simulate login process
     setTimeout(() => {
-      if (otp === "123456") {
-        localStorage.setItem("authToken", "demo-token");
-        toast({
-          title: "Success",
-          description: "Phone auth successful",
-        });
-        navigate("/dashboard");
-      } else {
-        toast({
-          title: "Error",
-          description: "Invalid OTP. Try 123456",
-        });
-      }
+      // For demo purposes, accept any email/password combination
+      localStorage.setItem("authToken", "demo-token");
+      toast({
+        title: "Success",
+        description: "Login successful",
+      });
+      navigate("/dashboard");
       setLoading(false);
     }, 1000);
   };
@@ -81,44 +67,64 @@ const Index = () => {
               Welcome to Aligned
             </CardTitle>
             <CardDescription className="text-center">
-              Enter your phone number to get started
+              Sign in to your account
             </CardDescription>
           </CardHeader>
-          <CardContent className="grid gap-4">
-            <div className="grid gap-2">
-              <Label htmlFor="phone">Phone Number</Label>
-              <Input
-                id="phone"
-                type="tel"
-                placeholder="555-555-5555"
-                value={phoneNumber}
-                onChange={(e) => setPhoneNumber(e.target.value)}
-                disabled={showOTPInput}
-              />
-            </div>
-            {showOTPInput && (
+          <CardContent>
+            <form onSubmit={handleLogin} className="grid gap-4">
               <div className="grid gap-2">
-                <Label htmlFor="otp">OTP</Label>
-                <Input
-                  id="otp"
-                  placeholder="123456"
-                  value={otp}
-                  onChange={(e) => setOtp(e.target.value)}
-                />
+                <Label htmlFor="email">Email</Label>
+                <div className="relative">
+                  <Mail className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-white/50" />
+                  <Input
+                    id="email"
+                    type="email"
+                    placeholder="Enter your email"
+                    value={email}
+                    onChange={(e) => setEmail(e.target.value)}
+                    className="pl-10"
+                    required
+                  />
+                </div>
               </div>
-            )}
+              <div className="grid gap-2">
+                <Label htmlFor="password">Password</Label>
+                <div className="relative">
+                  <Lock className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-white/50" />
+                  <Input
+                    id="password"
+                    type={showPassword ? "text" : "password"}
+                    placeholder="Enter your password"
+                    value={password}
+                    onChange={(e) => setPassword(e.target.value)}
+                    className="pl-10 pr-10"
+                    required
+                  />
+                  <button
+                    type="button"
+                    onClick={() => setShowPassword(!showPassword)}
+                    className="absolute right-3 top-1/2 transform -translate-y-1/2 text-white/50 hover:text-white/80 transition-colors"
+                  >
+                    {showPassword ? <EyeOff className="h-4 w-4" /> : <Eye className="h-4 w-4" />}
+                  </button>
+                </div>
+              </div>
+              <Button
+                type="submit"
+                disabled={loading}
+                className="w-full"
+              >
+                {loading ? (
+                  <>
+                    <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                    Signing In...
+                  </>
+                ) : (
+                  "Sign In"
+                )}
+              </Button>
+            </form>
           </CardContent>
-          <CardFooter className="flex justify-between">
-            <Button
-              onClick={showOTPInput ? verifyOTP : sendOTP}
-              disabled={loading}
-            >
-              {loading ? (
-                <Loader2 className="mr-2 h-4 w-4 animate-spin" />
-              ) : null}
-              {showOTPInput ? "Verify OTP" : "Send OTP"}
-            </Button>
-          </CardFooter>
         </Card>
       </div>
     </div>
