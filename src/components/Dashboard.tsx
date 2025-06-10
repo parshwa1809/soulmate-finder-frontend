@@ -5,6 +5,7 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/com
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Badge } from "@/components/ui/badge";
+import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
 import { Heart, Bell, Clock, Users, User, LogOut, Star } from "lucide-react";
 import { config } from "../config/api";
 import UserActions from "./UserActions";
@@ -38,6 +39,7 @@ const Dashboard = ({ userUID, setIsLoggedIn }: DashboardProps) => {
   const [awaiting, setAwaiting] = useState<User[]>([]);
   const [isLoading, setIsLoading] = useState(true);
   const [selectedUser, setSelectedUser] = useState<User | null>(null);
+  const [isMatchesOpen, setIsMatchesOpen] = useState(false);
 
   useEffect(() => {
     loadUserData();
@@ -353,12 +355,66 @@ const Dashboard = ({ userUID, setIsLoggedIn }: DashboardProps) => {
       <div className="border-b border-white/10 bg-white/5 backdrop-blur-2xl sticky top-0 z-50">
         <div className="max-w-7xl mx-auto px-6 py-6 flex items-center justify-between">
           <div className="flex items-center space-x-4">
-            <div className="relative">
-              <div className="absolute -inset-1 bg-gradient-to-r from-violet-500 to-purple-500 rounded-lg blur opacity-30"></div>
-              <div className="relative w-10 h-10 bg-white/10 backdrop-blur-xl rounded-lg border border-white/20 flex items-center justify-center">
-                <Heart className="w-5 h-5 text-violet-300" />
-              </div>
-            </div>
+            <Popover open={isMatchesOpen} onOpenChange={setIsMatchesOpen}>
+              <PopoverTrigger asChild>
+                <div className="relative cursor-pointer">
+                  <div className="absolute -inset-1 bg-gradient-to-r from-violet-500 to-purple-500 rounded-lg blur opacity-30"></div>
+                  <div className="relative w-10 h-10 bg-white/10 backdrop-blur-xl rounded-lg border border-white/20 flex items-center justify-center hover:bg-white/20 transition-all duration-300">
+                    <Heart className="w-5 h-5 text-violet-300" />
+                    {matches.length > 0 && (
+                      <Badge className="absolute -top-2 -right-2 h-5 w-5 p-0 flex items-center justify-center bg-red-500 text-white text-xs">
+                        {matches.length}
+                      </Badge>
+                    )}
+                  </div>
+                </div>
+              </PopoverTrigger>
+              <PopoverContent className="w-80 p-0 bg-white/5 backdrop-blur-xl border border-white/10" align="start">
+                <div className="p-4 border-b border-white/10">
+                  <h3 className="font-semibold text-white text-lg">Your Matches</h3>
+                  <p className="text-white/60 text-sm">People who liked you back</p>
+                </div>
+                <div className="max-h-96 overflow-y-auto p-4">
+                  {matches.length > 0 ? (
+                    <div className="space-y-3">
+                      {matches.map((user) => (
+                        <div 
+                          key={user.UID} 
+                          className="flex items-center space-x-3 p-3 rounded-lg bg-white/5 hover:bg-white/10 cursor-pointer transition-colors"
+                          onClick={() => {
+                            handleUserClick(user);
+                            setIsMatchesOpen(false);
+                          }}
+                        >
+                          <Avatar className="w-12 h-12">
+                            <AvatarImage src={user.profilePicture} />
+                            <AvatarFallback className="bg-gradient-to-br from-violet-500 to-purple-500 text-white">
+                              {user.name?.charAt(0) || <User className="w-6 h-6" />}
+                            </AvatarFallback>
+                          </Avatar>
+                          <div className="flex-1 min-w-0">
+                            <p className="font-medium text-white truncate">{user.name}</p>
+                            {user.kundliScore !== undefined && (
+                              <div className="flex items-center">
+                                <Star className="w-3 h-3 text-yellow-400 mr-1" />
+                                <span className="text-xs text-white/70">
+                                  {user.kundliScore}/36
+                                </span>
+                              </div>
+                            )}
+                          </div>
+                        </div>
+                      ))}
+                    </div>
+                  ) : (
+                    <div className="text-center py-8">
+                      <Heart className="w-8 h-8 text-white/40 mx-auto mb-2" />
+                      <p className="text-white/60 text-sm">No matches yet</p>
+                    </div>
+                  )}
+                </div>
+              </PopoverContent>
+            </Popover>
             <div>
               <h1 className="text-2xl font-bold text-white tracking-tight amazon-font">Aligned</h1>
             </div>
@@ -378,7 +434,7 @@ const Dashboard = ({ userUID, setIsLoggedIn }: DashboardProps) => {
 
       <div className="max-w-7xl mx-auto px-6 py-8">
         <Tabs defaultValue="recommendations" className="space-y-8">
-          <TabsList className="grid w-full grid-cols-4 bg-white/5 backdrop-blur-xl border border-white/10 p-1 rounded-2xl">
+          <TabsList className="grid w-full grid-cols-3 bg-white/5 backdrop-blur-xl border border-white/10 p-1 rounded-2xl">
             <TabsTrigger 
               value="recommendations" 
               className="flex items-center gap-2 text-white/70 data-[state=active]:bg-white/10 data-[state=active]:text-white font-medium rounded-xl transition-all duration-300 py-3"
@@ -387,16 +443,6 @@ const Dashboard = ({ userUID, setIsLoggedIn }: DashboardProps) => {
               <span className="hidden sm:inline">Discover</span>
               <Badge variant="secondary" className="bg-white/20 text-white/80 text-xs">
                 {recommendations.length}
-              </Badge>
-            </TabsTrigger>
-            <TabsTrigger 
-              value="matches" 
-              className="flex items-center gap-2 text-white/70 data-[state=active]:bg-white/10 data-[state=active]:text-white font-medium rounded-xl transition-all duration-300 py-3"
-            >
-              <Heart className="w-4 h-4" />
-              <span className="hidden sm:inline">Matches</span>
-              <Badge variant="secondary" className="bg-white/20 text-white/80 text-xs">
-                {matches.length}
               </Badge>
             </TabsTrigger>
             <TabsTrigger 
@@ -451,42 +497,6 @@ const Dashboard = ({ userUID, setIsLoggedIn }: DashboardProps) => {
                     icon={Users}
                     title="No new discoveries"
                     description="We're finding amazing people for you to connect with!"
-                  />
-                )}
-              </CardContent>
-            </Card>
-          </TabsContent>
-
-          <TabsContent value="matches" className="space-y-6">
-            <Card className="bg-white/5 backdrop-blur-xl border border-white/10 shadow-2xl overflow-hidden">
-              <CardHeader className="pb-6 bg-gradient-to-r from-emerald-500/10 to-green-500/10">
-                <div className="flex items-center gap-4">
-                  <div className="relative">
-                    <div className="absolute -inset-1 bg-gradient-to-r from-emerald-500 to-green-500 rounded-xl blur opacity-30"></div>
-                    <div className="relative w-12 h-12 bg-white/10 backdrop-blur-xl rounded-xl border border-white/20 flex items-center justify-center">
-                      <Heart className="w-6 h-6 text-emerald-300" />
-                    </div>
-                  </div>
-                  <div>
-                    <CardTitle className="text-white text-xl font-bold">Your Matches</CardTitle>
-                    <CardDescription className="text-white/60 font-medium mt-1">
-                      People who liked you back - start a conversation!
-                    </CardDescription>
-                  </div>
-                </div>
-              </CardHeader>
-              <CardContent className="p-6">
-                {matches.length > 0 ? (
-                  <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-                    {matches.map((user) => (
-                      <UserCard key={user.UID} user={user} />
-                    ))}
-                  </div>
-                ) : (
-                  <EmptyState
-                    icon={Heart}
-                    title="No matches yet"
-                    description="Keep exploring to find your perfect match!"
                   />
                 )}
               </CardContent>
