@@ -14,7 +14,6 @@ import {
 } from "@/components/ui/card";
 import { Label } from "@/components/ui/label";
 import { Loader2 } from "lucide-react";
-import Logo from "@/components/Logo";
 
 const Index = () => {
   const [phoneNumber, setPhoneNumber] = useState("");
@@ -75,16 +74,6 @@ const Index = () => {
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-slate-900 via-purple-900 to-slate-900">
-      {/* Add logo at the top to test */}
-      <div className="flex justify-center pt-8 pb-4">
-        <Logo size="lg" />
-      </div>
-      
-      {/* Test font separately */}
-      <div className="text-center pb-8">
-        <h1 className="font-antrokas text-4xl text-white">Antrokas Font Test</h1>
-      </div>
-      
       <div className="flex justify-center items-center h-screen">
         <Card className="w-full max-w-md bg-gradient-card nebula-glow">
           <CardHeader>
