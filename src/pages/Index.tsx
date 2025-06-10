@@ -1,132 +1,118 @@
 
-import { useEffect, useState } from "react";
-import { useNavigate } from "react-router-dom";
-import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
-import { useToast } from "@/components/ui/use-toast";
-import {
-  Card,
-  CardContent,
-  CardDescription,
-  CardFooter,
-  CardHeader,
-  CardTitle,
-} from "@/components/ui/card";
-import { Label } from "@/components/ui/label";
-import { Loader2, Mail, Lock, Eye, EyeOff } from "lucide-react";
+import { Routes, Route, Navigate } from "react-router-dom";
+import { useState, useEffect } from "react";
+import Login from "../components/Login";
+import Register from "../components/Register";
+import Dashboard from "../components/Dashboard";
+import Matches from "./Matches";
+import Recommendations from "./Recommendations";
+import Notifications from "./Notifications";
+import Awaiting from "./Awaiting";
+import ProfilePage from "./Profile";
 
 const Index = () => {
-  const [email, setEmail] = useState("");
-  const [password, setPassword] = useState("");
-  const [loading, setLoading] = useState(false);
-  const [showPassword, setShowPassword] = useState(false);
-  const navigate = useNavigate();
-  const { toast } = useToast();
+  const [isLoggedIn, setIsLoggedIn] = useState(false);
+  const [userUID, setUserUID] = useState<string | null>(null);
+  const [isLoading, setIsLoading] = useState(true);
 
   useEffect(() => {
-    // Check if user is already authenticated
-    const authToken = localStorage.getItem("authToken");
-    if (authToken) {
-      navigate("/dashboard");
+    // Check for existing login state on app load
+    const storedUID = localStorage.getItem('userUID');
+    if (storedUID) {
+      setUserUID(storedUID);
+      setIsLoggedIn(true);
     }
-  }, [navigate]);
+    setIsLoading(false);
+  }, []);
 
-  const handleLogin = async (e: React.FormEvent) => {
-    e.preventDefault();
-    
-    if (!email || !password) {
-      toast({
-        title: "Missing credentials",
-        description: "Please enter both email and password",
-        variant: "destructive",
-      });
-      return;
-    }
-
-    setLoading(true);
-    
-    // Simulate login process
-    setTimeout(() => {
-      // For demo purposes, accept any email/password combination
-      localStorage.setItem("authToken", "demo-token");
-      toast({
-        title: "Success",
-        description: "Login successful",
-      });
-      navigate("/dashboard");
-      setLoading(false);
-    }, 1000);
-  };
+  if (isLoading) {
+    return (
+      <div className="min-h-screen bg-gradient-to-br from-slate-900 via-purple-900 to-slate-900 flex items-center justify-center">
+        <div className="text-center">
+          <div className="relative w-16 h-16 mx-auto mb-6">
+            <div className="absolute inset-0 bg-gradient-to-br from-violet-500 to-purple-500 rounded-full blur-lg opacity-50"></div>
+            <div className="relative w-16 h-16 bg-white/10 backdrop-blur-xl rounded-full border border-white/20 flex items-center justify-center">
+              <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-white/70"></div>
+            </div>
+          </div>
+          <p className="text-white/70 font-medium">Loading...</p>
+        </div>
+      </div>
+    );
+  }
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-slate-900 via-purple-900 to-slate-900">
-      <div className="flex justify-center items-center h-screen">
-        <Card className="w-full max-w-md bg-gradient-card nebula-glow">
-          <CardHeader>
-            <CardTitle className="text-2xl text-center">
-              Welcome to Aligned
-            </CardTitle>
-            <CardDescription className="text-center">
-              Sign in to your account
-            </CardDescription>
-          </CardHeader>
-          <CardContent>
-            <form onSubmit={handleLogin} className="grid gap-4">
-              <div className="grid gap-2">
-                <Label htmlFor="email">Email</Label>
-                <div className="relative">
-                  <Mail className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-white/50" />
-                  <Input
-                    id="email"
-                    type="email"
-                    placeholder="Enter your email"
-                    value={email}
-                    onChange={(e) => setEmail(e.target.value)}
-                    className="pl-10"
-                    required
-                  />
-                </div>
-              </div>
-              <div className="grid gap-2">
-                <Label htmlFor="password">Password</Label>
-                <div className="relative">
-                  <Lock className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-white/50" />
-                  <Input
-                    id="password"
-                    type={showPassword ? "text" : "password"}
-                    placeholder="Enter your password"
-                    value={password}
-                    onChange={(e) => setPassword(e.target.value)}
-                    className="pl-10 pr-10"
-                    required
-                  />
-                  <button
-                    type="button"
-                    onClick={() => setShowPassword(!showPassword)}
-                    className="absolute right-3 top-1/2 transform -translate-y-1/2 text-white/50 hover:text-white/80 transition-colors"
-                  >
-                    {showPassword ? <EyeOff className="h-4 w-4" /> : <Eye className="h-4 w-4" />}
-                  </button>
-                </div>
-              </div>
-              <Button
-                type="submit"
-                disabled={loading}
-                className="w-full"
-              >
-                {loading ? (
-                  <>
-                    <Loader2 className="mr-2 h-4 w-4 animate-spin" />
-                    Signing In...
-                  </>
-                ) : (
-                  "Sign In"
-                )}
-              </Button>
-            </form>
-          </CardContent>
-        </Card>
-      </div>
+      <Routes>
+        <Route 
+          path="/login" 
+          element={
+            isLoggedIn ? 
+            <Navigate to="/dashboard" /> : 
+            <Login setIsLoggedIn={setIsLoggedIn} setUserUID={setUserUID} />
+          } 
+        />
+        <Route 
+          path="/register" 
+          element={
+            isLoggedIn ? 
+            <Navigate to="/dashboard" /> : 
+            <Register />
+          } 
+        />
+        <Route 
+          path="/dashboard" 
+          element={
+            isLoggedIn ? 
+            <Dashboard userUID={userUID} setIsLoggedIn={setIsLoggedIn} /> : 
+            <Navigate to="/login" />
+          } 
+        />
+        <Route 
+          path="/profile" 
+          element={
+            isLoggedIn ? 
+            <ProfilePage /> : 
+            <Navigate to="/login" />
+          } 
+        />
+        <Route 
+          path="/matches" 
+          element={
+            isLoggedIn ? 
+            <Matches /> : 
+            <Navigate to="/login" />
+          } 
+        />
+        <Route 
+          path="/recommendations" 
+          element={
+            isLoggedIn ? 
+            <Recommendations /> : 
+            <Navigate to="/login" />
+          } 
+        />
+        <Route 
+          path="/notifications" 
+          element={
+            isLoggedIn ? 
+            <Notifications /> : 
+            <Navigate to="/login" />
+          } 
+        />
+        <Route 
+          path="/awaiting" 
+          element={
+            isLoggedIn ? 
+            <Awaiting /> : 
+            <Navigate to="/login" />
+          } 
+        />
+        <Route 
+          path="/" 
+          element={<Navigate to={isLoggedIn ? "/dashboard" : "/login"} />} 
+        />
+      </Routes>
     </div>
   );
 };
