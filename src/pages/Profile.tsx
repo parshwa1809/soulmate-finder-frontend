@@ -27,9 +27,12 @@ const ProfilePage = () => {
   };
 
   const handleLogout = () => {
+    // Clear all user data from localStorage
     localStorage.removeItem('userUID');
     localStorage.removeItem('userData');
-    navigate("/login");
+    
+    // Force a complete page reload to reset the app state
+    window.location.href = "/login";
   };
 
   const handleUpdate = () => {
