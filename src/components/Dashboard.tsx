@@ -24,6 +24,7 @@ interface User {
   bio?: string;
   images?: string[];
   kundliScore?: number;
+  recommendationUID?: string; // Add this to store the recommendation_uid
 }
 
 interface DashboardMessage {
@@ -54,7 +55,7 @@ const Dashboard = ({ userUID, setIsLoggedIn }: DashboardProps) => {
     loadUserData();
   }, []);
 
-  const transformUserData = (apiData: any, kundliScore?: number): User => {
+  const transformUserData = (apiData: any, kundliScore?: number, recommendationUID?: string): User => {
     // Parse hobbies if it's a JSON string
     let hobbies = '';
     if (apiData.HOBBIES) {
@@ -127,11 +128,12 @@ const Dashboard = ({ userUID, setIsLoggedIn }: DashboardProps) => {
       profilePicture: profilePicture,
       bio: apiData.BIO || apiData.bio,
       images: images,
-      kundliScore: kundliScore
+      kundliScore: kundliScore,
+      recommendationUID: recommendationUID
     };
 
-    // Log the transformed user data with kundliScore
-    console.log(`Transformed user ${apiData.UID} with kundliScore:`, kundliScore, userData);
+    // Log the transformed user data with kundliScore and recommendationUID
+    console.log(`Transformed user ${apiData.UID} with kundliScore:`, kundliScore, 'and recommendationUID:', recommendationUID, userData);
     
     return userData;
   };
@@ -181,11 +183,13 @@ const Dashboard = ({ userUID, setIsLoggedIn }: DashboardProps) => {
         // Handle both array format [UID, score, date, ...] and object format
         const uid = Array.isArray(item) ? item[0] : (item.UID || item);
         const kundliScore = Array.isArray(item) && item.length > 1 ? item[1] : undefined;
+        const recommendationUID = Array.isArray(item) ? item[0] : (item.UID || item); // Extract recommendation_uid
         
         console.log(`${categoryName}[${index}]:`, {
           rawItem: item,
           extractedUID: uid,
           extractedKundliScore: kundliScore,
+          extractedRecommendationUID: recommendationUID,
           isArray: Array.isArray(item),
           itemLength: Array.isArray(item) ? item.length : 'not array'
         });
@@ -201,7 +205,7 @@ const Dashboard = ({ userUID, setIsLoggedIn }: DashboardProps) => {
         if (response.ok) {
           const userData = await response.json();
           console.log(`Successfully fetched user data for ${uid}:`, userData);
-          return transformUserData(userData, kundliScore);
+          return transformUserData(userData, kundliScore, recommendationUID);
         } else {
           console.error(`Failed to fetch user ${uid}, status: ${response.status}`);
         }
@@ -209,7 +213,7 @@ const Dashboard = ({ userUID, setIsLoggedIn }: DashboardProps) => {
       });
 
       const users = (await Promise.all(userPromises)).filter(Boolean);
-      console.log(`Final processed users for ${categoryName}:`, users.map(u => ({ UID: u.UID, name: u.name, kundliScore: u.kundliScore })));
+      console.log(`Final processed users for ${categoryName}:`, users.map(u => ({ UID: u.UID, name: u.name, kundliScore: u.kundliScore, recommendationUID: u.recommendationUID })));
       setter(users);
     } catch (error) {
       console.error(`Error fetching users for ${categoryName}:`, error);
@@ -349,6 +353,7 @@ const Dashboard = ({ userUID, setIsLoggedIn }: DashboardProps) => {
             <UserActions 
               userUID={user.UID} 
               currentUserUID={userUID}
+              recommendationUID={user.recommendationUID}
               onActionComplete={handleActionComplete}
             />
           </div>
@@ -382,6 +387,7 @@ const Dashboard = ({ userUID, setIsLoggedIn }: DashboardProps) => {
             <UserActions 
               userUID={selectedUser.UID} 
               currentUserUID={userUID}
+              recommendationUID={selectedUser.recommendationUID}
               onActionComplete={handleActionComplete}
             />
           </ProfileView>
