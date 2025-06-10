@@ -3,11 +3,12 @@ import { Card, CardContent } from "@/components/ui/card";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
-import { Clock, User, ArrowLeft } from "lucide-react";
+import { Clock, User, ArrowLeft, Heart, X } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 import { config } from "../config/api";
 import ProfileView from "../components/ProfileView";
 import UserActions from "../components/UserActions";
+import { useToast } from "@/components/ui/use-toast";
 
 interface User {
   UID: string;
@@ -20,7 +21,8 @@ interface User {
   hobbies?: string;
   profilePicture?: string;
   bio?: string;
-  recommendationUID?: string; // Add this to store the recommendation_uid
+  recommendationUID?: string;
+  isReceived?: boolean; // Add this to track if it's a received request
 }
 
 const Awaiting = () => {
@@ -29,6 +31,8 @@ const Awaiting = () => {
   const [isLoading, setIsLoading] = useState(true);
   const [selectedUser, setSelectedUser] = useState<User | null>(null);
   const [userUID, setUserUID] = useState<string | null>(null);
+  const [actionLoading, setActionLoading] = useState<string | null>(null);
+  const { toast } = useToast();
 
   useEffect(() => {
     const uid = localStorage.getItem('userUID');
@@ -53,21 +57,22 @@ const Awaiting = () => {
   const loadUsersForCategory = async (userList: any[], setter: (users: User[]) => void) => {
     try {
       const userPromises = userList.map(async (item) => {
-        // Extract recommendation_uid from the array structure [["recommendation_uid","score",..]]
+        // Extract values from the array structure [["recommendation_uid","score","date","isReceived",..]]
         const recommendationUID = Array.isArray(item) ? item[0] : (item.UID || item);
-        const uid = recommendationUID; // The user UID is the same as recommendation_uid in this case
+        const uid = recommendationUID;
+        const isReceived = Array.isArray(item) && item.length > 3 ? item[3] : false;
         
-        console.log('Loading user with recommendationUID:', recommendationUID);
+        console.log('Loading user with recommendationUID:', recommendationUID, 'isReceived:', isReceived);
         
         const response = await fetch(`${config.URL}/get:${uid}`, {
           method: 'POST',
         });
         if (response.ok) {
           const userData = await response.json();
-          // Add the recommendationUID to the user data
           return {
             ...userData,
-            recommendationUID: recommendationUID
+            recommendationUID: recommendationUID,
+            isReceived: isReceived
           };
         }
         return null;
@@ -78,6 +83,74 @@ const Awaiting = () => {
     } catch (error) {
       console.error('Error fetching users:', error);
       setter([]);
+    }
+  };
+
+  const handleAction = async (actionType: 'skip' | 'align', user: User) => {
+    if (!userUID) {
+      toast({
+        title: "Error",
+        description: "You must be logged in to perform this action.",
+        variant: "destructive",
+      });
+      return;
+    }
+    
+    setActionLoading(user.UID);
+    try {
+      const formData = new FormData();
+      const metadata = {
+        uid: userUID,
+        action: actionType,
+        recommendation_uid: user.recommendationUID || user.UID
+      };
+      formData.append('metadata', JSON.stringify(metadata));
+
+      console.log('Sending action request:', metadata);
+
+      const response = await fetch(`${config.URL}/account:action`, {
+        method: 'POST',
+        body: formData,
+      });
+
+      if (response.ok) {
+        const data = await response.json();
+        console.log('Action response:', data);
+        
+        if (data.error === 'OK') {
+          toast({
+            title: "Success",
+            description: data.message || `${actionType === 'align' ? 'Aligned' : 'Skipped'} successfully!`,
+          });
+          
+          // Remove user from awaiting list
+          setAwaiting(prev => prev.filter(u => u.UID !== user.UID));
+        } else {
+          console.error('API error:', data.error);
+          toast({
+            title: "Error",
+            description: data.error || "An error occurred while processing your action.",
+            variant: "destructive",
+          });
+        }
+      } else {
+        const errorText = await response.text();
+        console.error('HTTP error:', response.status, errorText);
+        toast({
+          title: "Network Error",
+          description: `Server responded with status ${response.status}. Please try again.`,
+          variant: "destructive",
+        });
+      }
+    } catch (error) {
+      console.error('Action error:', error);
+      toast({
+        title: "Error",
+        description: "Failed to connect to server. Please check your connection and try again.",
+        variant: "destructive",
+      });
+    } finally {
+      setActionLoading(null);
     }
   };
 
@@ -137,6 +210,45 @@ const Awaiting = () => {
               </div>
             )}
           </div>
+        </div>
+        
+        {/* Action buttons at bottom of card */}
+        <div className="mt-4 pt-4 border-t border-white/10" onClick={(e) => e.stopPropagation()}>
+          {user.isReceived ? (
+            // Show align and skip buttons for received requests
+            <div className="flex justify-center items-center gap-4">
+              <div className="relative group">
+                <Button
+                  onClick={() => handleAction('align', user)}
+                  variant="outline"
+                  size="sm"
+                  disabled={actionLoading === user.UID}
+                  className="relative w-12 h-12 rounded-full bg-white/5 backdrop-blur-xl border-2 border-white/10 hover:border-emerald-400/50 text-white/80 hover:text-emerald-300 transition-all duration-300 hover:scale-110 shadow-2xl hover:shadow-emerald-500/25 group-hover:bg-gradient-to-r group-hover:from-emerald-500/10 group-hover:to-green-500/10"
+                >
+                  <Heart className="w-5 h-5 group-hover:scale-110 group-hover:fill-current transition-all duration-300" />
+                </Button>
+              </div>
+              
+              <div className="relative group">
+                <Button
+                  onClick={() => handleAction('skip', user)}
+                  variant="outline"
+                  size="sm"
+                  disabled={actionLoading === user.UID}
+                  className="relative w-12 h-12 rounded-full bg-white/5 backdrop-blur-xl border-2 border-white/10 hover:border-red-400/50 text-white/80 hover:text-red-300 transition-all duration-300 hover:scale-110 shadow-2xl hover:shadow-red-500/25 group-hover:bg-gradient-to-r group-hover:from-red-500/10 group-hover:to-pink-500/10"
+                >
+                  <X className="w-5 h-5 group-hover:rotate-90 transition-transform duration-300" />
+                </Button>
+              </div>
+            </div>
+          ) : (
+            // Show grey clock for sent requests (not clickable)
+            <div className="flex justify-center">
+              <div className="relative w-12 h-12 bg-white/5 backdrop-blur-xl border-2 border-white/10 rounded-full flex items-center justify-center">
+                <Clock className="w-5 h-5 text-white/40" />
+              </div>
+            </div>
+          )}
         </div>
       </CardContent>
     </Card>
