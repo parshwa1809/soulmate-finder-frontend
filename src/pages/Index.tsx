@@ -1,3 +1,4 @@
+
 import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { Button } from "@/components/ui/button";
@@ -12,14 +13,7 @@ import {
   CardTitle,
 } from "@/components/ui/card";
 import { Label } from "@/components/ui/label";
-import { useMutation } from "@tanstack/react-query";
 import { Loader2 } from "lucide-react";
-import {
-  getAuth,
-  RecaptchaVerifier,
-  signInWithPhoneNumber,
-} from "firebase/auth";
-import { app } from "../firebase.config";
 import Logo from "@/components/Logo";
 
 const Index = () => {
@@ -38,19 +32,6 @@ const Index = () => {
     }
   }, [navigate]);
 
-  const generateRecaptcha = () => {
-    window.recaptchaVerifier = new RecaptchaVerifier(
-      "recaptcha-container",
-      {
-        size: "invisible",
-        callback: (response) => {
-          // reCAPTCHA solved, allow signInWithPhoneNumber.
-        },
-      },
-      getAuth(app)
-    );
-  };
-
   const sendOTP = async () => {
     if (phoneNumber.length !== 10) {
       toast({
@@ -60,56 +41,36 @@ const Index = () => {
       return;
     }
     setLoading(true);
-    generateRecaptcha();
-    let appVerifier = window.recaptchaVerifier;
-    const authentication = getAuth(app);
-    signInWithPhoneNumber(authentication, "+1" + phoneNumber, appVerifier)
-      .then((confirmationResult) => {
-        window.confirmationResult = confirmationResult;
-        setShowOTPInput(true);
-        toast({
-          title: "OTP sent",
-          description: "Please enter the OTP sent to your phone number",
-        });
-      })
-      .catch((error) => {
-        console.log(error);
-        toast({
-          title: "Error",
-          description: "Too many requests, please try again later",
-        });
-      })
-      .finally(() => {
-        setLoading(false);
+    // Simulate OTP sending
+    setTimeout(() => {
+      setShowOTPInput(true);
+      setLoading(false);
+      toast({
+        title: "OTP sent",
+        description: "Please enter the OTP sent to your phone number",
       });
+    }, 1000);
   };
 
   const verifyOTP = async () => {
     setLoading(true);
-    let confirmationResult = window.confirmationResult;
-    confirmationResult
-      .confirm(otp)
-      .then((result) => {
-        // User signed in successfully.
-        const user = result.user;
-        localStorage.setItem("authToken", user.accessToken);
+    // Simulate OTP verification
+    setTimeout(() => {
+      if (otp === "123456") {
+        localStorage.setItem("authToken", "demo-token");
         toast({
           title: "Success",
           description: "Phone auth successful",
         });
         navigate("/dashboard");
-        // ...
-      })
-      .catch((error) => {
-        console.log(error);
+      } else {
         toast({
           title: "Error",
-          description: "Invalid OTP",
+          description: "Invalid OTP. Try 123456",
         });
-      })
-      .finally(() => {
-        setLoading(false);
-      });
+      }
+      setLoading(false);
+    }, 1000);
   };
 
   return (
@@ -170,7 +131,6 @@ const Index = () => {
             </Button>
           </CardFooter>
         </Card>
-        <div id="recaptcha-container"></div>
       </div>
     </div>
   );
