@@ -428,7 +428,7 @@ const Dashboard = ({ userUID, setIsLoggedIn }: DashboardProps) => {
           <div className="flex justify-between items-center h-16">
             <div className="flex items-center gap-3">
               <Logo size="sm" showText={false} />
-              <span className="font-antrokas font-bold text-white text-2xl tracking-wide">
+              <span className="font-bold text-white text-2xl tracking-wide">
                 Aligned
               </span>
             </div>
