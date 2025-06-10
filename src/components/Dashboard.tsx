@@ -426,71 +426,10 @@ const Dashboard = ({ userUID, setIsLoggedIn }: DashboardProps) => {
       <header className="relative z-10 bg-white/5 backdrop-blur-xl border-b border-white/10">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="flex justify-between items-center h-16">
-            <Logo size="sm" showText={true} />
+            <div></div>
             
             <div className="flex items-center gap-4">
-              <Popover open={isMatchesOpen} onOpenChange={setIsMatchesOpen}>
-                <PopoverTrigger asChild>
-                  <div className="relative cursor-pointer">
-                    <div className="absolute -inset-1 bg-gradient-to-r from-violet-500 to-purple-500 rounded-xl blur opacity-30"></div>
-                    <img 
-                      src="/lovable-uploads/b01e8af5-640c-4d6b-a324-774afb9bbf88.png" 
-                      alt="Aligned Logo" 
-                      className="relative w-12 h-12 object-cover rounded-xl hover:scale-105 transition-transform duration-300"
-                    />
-                    {matches.length > 0 && (
-                      <Badge className="absolute -top-2 -right-2 h-6 w-6 p-0 flex items-center justify-center bg-red-500 text-white text-xs font-bold">
-                        {matches.length}
-                      </Badge>
-                    )}
-                  </div>
-                </PopoverTrigger>
-                <PopoverContent className="w-80 p-0 bg-white/5 backdrop-blur-xl border border-white/10" align="start">
-                  <div className="p-4 border-b border-white/10">
-                    <h3 className="font-semibold text-white text-lg">Your Matches</h3>
-                    <p className="text-white/60 text-sm">People who liked you back</p>
-                  </div>
-                  <div className="max-h-96 overflow-y-auto p-4">
-                    {matches.length > 0 ? (
-                      <div className="space-y-3">
-                        {matches.map((user) => (
-                          <div 
-                            key={user.UID} 
-                            className="flex items-center space-x-3 p-3 rounded-lg bg-white/5 hover:bg-white/10 cursor-pointer transition-colors"
-                            onClick={() => {
-                              handleUserClick(user);
-                              setIsMatchesOpen(false);
-                            }}
-                          >
-                            <Avatar className="w-12 h-12">
-                              <AvatarImage src={user.profilePicture} />
-                              <AvatarFallback className="bg-gradient-to-br from-violet-500 to-purple-500 text-white">
-                                {user.name?.charAt(0) || <User className="w-6 h-6" />}
-                              </AvatarFallback>
-                            </Avatar>
-                            <div className="flex-1 min-w-0">
-                              <p className="font-medium text-white truncate">{user.name}</p>
-                              {user.kundliScore !== undefined && (
-                                <div className="flex items-center">
-                                  <Star className="w-3 h-3 text-yellow-400 mr-1" />
-                                  <span className="text-xs text-white/70">
-                                    {user.kundliScore}/36
-                                  </span>
-                                </div>
-                              )}
-                            </div>
-                          </div>
-                        ))}
-                      </div>
-                    ) : (
-                      <div className="text-center py-8">
-                        <Heart className="w-8 h-8 text-white/40 mx-auto mb-2" />
-                        <p className="text-white/60 text-sm">No matches yet</p>
-                      </div>
-                    )}
-                  </div>
-                </PopoverContent>
-              </Popover>
+              <Logo size="sm" showText={true} />
 
               <Popover open={isNotificationsOpen} onOpenChange={setIsNotificationsOpen}>
                 <PopoverTrigger asChild>
