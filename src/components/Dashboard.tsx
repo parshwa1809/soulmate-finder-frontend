@@ -448,6 +448,11 @@ const Dashboard = ({ userUID, setIsLoggedIn }: DashboardProps) => {
                 </div>
               </PopoverContent>
             </Popover>
+            <div>
+              <h1 className="text-2xl font-bold text-white tracking-tight amazon-font">Aligned</h1>
+            </div>
+          </div>
+          <div className="flex gap-3">
             <Popover open={isNotificationsOpen} onOpenChange={setIsNotificationsOpen}>
               <PopoverTrigger asChild>
                 <Button 
@@ -509,11 +514,6 @@ const Dashboard = ({ userUID, setIsLoggedIn }: DashboardProps) => {
                 </div>
               </PopoverContent>
             </Popover>
-            <div>
-              <h1 className="text-2xl font-bold text-white tracking-tight amazon-font">Aligned</h1>
-            </div>
-          </div>
-          <div className="flex gap-3">
             <Button 
               onClick={handleViewProfile}
               variant="outline"
