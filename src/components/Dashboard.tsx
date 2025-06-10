@@ -1,14 +1,14 @@
+
 import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { Button } from "@/components/ui/button";
-import { LogOut, User, Heart, Star, Bell } from "lucide-react";
+import { LogOut, User, Heart, Star, Bell, Users, Clock } from "lucide-react";
 import { Avatar, AvatarImage, AvatarFallback } from "@/components/ui/avatar";
 import { Badge } from "@/components/ui/badge";
 import { Popover, PopoverTrigger, PopoverContent } from "@/components/ui/popover";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { useToast } from "@/hooks/use-toast";
 import Profile from './Profile';
-import Recommendations from '../pages/Recommendations';
 
 interface DashboardProps {
   setIsLoggedIn: (value: boolean) => void;
@@ -26,9 +26,10 @@ interface UserProfile {
 }
 
 const Dashboard = ({ setIsLoggedIn, userUID }: DashboardProps) => {
-  const [currentView, setCurrentView] = useState<'recommendations' | 'profile'>('recommendations');
+  const [currentView, setCurrentView] = useState<'dashboard' | 'profile'>('dashboard');
   const [recommendations, setRecommendations] = useState<UserProfile[]>([]);
   const [matches, setMatches] = useState<UserProfile[]>([]);
+  const [awaiting, setAwaiting] = useState<UserProfile[]>([]);
   const [notifications, setNotifications] = useState<any[]>([]);
   const [selectedUser, setSelectedUser] = useState<UserProfile | null>(null);
   const [isMatchesOpen, setIsMatchesOpen] = useState(false);
@@ -43,6 +44,7 @@ const Dashboard = ({ setIsLoggedIn, userUID }: DashboardProps) => {
         const userData = JSON.parse(storedUserData);
         setRecommendations(userData.recommendations || []);
         setMatches(userData.matches || []);
+        setAwaiting(userData.awaiting || []);
         setNotifications(userData.notifications || []);
       } catch (error) {
         console.error('Error parsing user data from localStorage:', error);
@@ -64,6 +66,89 @@ const Dashboard = ({ setIsLoggedIn, userUID }: DashboardProps) => {
   const handleUserClick = (user: UserProfile) => {
     setSelectedUser(user);
   };
+
+  const DashboardContent = () => (
+    <div className="space-y-8">
+      <div className="text-center">
+        <h1 className="text-4xl font-bold text-white mb-4">Welcome to Aligned</h1>
+        <p className="text-white/70 text-lg">Discover meaningful connections</p>
+      </div>
+
+      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+        {/* Discover Card */}
+        <div 
+          onClick={() => navigate('/recommendations')}
+          className="bg-white/5 backdrop-blur-xl border border-white/10 rounded-xl p-6 hover:bg-white/10 transition-all duration-300 cursor-pointer group"
+        >
+          <div className="flex items-center gap-4 mb-4">
+            <div className="w-12 h-12 bg-gradient-to-br from-violet-500 to-purple-500 rounded-xl flex items-center justify-center">
+              <Users className="w-6 h-6 text-white" />
+            </div>
+            <div>
+              <h3 className="text-xl font-semibold text-white">Discover</h3>
+              <p className="text-white/60 text-sm">Find new connections</p>
+            </div>
+          </div>
+          <div className="flex items-center justify-between">
+            <span className="text-white/80">
+              {recommendations.length} recommendations
+            </span>
+            <div className="text-white/40 group-hover:text-white/60 transition-colors">
+              →
+            </div>
+          </div>
+        </div>
+
+        {/* Awaiting Card */}
+        <div 
+          onClick={() => navigate('/awaiting')}
+          className="bg-white/5 backdrop-blur-xl border border-white/10 rounded-xl p-6 hover:bg-white/10 transition-all duration-300 cursor-pointer group"
+        >
+          <div className="flex items-center gap-4 mb-4">
+            <div className="w-12 h-12 bg-gradient-to-br from-amber-500 to-orange-500 rounded-xl flex items-center justify-center">
+              <Clock className="w-6 h-6 text-white" />
+            </div>
+            <div>
+              <h3 className="text-xl font-semibold text-white">Awaiting</h3>
+              <p className="text-white/60 text-sm">Pending responses</p>
+            </div>
+          </div>
+          <div className="flex items-center justify-between">
+            <span className="text-white/80">
+              {awaiting.length} awaiting
+            </span>
+            <div className="text-white/40 group-hover:text-white/60 transition-colors">
+              →
+            </div>
+          </div>
+        </div>
+
+        {/* Matches Card */}
+        <div 
+          onClick={() => navigate('/matches')}
+          className="bg-white/5 backdrop-blur-xl border border-white/10 rounded-xl p-6 hover:bg-white/10 transition-all duration-300 cursor-pointer group"
+        >
+          <div className="flex items-center gap-4 mb-4">
+            <div className="w-12 h-12 bg-gradient-to-br from-emerald-500 to-green-500 rounded-xl flex items-center justify-center">
+              <Heart className="w-6 h-6 text-white" />
+            </div>
+            <div>
+              <h3 className="text-xl font-semibold text-white">Matches</h3>
+              <p className="text-white/60 text-sm">Your connections</p>
+            </div>
+          </div>
+          <div className="flex items-center justify-between">
+            <span className="text-white/80">
+              {matches.length} matches
+            </span>
+            <div className="text-white/40 group-hover:text-white/60 transition-colors">
+              →
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  );
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-slate-900 via-purple-900 to-slate-900 relative overflow-hidden">
@@ -205,9 +290,7 @@ const Dashboard = ({ setIsLoggedIn, userUID }: DashboardProps) => {
       </header>
 
       <main className="relative z-0 max-w-7xl mx-auto py-6 px-4 sm:px-6 lg:px-8">
-        {currentView === 'recommendations' && (
-          <Recommendations />
-        )}
+        {currentView === 'dashboard' && <DashboardContent />}
         {currentView === 'profile' && <Profile />}
       </main>
     </div>
