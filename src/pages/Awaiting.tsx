@@ -22,7 +22,6 @@ interface User {
   profilePicture?: string;
   bio?: string;
   recommendationUID?: string;
-  isReceived?: boolean; // Add this to track if it's a received request
 }
 
 const Awaiting = () => {
@@ -59,16 +58,12 @@ const Awaiting = () => {
       const userPromises = userList.map(async (item) => {
         console.log('Processing awaiting item:', item);
         
-        // Extract values from the array structure ["recommendation_uid","score","date","isReceived",..]
+        // Extract values from the array structure ["recommendation_uid","score","date",...]
         const recommendationUID = Array.isArray(item) ? item[0] : (item.UID || item);
         const uid = recommendationUID;
-        // The fourth element (index 3) indicates if this is a received request
-        const isReceived = Array.isArray(item) && item.length > 3 ? Boolean(item[3]) : false;
         
         console.log('Processing user:', {
           recommendationUID,
-          isReceived,
-          fourthValue: Array.isArray(item) ? item[3] : 'not array',
           fullItem: item
         });
         
@@ -79,8 +74,7 @@ const Awaiting = () => {
           const userData = await response.json();
           const processedUser = {
             ...userData,
-            recommendationUID: recommendationUID,
-            isReceived: isReceived
+            recommendationUID: recommendationUID
           };
           console.log('Final processed user:', processedUser);
           return processedUser;
@@ -183,8 +177,6 @@ const Awaiting = () => {
   };
 
   const UserCard = ({ user }: { user: User }) => {
-    console.log('Rendering UserCard for user:', user.name, 'isReceived:', user.isReceived);
-    
     return (
       <Card className="group hover:shadow-2xl transition-all duration-500 hover:scale-[1.02] relative">
         <CardContent className="p-6">
@@ -226,7 +218,7 @@ const Awaiting = () => {
             </div>
           </div>
           
-          {/* Action buttons - show for ALL users in awaiting section */}
+          {/* Action buttons - show for ALL users */}
           <div className="mt-6 pt-4 border-t border-white/10">
             <div className="flex justify-center items-center gap-4">
               <div className="relative group">
