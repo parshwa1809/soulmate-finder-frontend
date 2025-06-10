@@ -1,3 +1,4 @@
+
 import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { Button } from "@/components/ui/button";
@@ -419,7 +420,7 @@ const Dashboard = ({ userUID, setIsLoggedIn }: DashboardProps) => {
                   <img 
                     src="/lovable-uploads/b01e8af5-640c-4d6b-a324-774afb9bbf88.png" 
                     alt="Aligned Logo" 
-                    className="relative w-16 h-16 sm:w-24 sm:h-24 object-cover rounded-xl hover:scale-105 transition-transform duration-300"
+                    className="relative w-12 h-12 sm:w-16 sm:h-16 md:w-24 md:h-24 object-cover rounded-xl hover:scale-105 transition-transform duration-300"
                   />
                   {matches.length > 0 && (
                     <Badge className="absolute -top-2 -right-2 h-5 w-5 sm:h-6 sm:w-6 p-0 flex items-center justify-center bg-red-500 text-white text-xs font-bold">
@@ -573,31 +574,31 @@ const Dashboard = ({ userUID, setIsLoggedIn }: DashboardProps) => {
           <TabsList className="grid w-full grid-cols-3 bg-white/5 backdrop-blur-xl border border-white/10 p-1 rounded-2xl">
             <TabsTrigger 
               value="recommendations" 
-              className="flex flex-col sm:flex-row items-center gap-1 sm:gap-2 text-white/70 data-[state=active]:bg-white/10 data-[state=active]:text-white font-medium rounded-xl transition-all duration-300 py-2 sm:py-3 px-2 sm:px-4 text-xs sm:text-sm"
+              className="flex items-center gap-1 sm:gap-2 text-white/70 data-[state=active]:bg-white/10 data-[state=active]:text-white font-medium rounded-xl transition-all duration-300 py-2 sm:py-3 px-2 sm:px-4 text-xs sm:text-sm"
             >
               <Users className="w-4 h-4" />
-              <span>Recommendations</span>
-              <Badge variant="secondary" className="bg-white/20 text-white/80 text-xs mt-1 sm:mt-0">
+              <span className="hidden sm:inline">Recommendations</span>
+              <Badge variant="secondary" className="bg-white/20 text-white/80 text-xs">
                 {recommendations.length}
               </Badge>
             </TabsTrigger>
             <TabsTrigger 
               value="awaiting" 
-              className="flex flex-col sm:flex-row items-center gap-1 sm:gap-2 text-white/70 data-[state=active]:bg-white/10 data-[state=active]:text-white font-medium rounded-xl transition-all duration-300 py-2 sm:py-3 px-2 sm:px-4 text-xs sm:text-sm"
+              className="flex items-center gap-1 sm:gap-2 text-white/70 data-[state=active]:bg-white/10 data-[state=active]:text-white font-medium rounded-xl transition-all duration-300 py-2 sm:py-3 px-2 sm:px-4 text-xs sm:text-sm"
             >
               <Clock className="w-4 h-4" />
-              <span>Awaiting</span>
-              <Badge variant="secondary" className="bg-white/20 text-white/80 text-xs mt-1 sm:mt-0">
+              <span className="hidden sm:inline">Awaiting</span>
+              <Badge variant="secondary" className="bg-white/20 text-white/80 text-xs">
                 {awaiting.length}
               </Badge>
             </TabsTrigger>
             <TabsTrigger 
               value="matches" 
-              className="flex flex-col sm:flex-row items-center gap-1 sm:gap-2 text-white/70 data-[state=active]:bg-white/10 data-[state=active]:text-white font-medium rounded-xl transition-all duration-300 py-2 sm:py-3 px-2 sm:px-4 text-xs sm:text-sm"
+              className="flex items-center gap-1 sm:gap-2 text-white/70 data-[state=active]:bg-white/10 data-[state=active]:text-white font-medium rounded-xl transition-all duration-300 py-2 sm:py-3 px-2 sm:px-4 text-xs sm:text-sm"
             >
               <Heart className="w-4 h-4" />
-              <span>Matches</span>
-              <Badge variant="secondary" className="bg-white/20 text-white/80 text-xs mt-1 sm:mt-0">
+              <span className="hidden sm:inline">Matches</span>
+              <Badge variant="secondary" className="bg-white/20 text-white/80 text-xs">
                 {matches.length}
               </Badge>
             </TabsTrigger>
