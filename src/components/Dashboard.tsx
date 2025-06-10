@@ -1,4 +1,3 @@
-
 import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { Button } from "@/components/ui/button";
@@ -569,13 +568,13 @@ const Dashboard = ({ userUID, setIsLoggedIn }: DashboardProps) => {
 
       <div className="max-w-7xl mx-auto px-6 py-8">
         <Tabs defaultValue="recommendations" className="space-y-8">
-          <TabsList className="grid w-full grid-cols-2 bg-white/5 backdrop-blur-xl border border-white/10 p-1 rounded-2xl">
+          <TabsList className="grid w-full grid-cols-3 bg-white/5 backdrop-blur-xl border border-white/10 p-1 rounded-2xl">
             <TabsTrigger 
               value="recommendations" 
               className="flex items-center gap-2 text-white/70 data-[state=active]:bg-white/10 data-[state=active]:text-white font-medium rounded-xl transition-all duration-300 py-3"
             >
               <Users className="w-4 h-4" />
-              <span className="hidden sm:inline">Discover</span>
+              <span>Recommendations</span>
               <Badge variant="secondary" className="bg-white/20 text-white/80 text-xs">
                 {recommendations.length}
               </Badge>
@@ -585,9 +584,19 @@ const Dashboard = ({ userUID, setIsLoggedIn }: DashboardProps) => {
               className="flex items-center gap-2 text-white/70 data-[state=active]:bg-white/10 data-[state=active]:text-white font-medium rounded-xl transition-all duration-300 py-3"
             >
               <Clock className="w-4 h-4" />
-              <span className="hidden sm:inline">Pending</span>
+              <span>Awaiting</span>
               <Badge variant="secondary" className="bg-white/20 text-white/80 text-xs">
                 {awaiting.length}
+              </Badge>
+            </TabsTrigger>
+            <TabsTrigger 
+              value="matches" 
+              className="flex items-center gap-2 text-white/70 data-[state=active]:bg-white/10 data-[state=active]:text-white font-medium rounded-xl transition-all duration-300 py-3"
+            >
+              <Heart className="w-4 h-4" />
+              <span>Matches</span>
+              <Badge variant="secondary" className="bg-white/20 text-white/80 text-xs">
+                {matches.length}
               </Badge>
             </TabsTrigger>
           </TabsList>
