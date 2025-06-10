@@ -392,15 +392,15 @@ const Dashboard = ({ userUID, setIsLoggedIn }: DashboardProps) => {
             <Popover open={isMatchesOpen} onOpenChange={setIsMatchesOpen}>
               <PopoverTrigger asChild>
                 <div className="relative cursor-pointer">
-                  <div className="absolute -inset-1 bg-gradient-to-r from-violet-500 to-purple-500 rounded-lg blur opacity-30"></div>
-                  <div className="relative w-10 h-10 bg-white/10 backdrop-blur-xl rounded-lg border border-white/20 flex items-center justify-center">
+                  <div className="absolute -inset-2 bg-gradient-to-r from-violet-500 to-purple-500 rounded-2xl blur opacity-30"></div>
+                  <div className="relative w-16 h-16 bg-white/10 backdrop-blur-xl rounded-2xl border border-white/20 flex items-center justify-center hover:bg-white/20 transition-all duration-300">
                     <img 
                       src="/lovable-uploads/b01e8af5-640c-4d6b-a324-774afb9bbf88.png" 
                       alt="Aligned Logo" 
-                      className="w-6 h-6"
+                      className="w-12 h-12 object-cover rounded-xl"
                     />
                     {matches.length > 0 && (
-                      <Badge className="absolute -top-2 -right-2 h-5 w-5 p-0 flex items-center justify-center bg-red-500 text-white text-xs">
+                      <Badge className="absolute -top-2 -right-2 h-6 w-6 p-0 flex items-center justify-center bg-red-500 text-white text-xs font-bold">
                         {matches.length}
                       </Badge>
                     )}
