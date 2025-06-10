@@ -1,3 +1,4 @@
+
 import { useState, useEffect } from "react";
 import { Card, CardContent } from "@/components/ui/card";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
@@ -218,7 +219,7 @@ const Awaiting = () => {
             </div>
           </div>
           
-          {/* Action buttons - show for ALL users */}
+          {/* Action buttons - exactly like in Recommendations */}
           <div className="mt-6 pt-4 border-t border-white/10">
             <div className="flex justify-center items-center gap-4">
               <div className="relative group">
@@ -349,7 +350,16 @@ const Awaiting = () => {
             ))}
           </div>
         ) : (
-          <EmptyState />
+          <div className="text-center py-20">
+            <div className="relative mx-auto mb-6 w-20 h-20">
+              <div className="absolute inset-0 bg-gradient-to-br from-violet-500/20 to-purple-500/20 rounded-full blur-xl"></div>
+              <div className="relative w-20 h-20 bg-white/5 backdrop-blur-xl rounded-full flex items-center justify-center">
+                <Clock className="w-8 h-8 text-white/60" />
+              </div>
+            </div>
+            <h3 className="text-xl font-semibold text-white/90 mb-3">No pending responses</h3>
+            <p className="text-white/60 max-w-md mx-auto leading-relaxed">You're all up to date with your responses! New requests will appear here.</p>
+          </div>
         )}
       </div>
     </div>
