@@ -1,118 +1,177 @@
-
-import { Routes, Route, Navigate } from "react-router-dom";
-import { useState, useEffect } from "react";
-import Login from "../components/Login";
-import Register from "../components/Register";
-import Dashboard from "../components/Dashboard";
-import Matches from "./Matches";
-import Recommendations from "./Recommendations";
-import Notifications from "./Notifications";
-import Awaiting from "./Awaiting";
-import ProfilePage from "./Profile";
+import { useEffect, useState } from "react";
+import { useNavigate } from "react-router-dom";
+import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
+import { useToast } from "@/components/ui/use-toast";
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardFooter,
+  CardHeader,
+  CardTitle,
+} from "@/components/ui/card";
+import { Label } from "@/components/ui/label";
+import { useMutation } from "@tanstack/react-query";
+import { Loader2 } from "lucide-react";
+import {
+  getAuth,
+  RecaptchaVerifier,
+  signInWithPhoneNumber,
+} from "firebase/auth";
+import { app } from "../firebase.config";
+import Logo from "@/components/Logo";
 
 const Index = () => {
-  const [isLoggedIn, setIsLoggedIn] = useState(false);
-  const [userUID, setUserUID] = useState<string | null>(null);
-  const [isLoading, setIsLoading] = useState(true);
+  const [phoneNumber, setPhoneNumber] = useState("");
+  const [otp, setOtp] = useState("");
+  const [showOTPInput, setShowOTPInput] = useState(false);
+  const [loading, setLoading] = useState(false);
+  const navigate = useNavigate();
+  const { toast } = useToast();
 
   useEffect(() => {
-    // Check for existing login state on app load
-    const storedUID = localStorage.getItem('userUID');
-    if (storedUID) {
-      setUserUID(storedUID);
-      setIsLoggedIn(true);
+    // Check if user is already authenticated
+    const authToken = localStorage.getItem("authToken");
+    if (authToken) {
+      navigate("/dashboard");
     }
-    setIsLoading(false);
-  }, []);
+  }, [navigate]);
 
-  if (isLoading) {
-    return (
-      <div className="min-h-screen bg-gradient-to-br from-slate-900 via-purple-900 to-slate-900 flex items-center justify-center">
-        <div className="text-center">
-          <div className="relative w-16 h-16 mx-auto mb-6">
-            <div className="absolute inset-0 bg-gradient-to-br from-violet-500 to-purple-500 rounded-full blur-lg opacity-50"></div>
-            <div className="relative w-16 h-16 bg-white/10 backdrop-blur-xl rounded-full border border-white/20 flex items-center justify-center">
-              <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-white/70"></div>
-            </div>
-          </div>
-          <p className="text-white/70 font-medium">Loading...</p>
-        </div>
-      </div>
+  const generateRecaptcha = () => {
+    window.recaptchaVerifier = new RecaptchaVerifier(
+      "recaptcha-container",
+      {
+        size: "invisible",
+        callback: (response) => {
+          // reCAPTCHA solved, allow signInWithPhoneNumber.
+        },
+      },
+      getAuth(app)
     );
-  }
+  };
+
+  const sendOTP = async () => {
+    if (phoneNumber.length !== 10) {
+      toast({
+        title: "Invalid phone number",
+        description: "Please enter a 10 digit phone number",
+      });
+      return;
+    }
+    setLoading(true);
+    generateRecaptcha();
+    let appVerifier = window.recaptchaVerifier;
+    const authentication = getAuth(app);
+    signInWithPhoneNumber(authentication, "+1" + phoneNumber, appVerifier)
+      .then((confirmationResult) => {
+        window.confirmationResult = confirmationResult;
+        setShowOTPInput(true);
+        toast({
+          title: "OTP sent",
+          description: "Please enter the OTP sent to your phone number",
+        });
+      })
+      .catch((error) => {
+        console.log(error);
+        toast({
+          title: "Error",
+          description: "Too many requests, please try again later",
+        });
+      })
+      .finally(() => {
+        setLoading(false);
+      });
+  };
+
+  const verifyOTP = async () => {
+    setLoading(true);
+    let confirmationResult = window.confirmationResult;
+    confirmationResult
+      .confirm(otp)
+      .then((result) => {
+        // User signed in successfully.
+        const user = result.user;
+        localStorage.setItem("authToken", user.accessToken);
+        toast({
+          title: "Success",
+          description: "Phone auth successful",
+        });
+        navigate("/dashboard");
+        // ...
+      })
+      .catch((error) => {
+        console.log(error);
+        toast({
+          title: "Error",
+          description: "Invalid OTP",
+        });
+      })
+      .finally(() => {
+        setLoading(false);
+      });
+  };
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-slate-900 via-purple-900 to-slate-900">
-      <Routes>
-        <Route 
-          path="/login" 
-          element={
-            isLoggedIn ? 
-            <Navigate to="/dashboard" /> : 
-            <Login setIsLoggedIn={setIsLoggedIn} setUserUID={setUserUID} />
-          } 
-        />
-        <Route 
-          path="/register" 
-          element={
-            isLoggedIn ? 
-            <Navigate to="/dashboard" /> : 
-            <Register />
-          } 
-        />
-        <Route 
-          path="/dashboard" 
-          element={
-            isLoggedIn ? 
-            <Dashboard userUID={userUID} setIsLoggedIn={setIsLoggedIn} /> : 
-            <Navigate to="/login" />
-          } 
-        />
-        <Route 
-          path="/profile" 
-          element={
-            isLoggedIn ? 
-            <ProfilePage /> : 
-            <Navigate to="/login" />
-          } 
-        />
-        <Route 
-          path="/matches" 
-          element={
-            isLoggedIn ? 
-            <Matches /> : 
-            <Navigate to="/login" />
-          } 
-        />
-        <Route 
-          path="/recommendations" 
-          element={
-            isLoggedIn ? 
-            <Recommendations /> : 
-            <Navigate to="/login" />
-          } 
-        />
-        <Route 
-          path="/notifications" 
-          element={
-            isLoggedIn ? 
-            <Notifications /> : 
-            <Navigate to="/login" />
-          } 
-        />
-        <Route 
-          path="/awaiting" 
-          element={
-            isLoggedIn ? 
-            <Awaiting /> : 
-            <Navigate to="/login" />
-          } 
-        />
-        <Route 
-          path="/" 
-          element={<Navigate to={isLoggedIn ? "/dashboard" : "/login"} />} 
-        />
-      </Routes>
+      {/* Add logo at the top to test */}
+      <div className="flex justify-center pt-8 pb-4">
+        <Logo size="lg" />
+      </div>
+      
+      {/* Test font separately */}
+      <div className="text-center pb-8">
+        <h1 className="font-antrokas text-4xl text-white">Antrokas Font Test</h1>
+      </div>
+      
+      <div className="flex justify-center items-center h-screen">
+        <Card className="w-full max-w-md bg-gradient-card nebula-glow">
+          <CardHeader>
+            <CardTitle className="text-2xl text-center">
+              Welcome to Aligned
+            </CardTitle>
+            <CardDescription className="text-center">
+              Enter your phone number to get started
+            </CardDescription>
+          </CardHeader>
+          <CardContent className="grid gap-4">
+            <div className="grid gap-2">
+              <Label htmlFor="phone">Phone Number</Label>
+              <Input
+                id="phone"
+                type="tel"
+                placeholder="555-555-5555"
+                value={phoneNumber}
+                onChange={(e) => setPhoneNumber(e.target.value)}
+                disabled={showOTPInput}
+              />
+            </div>
+            {showOTPInput && (
+              <div className="grid gap-2">
+                <Label htmlFor="otp">OTP</Label>
+                <Input
+                  id="otp"
+                  placeholder="123456"
+                  value={otp}
+                  onChange={(e) => setOtp(e.target.value)}
+                />
+              </div>
+            )}
+          </CardContent>
+          <CardFooter className="flex justify-between">
+            <Button
+              onClick={showOTPInput ? verifyOTP : sendOTP}
+              disabled={loading}
+            >
+              {loading ? (
+                <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+              ) : null}
+              {showOTPInput ? "Verify OTP" : "Send OTP"}
+            </Button>
+          </CardFooter>
+        </Card>
+        <div id="recaptcha-container"></div>
+      </div>
     </div>
   );
 };
