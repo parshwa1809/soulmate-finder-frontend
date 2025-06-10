@@ -690,5 +690,3 @@ const Dashboard = ({ userUID, setIsLoggedIn }: DashboardProps) => {
 };
 
 export default Dashboard;
-
-</edits_to_apply>
