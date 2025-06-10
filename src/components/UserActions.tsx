@@ -3,6 +3,7 @@ import { useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Heart, X } from "lucide-react";
 import { config } from "../config/api";
+import { useToast } from "@/components/ui/use-toast";
 
 interface UserActionsProps {
   userUID: string;
@@ -12,9 +13,17 @@ interface UserActionsProps {
 
 const UserActions = ({ userUID, currentUserUID, onActionComplete }: UserActionsProps) => {
   const [isLoading, setIsLoading] = useState(false);
+  const { toast } = useToast();
 
   const handleAction = async (actionType: 'skip' | 'align') => {
-    if (!currentUserUID) return;
+    if (!currentUserUID) {
+      toast({
+        title: "Error",
+        description: "You must be logged in to perform this action.",
+        variant: "destructive",
+      });
+      return;
+    }
     
     setIsLoading(true);
     try {
@@ -26,10 +35,14 @@ const UserActions = ({ userUID, currentUserUID, onActionComplete }: UserActionsP
       };
       formData.append('metadata', JSON.stringify(metadata));
 
+      console.log('Sending action request:', metadata);
+
       const response = await fetch(`${config.URL}/account:action`, {
         method: 'POST',
         body: formData,
       });
+
+      console.log('Response status:', response.status);
 
       if (response.ok) {
         const data = await response.json();
@@ -40,16 +53,38 @@ const UserActions = ({ userUID, currentUserUID, onActionComplete }: UserActionsP
           const queue = data.queue;
           const message = data.message;
           
+          // Show success toast
+          toast({
+            title: "Success",
+            description: message || `${actionType === 'align' ? 'Aligned' : 'Skipped'} successfully!`,
+          });
+          
           // Call parent callback with action type, queue and message info
           onActionComplete?.(actionType, queue, message);
         } else {
           console.error('API error:', data.error);
+          toast({
+            title: "Error",
+            description: data.error || "An error occurred while processing your action.",
+            variant: "destructive",
+          });
         }
       } else {
-        throw new Error('Network response was not ok');
+        const errorText = await response.text();
+        console.error('HTTP error:', response.status, errorText);
+        toast({
+          title: "Network Error",
+          description: `Server responded with status ${response.status}. Please try again.`,
+          variant: "destructive",
+        });
       }
     } catch (error) {
       console.error('Action error:', error);
+      toast({
+        title: "Error",
+        description: "Failed to connect to server. Please check your connection and try again.",
+        variant: "destructive",
+      });
     } finally {
       setIsLoading(false);
     }
