@@ -6,7 +6,30 @@ import EditProfile from "../components/EditProfile";
 import { Button } from "@/components/ui/button";
 import { ArrowLeft, LogOut, Edit, RefreshCw } from "lucide-react";
 
-const ProfilePage = () => {
+interface ProfileData {
+  uid: string;
+  email: string;
+  name: string;
+  gender?: string;
+  city?: string;
+  country?: string;
+  birth_city?: string;
+  birth_country?: string;
+  profession?: string;
+  dob?: string;
+  tob?: string;
+  hobbies?: string[];
+  images?: string[];
+  login?: string;
+}
+
+interface ProfilePageProps {
+  cachedProfileData?: ProfileData | null;
+  isLoadingProfile?: boolean;
+  onLogout?: () => void;
+}
+
+const ProfilePage = ({ cachedProfileData, isLoadingProfile, onLogout }: ProfilePageProps) => {
   const navigate = useNavigate();
   const [isEditing, setIsEditing] = useState(false);
 
@@ -27,9 +50,15 @@ const ProfilePage = () => {
   };
 
   const handleLogout = () => {
-    // Clear all user data from localStorage
-    localStorage.removeItem('userUID');
-    localStorage.removeItem('userData');
+    if (onLogout) {
+      onLogout();
+    } else {
+      // Fallback to old behavior
+      localStorage.removeItem('userUID');
+      localStorage.removeItem('userData');
+      localStorage.removeItem('profileData');
+      localStorage.removeItem('dashboardData');
+    }
     
     // Force a complete page reload to reset the app state
     window.location.href = "/login";
@@ -103,7 +132,11 @@ const ProfilePage = () => {
         {isEditing ? (
           <EditProfile onCancel={handleCancelEdit} onSave={handleSaveEdit} />
         ) : (
-          <Profile onEdit={handleEdit} />
+          <Profile 
+            onEdit={handleEdit} 
+            cachedProfileData={cachedProfileData}
+            isLoadingProfile={isLoadingProfile}
+          />
         )}
       </div>
     </div>
