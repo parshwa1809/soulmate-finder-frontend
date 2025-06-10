@@ -1,8 +1,8 @@
+
 import { useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Heart, X } from "lucide-react";
 import { config } from "../config/api";
-import { useToast } from "@/hooks/use-toast";
 
 interface UserActionsProps {
   userUID: string;
@@ -12,7 +12,6 @@ interface UserActionsProps {
 
 const UserActions = ({ userUID, currentUserUID, onActionComplete }: UserActionsProps) => {
   const [isLoading, setIsLoading] = useState(false);
-  const { toast } = useToast();
 
   const handleAction = async (actionType: 'skip' | 'align') => {
     if (!currentUserUID) return;
@@ -41,34 +40,16 @@ const UserActions = ({ userUID, currentUserUID, onActionComplete }: UserActionsP
           const queue = data.queue;
           const message = data.message;
           
-          // Show toast for message if present
-          if (message && message !== 'None') {
-            toast({
-              title: "Update",
-              description: message,
-            });
-          }
-          
           // Call parent callback with action type, queue and message info
           onActionComplete?.(actionType, queue, message);
         } else {
           console.error('API error:', data.error);
-          toast({
-            title: "Error",
-            description: "Something went wrong. Please try again.",
-            variant: "destructive",
-          });
         }
       } else {
         throw new Error('Network response was not ok');
       }
     } catch (error) {
       console.error('Action error:', error);
-      toast({
-        title: "Error",
-        description: "Something went wrong. Please try again.",
-        variant: "destructive",
-      });
     } finally {
       setIsLoading(false);
     }

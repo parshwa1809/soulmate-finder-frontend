@@ -88,7 +88,7 @@ const Recommendations = () => {
     setRecommendations(prev => prev.filter(user => user.UID !== userUID));
 
     // Add user to the appropriate queue based on the API response
-    if (queue) {
+    if (queue && queue !== 'None') {
       const userData = localStorage.getItem('userData');
       if (userData) {
         try {

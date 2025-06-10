@@ -1,4 +1,3 @@
-
 import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { Button } from "@/components/ui/button";
@@ -27,6 +26,13 @@ interface User {
   kundliScore?: number;
 }
 
+interface DashboardMessage {
+  id: string;
+  text: string;
+  timestamp: Date;
+  userName?: string;
+}
+
 interface DashboardProps {
   userUID: string | null;
   setIsLoggedIn: (value: boolean) => void;
@@ -38,6 +44,7 @@ const Dashboard = ({ userUID, setIsLoggedIn }: DashboardProps) => {
   const [recommendations, setRecommendations] = useState<User[]>([]);
   const [notifications, setNotifications] = useState<User[]>([]);
   const [awaiting, setAwaiting] = useState<User[]>([]);
+  const [messages, setMessages] = useState<DashboardMessage[]>([]);
   const [isLoading, setIsLoading] = useState(true);
   const [selectedUser, setSelectedUser] = useState<User | null>(null);
   const [isMatchesOpen, setIsMatchesOpen] = useState(false);
@@ -210,6 +217,17 @@ const Dashboard = ({ userUID, setIsLoggedIn }: DashboardProps) => {
     }
   };
 
+  const addMessage = (text: string, userName?: string) => {
+    const newMessage: DashboardMessage = {
+      id: Date.now().toString(),
+      text,
+      timestamp: new Date(),
+      userName
+    };
+    setMessages(prev => [newMessage, ...prev]);
+    setIsNotificationsOpen(true);
+  };
+
   const handleLogout = () => {
     localStorage.removeItem('userUID');
     localStorage.removeItem('userData');
@@ -237,6 +255,11 @@ const Dashboard = ({ userUID, setIsLoggedIn }: DashboardProps) => {
     setMatches(prev => prev.filter(user => user.UID !== userUID));
     setNotifications(prev => prev.filter(user => user.UID !== userUID));
     setAwaiting(prev => prev.filter(user => user.UID !== userUID));
+
+    // Add message to notifications if present
+    if (message && message !== 'None') {
+      addMessage(message, selectedUser.name);
+    }
 
     // Handle queue management based on API response
     if (queue && queue !== 'None') {
@@ -393,11 +416,11 @@ const Dashboard = ({ userUID, setIsLoggedIn }: DashboardProps) => {
               <PopoverTrigger asChild>
                 <div className="relative cursor-pointer">
                   <div className="absolute -inset-2 bg-gradient-to-r from-violet-500 to-purple-500 rounded-2xl blur opacity-30"></div>
-                  <div className="relative w-16 h-16 bg-white/10 backdrop-blur-xl rounded-2xl border border-white/20 flex items-center justify-center hover:bg-white/20 transition-all duration-300">
+                  <div className="relative w-24 h-24 bg-white/10 backdrop-blur-xl rounded-2xl border border-white/20 flex items-center justify-center hover:bg-white/20 transition-all duration-300">
                     <img 
                       src="/lovable-uploads/b01e8af5-640c-4d6b-a324-774afb9bbf88.png" 
                       alt="Aligned Logo" 
-                      className="w-12 h-12 object-cover rounded-xl"
+                      className="w-20 h-20 object-cover rounded-xl"
                     />
                     {matches.length > 0 && (
                       <Badge className="absolute -top-2 -right-2 h-6 w-6 p-0 flex items-center justify-center bg-red-500 text-white text-xs font-bold">
@@ -466,9 +489,9 @@ const Dashboard = ({ userUID, setIsLoggedIn }: DashboardProps) => {
                 >
                   <Bell className="w-4 h-4 mr-2" />
                   Notifications
-                  {notifications.length > 0 && (
+                  {(notifications.length > 0 || messages.length > 0) && (
                     <Badge className="ml-2 h-5 w-5 p-0 flex items-center justify-center bg-red-500 text-white text-xs">
-                      {notifications.length}
+                      {notifications.length + messages.length}
                     </Badge>
                   )}
                 </Button>
@@ -479,8 +502,22 @@ const Dashboard = ({ userUID, setIsLoggedIn }: DashboardProps) => {
                   <p className="text-white/60 text-sm">Recent activity updates</p>
                 </div>
                 <div className="max-h-96 overflow-y-auto p-4">
-                  {notifications.length > 0 ? (
+                  {(messages.length > 0 || notifications.length > 0) ? (
                     <div className="space-y-3">
+                      {/* Show messages first */}
+                      {messages.map((message) => (
+                        <div key={message.id} className="p-3 rounded-lg bg-white/5 border border-white/10">
+                          <p className="text-white text-sm">{message.text}</p>
+                          {message.userName && (
+                            <p className="text-white/60 text-xs mt-1">From: {message.userName}</p>
+                          )}
+                          <p className="text-white/40 text-xs mt-1">
+                            {message.timestamp.toLocaleString()}
+                          </p>
+                        </div>
+                      ))}
+                      
+                      {/* Then show user notifications */}
                       {notifications.map((user) => (
                         <div 
                           key={user.UID} 
