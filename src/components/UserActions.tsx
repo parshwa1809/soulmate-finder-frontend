@@ -20,9 +20,12 @@ const UserActions = ({ userUID, currentUserUID, onActionComplete }: UserActionsP
     setIsLoading(true);
     try {
       const formData = new FormData();
-      formData.append('recommendation_uid', userUID);
-      formData.append('uid', currentUserUID);
-      formData.append('action', actionType);
+      const metadata = {
+        uid: currentUserUID,
+        action: actionType,
+        recommendation_uid: userUID
+      };
+      formData.append('metadata', JSON.stringify(metadata));
 
       const response = await fetch(`${config.URL}/account:action`, {
         method: 'POST',
