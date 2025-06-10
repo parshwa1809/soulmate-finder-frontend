@@ -91,6 +91,41 @@ const Awaiting = () => {
     }
   };
 
+  const updateLocalStorageQueue = (user: User, targetQueue: string) => {
+    try {
+      const userData = localStorage.getItem('userData');
+      if (userData) {
+        const parsedData = JSON.parse(userData);
+        
+        // Remove user from awaiting queue
+        if (parsedData.awaiting) {
+          parsedData.awaiting = parsedData.awaiting.filter((item: any) => {
+            const itemUID = Array.isArray(item) ? item[0] : (item.UID || item);
+            return itemUID !== user.recommendationUID;
+          });
+        }
+        
+        // Add user to target queue
+        if (targetQueue === 'MATCHED' || targetQueue === 'Matched') {
+          const currentMatches = parsedData.matches || [];
+          parsedData.matches = [...currentMatches, user.recommendationUID];
+          console.log('Added user to matches queue:', user.UID);
+        } else if (targetQueue === 'AWAITING' || targetQueue === 'Awaiting') {
+          // User stays in awaiting queue (shouldn't happen but handle it)
+          const currentAwaiting = parsedData.awaiting || [];
+          parsedData.awaiting = [...currentAwaiting, user.recommendationUID];
+          console.log('User remains in awaiting queue:', user.UID);
+        }
+        
+        // Update localStorage with the new queue data
+        localStorage.setItem('userData', JSON.stringify(parsedData));
+        console.log('Updated localStorage - removed from awaiting, added to:', targetQueue);
+      }
+    } catch (error) {
+      console.error('Error updating localStorage queue data:', error);
+    }
+  };
+
   const handleAction = async (actionType: 'skip' | 'align', user: User) => {
     if (!userUID) {
       toast({
@@ -133,30 +168,7 @@ const Awaiting = () => {
 
           // Handle queue management based on API response
           if (data.queue && data.queue !== 'None') {
-            const userData = localStorage.getItem('userData');
-            if (userData) {
-              try {
-                const parsedData = JSON.parse(userData);
-                
-                // Add user to the specified queue in localStorage
-                if (data.queue === 'MATCHED' || data.queue === 'Matched') {
-                  const currentMatches = parsedData.matches || [];
-                  parsedData.matches = [...currentMatches, user.recommendationUID];
-                  console.log('Added user to matches queue:', user.UID);
-                } else if (data.queue === 'AWAITING' || data.queue === 'Awaiting') {
-                  // User stays in awaiting queue (shouldn't happen but handle it)
-                  const currentAwaiting = parsedData.awaiting || [];
-                  parsedData.awaiting = [...currentAwaiting, user.recommendationUID];
-                  console.log('User remains in awaiting queue:', user.UID);
-                }
-                
-                // Update localStorage with the new queue data
-                localStorage.setItem('userData', JSON.stringify(parsedData));
-                console.log('Updated localStorage with new queue data for queue:', data.queue);
-              } catch (error) {
-                console.error('Error updating queue data:', error);
-              }
-            }
+            updateLocalStorageQueue(user, data.queue);
           }
         } else {
           console.error('API error:', data.error);
@@ -206,30 +218,7 @@ const Awaiting = () => {
 
     // Handle queue management based on API response
     if (queue && queue !== 'None') {
-      const userData = localStorage.getItem('userData');
-      if (userData) {
-        try {
-          const parsedData = JSON.parse(userData);
-          
-          // Add user to the specified queue in localStorage
-          if (queue === 'MATCHED' || queue === 'Matched') {
-            const currentMatches = parsedData.matches || [];
-            parsedData.matches = [...currentMatches, selectedUser.recommendationUID];
-            console.log('Added user to matches queue:', selectedUser.UID);
-          } else if (queue === 'AWAITING' || queue === 'Awaiting') {
-            // User stays in awaiting queue (shouldn't happen but handle it)
-            const currentAwaiting = parsedData.awaiting || [];
-            parsedData.awaiting = [...currentAwaiting, selectedUser.recommendationUID];
-            console.log('User remains in awaiting queue:', selectedUser.UID);
-          }
-          
-          // Update localStorage with the new queue data
-          localStorage.setItem('userData', JSON.stringify(parsedData));
-          console.log('Updated localStorage with new queue data for queue:', queue);
-        } catch (error) {
-          console.error('Error updating queue data:', error);
-        }
-      }
+      updateLocalStorageQueue(selectedUser, queue);
     }
 
     // Close the profile view
@@ -282,7 +271,7 @@ const Awaiting = () => {
             </div>
           </div>
           
-          {/* Action buttons - exactly like in Recommendations */}
+          {/* Action buttons */}
           <div className="mt-6 pt-4 border-t border-white/10">
             <div className="flex justify-center items-center gap-4">
               <div className="relative group">
