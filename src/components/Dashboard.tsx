@@ -420,7 +420,7 @@ const Dashboard = ({ userUID, setIsLoggedIn }: DashboardProps) => {
                   <img 
                     src="/lovable-uploads/b01e8af5-640c-4d6b-a324-774afb9bbf88.png" 
                     alt="Aligned Logo" 
-                    className="relative w-24 h-24 object-cover rounded-xl hover:scale-105 transition-transform duration-300"
+                    className="relative w-32 h-32 object-cover rounded-xl hover:scale-105 transition-transform duration-300"
                   />
                   {matches.length > 0 && (
                     <Badge className="absolute -top-2 -right-2 h-6 w-6 p-0 flex items-center justify-center bg-red-500 text-white text-xs font-bold">
