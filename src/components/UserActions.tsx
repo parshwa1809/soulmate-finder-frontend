@@ -1,4 +1,3 @@
-
 import { useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Heart, X } from "lucide-react";
@@ -25,7 +24,7 @@ const UserActions = ({ userUID, currentUserUID, onActionComplete }: UserActionsP
       formData.append('uid', currentUserUID);
       formData.append('action', actionType);
 
-      const response = await fetch(`${config.URL}/match:action`, {
+      const response = await fetch(`${config.URL}/account:action`, {
         method: 'POST',
         body: formData,
       });
