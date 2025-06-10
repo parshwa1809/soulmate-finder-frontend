@@ -57,7 +57,12 @@ const ProfilePage = () => {
           </Button>
           
           <h1 className="text-xl font-semibold text-white amazon-font">
-            {isEditing ? 'Edit Profile' : 'My Profile'}
+            <span className="hidden sm:inline">
+              {isEditing ? 'Edit Profile' : 'My Profile'}
+            </span>
+            <span className="sm:hidden">
+              {isEditing ? 'Edit Profile' : ''}
+            </span>
           </h1>
           
           <div className="flex gap-2">
