@@ -7,9 +7,8 @@ import { Badge } from "@/components/ui/badge";
 import { Popover, PopoverTrigger, PopoverContent } from "@/components/ui/popover";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { useToast } from "@/hooks/use-toast";
-import { config } from "../config/api";
 import Profile from './Profile';
-import Recommendations from './Recommendations';
+import Recommendations from '../pages/Recommendations';
 
 interface DashboardProps {
   setIsLoggedIn: (value: boolean) => void;
@@ -26,7 +25,7 @@ interface UserProfile {
   KUNDLI_SCORE?: number;
 }
 
-const Dashboard = () => {
+const Dashboard = ({ setIsLoggedIn, userUID }: DashboardProps) => {
   const [currentView, setCurrentView] = useState<'recommendations' | 'profile'>('recommendations');
   const [recommendations, setRecommendations] = useState<UserProfile[]>([]);
   const [matches, setMatches] = useState<UserProfile[]>([]);
@@ -54,6 +53,7 @@ const Dashboard = () => {
   const handleLogout = () => {
     localStorage.removeItem('userUID');
     localStorage.removeItem('userData');
+    setIsLoggedIn(false);
     navigate('/');
     toast({
       title: "Logged Out",
@@ -206,10 +206,7 @@ const Dashboard = () => {
 
       <main className="relative z-0 max-w-7xl mx-auto py-6 px-4 sm:px-6 lg:px-8">
         {currentView === 'recommendations' && (
-          <Recommendations 
-            recommendations={recommendations} 
-            onUserClick={handleUserClick} 
-          />
+          <Recommendations />
         )}
         {currentView === 'profile' && <Profile />}
       </main>
