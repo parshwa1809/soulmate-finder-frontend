@@ -60,9 +60,10 @@ const Awaiting = () => {
         // Extract values from the array structure [["recommendation_uid","score","date","isReceived",..]]
         const recommendationUID = Array.isArray(item) ? item[0] : (item.UID || item);
         const uid = recommendationUID;
-        const isReceived = Array.isArray(item) && item.length > 3 ? item[3] : false;
+        // Check if this is a received request (4th element in the array)
+        const isReceived = Array.isArray(item) && item.length > 3 ? Boolean(item[3]) : false;
         
-        console.log('Loading user with recommendationUID:', recommendationUID, 'isReceived:', isReceived);
+        console.log('Loading user with recommendationUID:', recommendationUID, 'isReceived:', isReceived, 'full item:', item);
         
         const response = await fetch(`${config.URL}/get:${uid}`, {
           method: 'POST',
@@ -79,6 +80,7 @@ const Awaiting = () => {
       });
 
       const users = (await Promise.all(userPromises)).filter(Boolean);
+      console.log('Final processed users for awaiting:', users);
       setter(users);
     } catch (error) {
       console.error('Error fetching users:', error);
@@ -354,3 +356,5 @@ const Awaiting = () => {
 };
 
 export default Awaiting;
+
+}
