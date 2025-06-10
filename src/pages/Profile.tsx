@@ -4,7 +4,7 @@ import { useNavigate } from "react-router-dom";
 import Profile from "../components/Profile";
 import EditProfile from "../components/EditProfile";
 import { Button } from "@/components/ui/button";
-import { ArrowLeft, LogOut } from "lucide-react";
+import { ArrowLeft, LogOut, Edit, RefreshCw } from "lucide-react";
 
 const ProfilePage = () => {
   const navigate = useNavigate();
@@ -32,6 +32,11 @@ const ProfilePage = () => {
     navigate("/login");
   };
 
+  const handleUpdate = () => {
+    // Refresh the page to update profile data
+    window.location.reload();
+  };
+
   return (
     <div className="min-h-screen bg-gradient-to-br from-slate-900 via-purple-900 to-slate-900">
       <div className="absolute inset-0 bg-[radial-gradient(circle_at_50%_50%,rgba(139,92,246,0.1),transparent_50%)]"></div>
@@ -48,18 +53,40 @@ const ProfilePage = () => {
             Back to Dashboard
           </Button>
           
-          <h1 className="text-xl font-semibold text-white">
+          <h1 className="text-xl font-semibold text-white amazon-font">
             {isEditing ? 'Edit Profile' : 'My Profile'}
           </h1>
           
-          <Button 
-            onClick={handleLogout}
-            variant="outline"
-            className="border-red-400/30 bg-red-500/10 text-red-200 hover:bg-red-500/20"
-          >
-            <LogOut className="w-4 h-4 mr-2" />
-            Logout
-          </Button>
+          <div className="flex gap-2">
+            {!isEditing && (
+              <>
+                <Button 
+                  onClick={handleUpdate}
+                  variant="outline"
+                  className="border-blue-400/30 bg-blue-500/10 text-blue-200 hover:bg-blue-500/20"
+                >
+                  <RefreshCw className="w-4 h-4 mr-2" />
+                  Update
+                </Button>
+                <Button 
+                  onClick={handleEdit}
+                  variant="outline"
+                  className="border-violet-400/30 bg-violet-500/10 text-violet-200 hover:bg-violet-500/20"
+                >
+                  <Edit className="w-4 h-4 mr-2" />
+                  Edit
+                </Button>
+              </>
+            )}
+            <Button 
+              onClick={handleLogout}
+              variant="outline"
+              className="border-red-400/30 bg-red-500/10 text-red-200 hover:bg-red-500/20"
+            >
+              <LogOut className="w-4 h-4 mr-2" />
+              Logout
+            </Button>
+          </div>
         </div>
       </div>
 

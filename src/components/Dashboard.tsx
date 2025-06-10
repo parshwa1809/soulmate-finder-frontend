@@ -360,8 +360,7 @@ const Dashboard = ({ userUID, setIsLoggedIn }: DashboardProps) => {
               </div>
             </div>
             <div>
-              <h1 className="text-2xl font-bold text-white tracking-tight">Align</h1>
-              <p className="text-white/60 text-sm font-medium">Where cosmic compatibility meets modern connection</p>
+              <h1 className="text-2xl font-bold text-white tracking-tight amazon-font">Aligned</h1>
             </div>
           </div>
           <div className="flex gap-3">
@@ -372,14 +371,6 @@ const Dashboard = ({ userUID, setIsLoggedIn }: DashboardProps) => {
             >
               <User className="w-4 h-4 mr-2" />
               Profile
-            </Button>
-            <Button 
-              onClick={handleLogout}
-              variant="outline"
-              className="border-red-400/30 bg-red-500/10 backdrop-blur-xl text-red-200 hover:bg-red-500/20 hover:border-red-400/40 transition-all duration-300 font-medium"
-            >
-              <LogOut className="w-4 h-4 mr-2" />
-              Logout
             </Button>
           </div>
         </div>

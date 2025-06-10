@@ -145,8 +145,8 @@ const Login = ({ setIsLoggedIn, setUserUID }: LoginProps) => {
             </div>
           </div>
           <div>
-            <CardTitle className="text-3xl font-bold text-white mb-2">
-              Welcome Back
+            <CardTitle className="text-3xl font-bold text-white mb-2 amazon-font">
+              Welcome to Aligned
             </CardTitle>
             <CardDescription className="text-white/60 font-medium">
               Sign in to find your perfect match
