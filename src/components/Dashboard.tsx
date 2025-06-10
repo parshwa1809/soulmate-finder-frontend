@@ -1,3 +1,4 @@
+
 import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { Button } from "@/components/ui/button";
@@ -667,6 +668,42 @@ const Dashboard = ({ userUID, setIsLoggedIn }: DashboardProps) => {
                     icon={Clock}
                     title="No pending responses"
                     description="You're all caught up with your responses!"
+                  />
+                )}
+              </CardContent>
+            </Card>
+          </TabsContent>
+
+          <TabsContent value="matches" className="space-y-6">
+            <Card className="bg-white/5 backdrop-blur-xl border border-white/10 shadow-2xl overflow-hidden">
+              <CardHeader className="pb-6 bg-gradient-to-r from-pink-500/10 to-red-500/10">
+                <div className="flex items-center gap-4">
+                  <div className="relative">
+                    <div className="absolute -inset-1 bg-gradient-to-r from-pink-500 to-red-500 rounded-xl blur opacity-30"></div>
+                    <div className="relative w-12 h-12 bg-white/10 backdrop-blur-xl rounded-xl border border-white/20 flex items-center justify-center">
+                      <Heart className="w-6 h-6 text-pink-300" />
+                    </div>
+                  </div>
+                  <div>
+                    <CardTitle className="text-white text-xl font-bold">Your Matches</CardTitle>
+                    <CardDescription className="text-white/60 font-medium mt-1">
+                      People who liked you back - it's a match!
+                    </CardDescription>
+                  </div>
+                </div>
+              </CardHeader>
+              <CardContent className="p-6">
+                {matches.length > 0 ? (
+                  <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                    {matches.map((user) => (
+                      <UserCard key={user.UID} user={user} />
+                    ))}
+                  </div>
+                ) : (
+                  <EmptyState
+                    icon={Heart}
+                    title="No matches yet"
+                    description="Keep swiping to find your perfect match! When someone likes you back, they'll appear here."
                   />
                 )}
               </CardContent>
