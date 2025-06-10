@@ -1,4 +1,3 @@
-
 import { useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Heart, X } from "lucide-react";
@@ -8,10 +7,11 @@ import { useToast } from "@/components/ui/use-toast";
 interface UserActionsProps {
   userUID: string;
   currentUserUID: string | null;
+  recommendationUID?: string; // Add this to pass the actual recommendation_uid
   onActionComplete?: (action: 'skip' | 'align', queue?: string, message?: string) => void;
 }
 
-const UserActions = ({ userUID, currentUserUID, onActionComplete }: UserActionsProps) => {
+const UserActions = ({ userUID, currentUserUID, recommendationUID, onActionComplete }: UserActionsProps) => {
   const [isLoading, setIsLoading] = useState(false);
   const { toast } = useToast();
 
@@ -31,7 +31,7 @@ const UserActions = ({ userUID, currentUserUID, onActionComplete }: UserActionsP
       const metadata = {
         uid: currentUserUID,
         action: actionType,
-        recommendation_uid: userUID
+        recommendation_uid: recommendationUID || userUID // Use recommendationUID if available, fallback to userUID
       };
       formData.append('metadata', JSON.stringify(metadata));
 
