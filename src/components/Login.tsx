@@ -1,4 +1,3 @@
-
 import { useState } from "react";
 import { Link } from "react-router-dom";
 import { Button } from "@/components/ui/button";
@@ -12,9 +11,10 @@ import { useToast } from "@/components/ui/use-toast";
 interface LoginProps {
   setIsLoggedIn: (value: boolean) => void;
   setUserUID: (uid: string) => void;
+  onSuccessfulLogin: (uid: string) => Promise<void>;
 }
 
-const Login = ({ setIsLoggedIn, setUserUID }: LoginProps) => {
+const Login = ({ setIsLoggedIn, setUserUID, onSuccessfulLogin }: LoginProps) => {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [isLoading, setIsLoading] = useState(false);
@@ -86,32 +86,12 @@ const Login = ({ setIsLoggedIn, setUserUID }: LoginProps) => {
       if (response.ok && data.LOGIN === "SUCCESSFUL") {
         console.log('Login successful for UID:', data.UID);
         
-        // Store user UID
-        setUserUID(data.UID);
-        safeSetLocalStorage('userUID', data.UID);
-        
-        // Process and store the complete user data from API response
-        const userData = {
-          UID: data.UID,
-          LOGIN: data.LOGIN,
-          recommendations: data.RECOMMENDATIONS || [],
-          matches: data.MATCHED || [],
-          notifications: data.NOTIFICATIONS || [],
-          awaiting: data.AWAITING || []
-        };
-        
-        console.log('=== PROCESSED USER DATA FOR STORAGE ===');
-        console.log('Storing user data:', JSON.stringify(userData, null, 2));
-        console.log('Recommendations detailed:', userData.recommendations);
-        console.log('Matches detailed:', userData.matches);
-        
-        safeSetLocalStorage('userData', JSON.stringify(userData));
-        
-        setIsLoggedIn(true);
+        // Use the new onSuccessfulLogin handler
+        await onSuccessfulLogin(data.UID);
         
         toast({
           title: "Login Successful",
-          description: `Welcome back! Found ${userData.recommendations.length} recommendations.`,
+          description: "Welcome back!",
         });
         
       } else {

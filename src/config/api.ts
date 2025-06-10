@@ -8,7 +8,11 @@ export const config = {
     VERIFY_EMAIL: '/verify:email',
     GET_PROFILE: '/get:profile',
     FIND_PROFILE: '/get:profile',
-    UPDATE_PROFILE: '/update:profile'
+    UPDATE_PROFILE: '/update:profile',
+    GET_RECOMMENDATIONS: '/get:recommendations',
+    GET_MATCHES: '/get:matches',
+    GET_AWAITING: '/get:awaiting',
+    GET_NOTIFICATIONS: '/get:notifications'
   }
 };
 
