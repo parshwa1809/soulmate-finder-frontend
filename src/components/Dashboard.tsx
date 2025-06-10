@@ -226,33 +226,37 @@ const Dashboard = ({ userUID, setIsLoggedIn }: DashboardProps) => {
     setSelectedUser(null);
   };
 
-  const handleActionComplete = (queue?: string, message?: string) => {
+  const handleActionComplete = (action: 'skip' | 'align', queue?: string, message?: string) => {
     if (!selectedUser) return;
 
-    // Remove user from current list
+    // Remove user from current list first
     const userUID = selectedUser.UID;
     setRecommendations(prev => prev.filter(user => user.UID !== userUID));
     setMatches(prev => prev.filter(user => user.UID !== userUID));
     setNotifications(prev => prev.filter(user => user.UID !== userUID));
     setAwaiting(prev => prev.filter(user => user.UID !== userUID));
 
-    // Add to appropriate queue if specified
+    // Handle queue management based on API response
     if (queue && queue !== 'None') {
       switch (queue) {
         case 'MATCHED':
+        case 'Matched':
+          // Move to matches (Aligned queue - the heart button on top left)
           setMatches(prev => [...prev, selectedUser]);
+          console.log(`Moving user ${selectedUser.name} to matches queue`);
           break;
         case 'AWAITING':
+        case 'Awaiting':
+          // Move to awaiting (Pending tab)
           setAwaiting(prev => [...prev, selectedUser]);
+          console.log(`Moving user ${selectedUser.name} to awaiting queue`);
+          break;
+        default:
+          console.log(`Unknown queue type: ${queue}, removing user from all queues`);
           break;
       }
-    }
-
-    // Add message to activity/notifications if present
-    if (message && message !== 'None') {
-      // You can implement a notification system here
-      // For now, this will be handled by the toast in UserActions
-      console.log('Activity message:', message);
+    } else {
+      console.log(`Queue is None or undefined, removing user ${selectedUser.name} from all queues`);
     }
 
     // Close the profile view

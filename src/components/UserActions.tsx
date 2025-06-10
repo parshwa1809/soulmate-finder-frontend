@@ -7,7 +7,7 @@ import { useToast } from "@/hooks/use-toast";
 interface UserActionsProps {
   userUID: string;
   currentUserUID: string | null;
-  onActionComplete?: (queue?: string, message?: string) => void;
+  onActionComplete?: (action: 'skip' | 'align', queue?: string, message?: string) => void;
 }
 
 const UserActions = ({ userUID, currentUserUID, onActionComplete }: UserActionsProps) => {
@@ -49,8 +49,8 @@ const UserActions = ({ userUID, currentUserUID, onActionComplete }: UserActionsP
             });
           }
           
-          // Call parent callback with queue and message info
-          onActionComplete?.(queue, message);
+          // Call parent callback with action type, queue and message info
+          onActionComplete?.(actionType, queue, message);
         } else {
           console.error('API error:', data.error);
           toast({
