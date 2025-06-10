@@ -1,4 +1,3 @@
-
 import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { Button } from "@/components/ui/button";
@@ -409,10 +408,10 @@ const Dashboard = ({ userUID, setIsLoggedIn }: DashboardProps) => {
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-slate-900 via-purple-900 to-slate-900">
-      {/* Modern Header */}
+      {/* Modern Header - Mobile Optimized */}
       <div className="border-b border-white/10 bg-white/5 backdrop-blur-2xl sticky top-0 z-50">
-        <div className="max-w-7xl mx-auto px-6 py-6 flex items-center justify-between">
-          <div className="flex items-center space-x-4">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 py-4 sm:py-6 flex items-center justify-between">
+          <div className="flex items-center space-x-2 sm:space-x-4">
             <Popover open={isMatchesOpen} onOpenChange={setIsMatchesOpen}>
               <PopoverTrigger asChild>
                 <div className="relative cursor-pointer">
@@ -420,10 +419,10 @@ const Dashboard = ({ userUID, setIsLoggedIn }: DashboardProps) => {
                   <img 
                     src="/lovable-uploads/b01e8af5-640c-4d6b-a324-774afb9bbf88.png" 
                     alt="Aligned Logo" 
-                    className="relative w-24 h-24 object-cover rounded-xl hover:scale-105 transition-transform duration-300"
+                    className="relative w-16 h-16 sm:w-24 sm:h-24 object-cover rounded-xl hover:scale-105 transition-transform duration-300"
                   />
                   {matches.length > 0 && (
-                    <Badge className="absolute -top-2 -right-2 h-6 w-6 p-0 flex items-center justify-center bg-red-500 text-white text-xs font-bold">
+                    <Badge className="absolute -top-2 -right-2 h-5 w-5 sm:h-6 sm:w-6 p-0 flex items-center justify-center bg-red-500 text-white text-xs font-bold">
                       {matches.length}
                     </Badge>
                   )}
@@ -475,21 +474,22 @@ const Dashboard = ({ userUID, setIsLoggedIn }: DashboardProps) => {
                 </div>
               </PopoverContent>
             </Popover>
-            <div>
-              <h1 className="text-2xl font-bold text-white tracking-tight amazon-font">Aligned</h1>
+            <div className="hidden sm:block">
+              <h1 className="text-xl sm:text-2xl font-bold text-white tracking-tight amazon-font">Aligned</h1>
             </div>
           </div>
-          <div className="flex gap-3">
+          <div className="flex gap-2 sm:gap-3">
             <Popover open={isNotificationsOpen} onOpenChange={setIsNotificationsOpen}>
               <PopoverTrigger asChild>
                 <Button 
                   variant="outline"
-                  className="border-white/20 bg-white/5 backdrop-blur-xl text-white/90 hover:bg-white/10 hover:border-white/30 transition-all duration-300 font-medium"
+                  size="sm"
+                  className="border-white/20 bg-white/5 backdrop-blur-xl text-white/90 hover:bg-white/10 hover:border-white/30 transition-all duration-300 font-medium text-xs sm:text-sm px-2 sm:px-4"
                 >
-                  <Bell className="w-4 h-4 mr-2" />
-                  Notifications
+                  <Bell className="w-3 h-3 sm:w-4 sm:h-4 sm:mr-2" />
+                  <span className="hidden sm:inline">Notifications</span>
                   {(notifications.length > 0 || messages.length > 0) && (
-                    <Badge className="ml-2 h-5 w-5 p-0 flex items-center justify-center bg-red-500 text-white text-xs">
+                    <Badge className="ml-1 sm:ml-2 h-4 w-4 sm:h-5 sm:w-5 p-0 flex items-center justify-center bg-red-500 text-white text-xs">
                       {notifications.length + messages.length}
                     </Badge>
                   )}
@@ -558,45 +558,46 @@ const Dashboard = ({ userUID, setIsLoggedIn }: DashboardProps) => {
             <Button 
               onClick={handleViewProfile}
               variant="outline"
-              className="border-white/20 bg-white/5 backdrop-blur-xl text-white/90 hover:bg-white/10 hover:border-white/30 transition-all duration-300 font-medium"
+              size="sm"
+              className="border-white/20 bg-white/5 backdrop-blur-xl text-white/90 hover:bg-white/10 hover:border-white/30 transition-all duration-300 font-medium text-xs sm:text-sm px-2 sm:px-4"
             >
-              <User className="w-4 h-4 mr-2" />
-              Profile
+              <User className="w-3 h-3 sm:w-4 sm:h-4 sm:mr-2" />
+              <span className="hidden sm:inline">Profile</span>
             </Button>
           </div>
         </div>
       </div>
 
-      <div className="max-w-7xl mx-auto px-6 py-8">
-        <Tabs defaultValue="recommendations" className="space-y-8">
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 py-6 sm:py-8">
+        <Tabs defaultValue="recommendations" className="space-y-6 sm:space-y-8">
           <TabsList className="grid w-full grid-cols-3 bg-white/5 backdrop-blur-xl border border-white/10 p-1 rounded-2xl">
             <TabsTrigger 
               value="recommendations" 
-              className="flex items-center gap-2 text-white/70 data-[state=active]:bg-white/10 data-[state=active]:text-white font-medium rounded-xl transition-all duration-300 py-3"
+              className="flex flex-col sm:flex-row items-center gap-1 sm:gap-2 text-white/70 data-[state=active]:bg-white/10 data-[state=active]:text-white font-medium rounded-xl transition-all duration-300 py-2 sm:py-3 px-2 sm:px-4 text-xs sm:text-sm"
             >
               <Users className="w-4 h-4" />
               <span>Recommendations</span>
-              <Badge variant="secondary" className="bg-white/20 text-white/80 text-xs">
+              <Badge variant="secondary" className="bg-white/20 text-white/80 text-xs mt-1 sm:mt-0">
                 {recommendations.length}
               </Badge>
             </TabsTrigger>
             <TabsTrigger 
               value="awaiting" 
-              className="flex items-center gap-2 text-white/70 data-[state=active]:bg-white/10 data-[state=active]:text-white font-medium rounded-xl transition-all duration-300 py-3"
+              className="flex flex-col sm:flex-row items-center gap-1 sm:gap-2 text-white/70 data-[state=active]:bg-white/10 data-[state=active]:text-white font-medium rounded-xl transition-all duration-300 py-2 sm:py-3 px-2 sm:px-4 text-xs sm:text-sm"
             >
               <Clock className="w-4 h-4" />
               <span>Awaiting</span>
-              <Badge variant="secondary" className="bg-white/20 text-white/80 text-xs">
+              <Badge variant="secondary" className="bg-white/20 text-white/80 text-xs mt-1 sm:mt-0">
                 {awaiting.length}
               </Badge>
             </TabsTrigger>
             <TabsTrigger 
               value="matches" 
-              className="flex items-center gap-2 text-white/70 data-[state=active]:bg-white/10 data-[state=active]:text-white font-medium rounded-xl transition-all duration-300 py-3"
+              className="flex flex-col sm:flex-row items-center gap-1 sm:gap-2 text-white/70 data-[state=active]:bg-white/10 data-[state=active]:text-white font-medium rounded-xl transition-all duration-300 py-2 sm:py-3 px-2 sm:px-4 text-xs sm:text-sm"
             >
               <Heart className="w-4 h-4" />
               <span>Matches</span>
-              <Badge variant="secondary" className="bg-white/20 text-white/80 text-xs">
+              <Badge variant="secondary" className="bg-white/20 text-white/80 text-xs mt-1 sm:mt-0">
                 {matches.length}
               </Badge>
             </TabsTrigger>
