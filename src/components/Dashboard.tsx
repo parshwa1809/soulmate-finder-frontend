@@ -226,8 +226,36 @@ const Dashboard = ({ userUID, setIsLoggedIn }: DashboardProps) => {
     setSelectedUser(null);
   };
 
-  const handleActionComplete = () => {
-    loadUserData();
+  const handleActionComplete = (queue?: string, message?: string) => {
+    if (!selectedUser) return;
+
+    // Remove user from current list
+    const userUID = selectedUser.UID;
+    setRecommendations(prev => prev.filter(user => user.UID !== userUID));
+    setMatches(prev => prev.filter(user => user.UID !== userUID));
+    setNotifications(prev => prev.filter(user => user.UID !== userUID));
+    setAwaiting(prev => prev.filter(user => user.UID !== userUID));
+
+    // Add to appropriate queue if specified
+    if (queue && queue !== 'None') {
+      switch (queue) {
+        case 'MATCHED':
+          setMatches(prev => [...prev, selectedUser]);
+          break;
+        case 'AWAITING':
+          setAwaiting(prev => [...prev, selectedUser]);
+          break;
+      }
+    }
+
+    // Add message to activity/notifications if present
+    if (message && message !== 'None') {
+      // You can implement a notification system here
+      // For now, this will be handled by the toast in UserActions
+      console.log('Activity message:', message);
+    }
+
+    // Close the profile view
     setSelectedUser(null);
   };
 
@@ -359,7 +387,7 @@ const Dashboard = ({ userUID, setIsLoggedIn }: DashboardProps) => {
               <PopoverTrigger asChild>
                 <div className="relative cursor-pointer">
                   <div className="absolute -inset-1 bg-gradient-to-r from-violet-500 to-purple-500 rounded-lg blur opacity-30"></div>
-                  <div className="relative w-10 h-10 bg-white/10 backdrop-blur-xl rounded-lg border border-white/20 flex items-center justify-center hover:bg-white/20 transition-all duration-300">
+                  <div className="relative w-10 h-10 bg-white/10 backdrop-blur-xl rounded-lg border border-white/20 flex items-center justify-center">
                     <Heart className="w-5 h-5 text-violet-300" />
                     {matches.length > 0 && (
                       <Badge className="absolute -top-2 -right-2 h-5 w-5 p-0 flex items-center justify-center bg-red-500 text-white text-xs">

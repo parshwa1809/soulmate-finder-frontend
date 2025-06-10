@@ -1,4 +1,3 @@
-
 import { useState, useEffect } from "react";
 import { Card, CardContent } from "@/components/ui/card";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
@@ -79,8 +78,17 @@ const Recommendations = () => {
     setSelectedUser(null);
   };
 
-  const handleActionComplete = () => {
-    loadRecommendations();
+  const handleActionComplete = (queue?: string, message?: string) => {
+    if (!selectedUser) return;
+
+    // Remove user from recommendations
+    const userUID = selectedUser.UID;
+    setRecommendations(prev => prev.filter(user => user.UID !== userUID));
+
+    // Note: For recommendations page, we don't add to other queues
+    // as this page only shows recommendations
+
+    // Close the profile view
     setSelectedUser(null);
   };
 
