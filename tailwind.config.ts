@@ -64,10 +64,6 @@ export default {
 					ring: 'hsl(var(--sidebar-ring))'
 				}
 			},
-			fontFamily: {
-				'antrokas': ['Antrokas', 'serif'],
-				'amazon': ['Amazon Ember', 'system-ui', '-apple-system', 'BlinkMacSystemFont', 'Segoe UI', 'Roboto', 'sans-serif'],
-			},
 			backgroundImage: {
 				'gradient-primary': 'linear-gradient(135deg, rgb(124, 58, 237) 0%, rgb(147, 51, 234) 50%, rgb(168, 85, 247) 100%)',
 				'gradient-card': 'linear-gradient(135deg, rgba(255, 255, 255, 0.95) 0%, rgba(196, 181, 253, 0.1) 100%)',

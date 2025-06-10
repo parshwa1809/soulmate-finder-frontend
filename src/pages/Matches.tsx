@@ -1,3 +1,4 @@
+
 import { useState, useEffect } from "react";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
@@ -20,7 +21,6 @@ interface User {
   hobbies?: string;
   profilePicture?: string;
   bio?: string;
-  recommendationUID?: string; // Add this to store the recommendation_uid
 }
 
 const Matches = () => {
@@ -53,22 +53,12 @@ const Matches = () => {
   const loadUsersForCategory = async (userList: any[], setter: (users: User[]) => void) => {
     try {
       const userPromises = userList.map(async (item) => {
-        // Extract recommendation_uid from the array structure [["recommendation_uid","score",..]]
-        const recommendationUID = Array.isArray(item) ? item[0] : (item.UID || item);
-        const uid = recommendationUID; // The user UID is the same as recommendation_uid in this case
-        
-        console.log('Loading user with recommendationUID:', recommendationUID);
-        
+        const uid = item.UID || item;
         const response = await fetch(`${config.URL}/get:${uid}`, {
           method: 'POST',
         });
         if (response.ok) {
-          const userData = await response.json();
-          // Add the recommendationUID to the user data
-          return {
-            ...userData,
-            recommendationUID: recommendationUID
-          };
+          return await response.json();
         }
         return null;
       });
@@ -157,7 +147,6 @@ const Matches = () => {
             <UserActions 
               userUID={selectedUser.UID} 
               currentUserUID={userUID}
-              recommendationUID={selectedUser.recommendationUID}
               onActionComplete={handleActionComplete}
             />
           </ProfileView>
