@@ -1,4 +1,3 @@
-
 import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { Button } from "@/components/ui/button";
@@ -7,6 +6,7 @@ import { Avatar, AvatarImage, AvatarFallback } from "@/components/ui/avatar";
 import { Badge } from "@/components/ui/badge";
 import { Popover, PopoverTrigger, PopoverContent } from "@/components/ui/popover";
 import { ScrollArea } from "@/components/ui/scroll-area";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { useToast } from "@/hooks/use-toast";
 import Profile from './Profile';
 
@@ -74,79 +74,70 @@ const Dashboard = ({ setIsLoggedIn, userUID }: DashboardProps) => {
         <p className="text-white/70 text-lg">Discover meaningful connections</p>
       </div>
 
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-        {/* Discover Card */}
-        <div 
-          onClick={() => navigate('/recommendations')}
-          className="bg-white/5 backdrop-blur-xl border border-white/10 rounded-xl p-6 hover:bg-white/10 transition-all duration-300 cursor-pointer group"
-        >
-          <div className="flex items-center gap-4 mb-4">
-            <div className="w-12 h-12 bg-gradient-to-br from-violet-500 to-purple-500 rounded-xl flex items-center justify-center">
-              <Users className="w-6 h-6 text-white" />
-            </div>
-            <div>
-              <h3 className="text-xl font-semibold text-white">Discover</h3>
-              <p className="text-white/60 text-sm">Find new connections</p>
-            </div>
-          </div>
-          <div className="flex items-center justify-between">
-            <span className="text-white/80">
-              {recommendations.length} recommendations
-            </span>
-            <div className="text-white/40 group-hover:text-white/60 transition-colors">
-              →
-            </div>
-          </div>
-        </div>
+      <Tabs defaultValue="discover" className="w-full">
+        <TabsList className="grid w-full grid-cols-3 bg-white/5 backdrop-blur-xl border border-white/10">
+          <TabsTrigger 
+            value="discover" 
+            className="text-white data-[state=active]:bg-white/10 data-[state=active]:text-white"
+          >
+            <Users className="w-4 h-4 mr-2" />
+            Discover ({recommendations.length})
+          </TabsTrigger>
+          <TabsTrigger 
+            value="awaiting"
+            className="text-white data-[state=active]:bg-white/10 data-[state=active]:text-white"
+          >
+            <Clock className="w-4 h-4 mr-2" />
+            Awaiting ({awaiting.length})
+          </TabsTrigger>
+          <TabsTrigger 
+            value="matches"
+            className="text-white data-[state=active]:bg-white/10 data-[state=active]:text-white"
+          >
+            <Heart className="w-4 h-4 mr-2" />
+            Matches ({matches.length})
+          </TabsTrigger>
+        </TabsList>
 
-        {/* Awaiting Card */}
-        <div 
-          onClick={() => navigate('/awaiting')}
-          className="bg-white/5 backdrop-blur-xl border border-white/10 rounded-xl p-6 hover:bg-white/10 transition-all duration-300 cursor-pointer group"
-        >
-          <div className="flex items-center gap-4 mb-4">
-            <div className="w-12 h-12 bg-gradient-to-br from-amber-500 to-orange-500 rounded-xl flex items-center justify-center">
-              <Clock className="w-6 h-6 text-white" />
-            </div>
-            <div>
-              <h3 className="text-xl font-semibold text-white">Awaiting</h3>
-              <p className="text-white/60 text-sm">Pending responses</p>
-            </div>
+        <TabsContent value="discover" className="mt-6">
+          <div className="bg-white/5 backdrop-blur-xl border border-white/10 rounded-xl p-6">
+            <h3 className="text-xl font-semibold text-white mb-4">Discover New People</h3>
+            <p className="text-white/70 mb-4">Find your perfect match based on compatibility</p>
+            <Button 
+              onClick={() => navigate('/recommendations')}
+              className="w-full"
+            >
+              Start Discovering
+            </Button>
           </div>
-          <div className="flex items-center justify-between">
-            <span className="text-white/80">
-              {awaiting.length} awaiting
-            </span>
-            <div className="text-white/40 group-hover:text-white/60 transition-colors">
-              →
-            </div>
-          </div>
-        </div>
+        </TabsContent>
 
-        {/* Matches Card */}
-        <div 
-          onClick={() => navigate('/matches')}
-          className="bg-white/5 backdrop-blur-xl border border-white/10 rounded-xl p-6 hover:bg-white/10 transition-all duration-300 cursor-pointer group"
-        >
-          <div className="flex items-center gap-4 mb-4">
-            <div className="w-12 h-12 bg-gradient-to-br from-emerald-500 to-green-500 rounded-xl flex items-center justify-center">
-              <Heart className="w-6 h-6 text-white" />
-            </div>
-            <div>
-              <h3 className="text-xl font-semibold text-white">Matches</h3>
-              <p className="text-white/60 text-sm">Your connections</p>
-            </div>
+        <TabsContent value="awaiting" className="mt-6">
+          <div className="bg-white/5 backdrop-blur-xl border border-white/10 rounded-xl p-6">
+            <h3 className="text-xl font-semibold text-white mb-4">Awaiting Responses</h3>
+            <p className="text-white/70 mb-4">People you've shown interest in</p>
+            <Button 
+              onClick={() => navigate('/awaiting')}
+              className="w-full"
+            >
+              View Awaiting
+            </Button>
           </div>
-          <div className="flex items-center justify-between">
-            <span className="text-white/80">
-              {matches.length} matches
-            </span>
-            <div className="text-white/40 group-hover:text-white/60 transition-colors">
-              →
-            </div>
+        </TabsContent>
+
+        <TabsContent value="matches" className="mt-6">
+          <div className="bg-white/5 backdrop-blur-xl border border-white/10 rounded-xl p-6">
+            <h3 className="text-xl font-semibold text-white mb-4">Your Matches</h3>
+            <p className="text-white/70 mb-4">People who liked you back</p>
+            <Button 
+              onClick={() => navigate('/matches')}
+              className="w-full"
+            >
+              View Matches
+            </Button>
           </div>
-        </div>
-      </div>
+        </TabsContent>
+      </Tabs>
     </div>
   );
 
@@ -268,11 +259,11 @@ const Dashboard = ({ setIsLoggedIn, userUID }: DashboardProps) => {
               <Button
                 variant="ghost"
                 size="sm"
-                onClick={() => setCurrentView('profile')}
+                onClick={() => setCurrentView(currentView === 'profile' ? 'dashboard' : 'profile')}
                 className="text-white/80 hover:text-white hover:bg-white/10"
               >
                 <User className="w-4 h-4 mr-2" />
-                Profile
+                {currentView === 'profile' ? 'Dashboard' : 'Profile'}
               </Button>
 
               <Button
