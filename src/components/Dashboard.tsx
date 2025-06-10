@@ -10,6 +10,8 @@ import { Heart, Bell, Clock, Users, User, LogOut, Star } from "lucide-react";
 import { config } from "../config/api";
 import UserActions from "./UserActions";
 import ProfileView from "./ProfileView";
+import { useToast } from "@/components/ui/use-toast";
+import Logo from "./Logo";
 
 interface User {
   UID: string;
@@ -50,6 +52,7 @@ const Dashboard = ({ userUID, setIsLoggedIn }: DashboardProps) => {
   const [selectedUser, setSelectedUser] = useState<User | null>(null);
   const [isMatchesOpen, setIsMatchesOpen] = useState(false);
   const [isNotificationsOpen, setIsNotificationsOpen] = useState(false);
+  const { toast } = useToast();
 
   useEffect(() => {
     loadUserData();
@@ -236,6 +239,11 @@ const Dashboard = ({ userUID, setIsLoggedIn }: DashboardProps) => {
     localStorage.removeItem('userUID');
     localStorage.removeItem('userData');
     setIsLoggedIn(false);
+    navigate('/login');
+    toast({
+      title: "Logged Out",
+      description: "You have been successfully logged out.",
+    });
   };
 
   const handleViewProfile = () => {
@@ -414,10 +422,17 @@ const Dashboard = ({ userUID, setIsLoggedIn }: DashboardProps) => {
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-slate-900 via-purple-900 to-slate-900">
-      {/* Modern Header */}
-      <div className="border-b border-white/10 bg-white/5 backdrop-blur-2xl sticky top-0 z-50">
-        <div className="max-w-7xl mx-auto px-6 py-6 flex items-center justify-between">
-          <div className="flex items-center space-x-4">
+      {/* Header */}
+      <header className="relative z-10 bg-white/5 backdrop-blur-xl border-b border-white/10">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+          <div className="flex justify-between items-center h-16">
+            <div className="flex items-center gap-3">
+              <Logo size="sm" showText={false} />
+              <span className="font-antrokas font-bold text-white text-2xl tracking-wide">
+                Aligned
+              </span>
+            </div>
+            
             <Popover open={isMatchesOpen} onOpenChange={setIsMatchesOpen}>
               <PopoverTrigger asChild>
                 <div className="relative cursor-pointer">
@@ -570,7 +585,7 @@ const Dashboard = ({ userUID, setIsLoggedIn }: DashboardProps) => {
             </Button>
           </div>
         </div>
-      </div>
+      </header>
 
       <div className="max-w-7xl mx-auto px-6 py-8">
         <Tabs defaultValue="recommendations" className="space-y-8">
@@ -675,3 +690,5 @@ const Dashboard = ({ userUID, setIsLoggedIn }: DashboardProps) => {
 };
 
 export default Dashboard;
+
+</edits_to_apply>
