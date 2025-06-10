@@ -1,4 +1,3 @@
-
 import { useState, useEffect } from "react";
 import { Card, CardContent } from "@/components/ui/card";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
@@ -58,30 +57,39 @@ const Awaiting = () => {
   const loadUsersForCategory = async (userList: any[], setter: (users: User[]) => void) => {
     try {
       const userPromises = userList.map(async (item) => {
-        // Extract values from the array structure [["recommendation_uid","score","date","isReceived",..]]
+        console.log('Processing awaiting item:', item);
+        
+        // Extract values from the array structure ["recommendation_uid","score","date","isReceived",..]
         const recommendationUID = Array.isArray(item) ? item[0] : (item.UID || item);
         const uid = recommendationUID;
-        // Check if this is a received request (4th element in the array)
+        // The fourth element (index 3) indicates if this is a received request
         const isReceived = Array.isArray(item) && item.length > 3 ? Boolean(item[3]) : false;
         
-        console.log('Loading user with recommendationUID:', recommendationUID, 'isReceived:', isReceived, 'full item:', item);
+        console.log('Processing user:', {
+          recommendationUID,
+          isReceived,
+          fourthValue: Array.isArray(item) ? item[3] : 'not array',
+          fullItem: item
+        });
         
         const response = await fetch(`${config.URL}/get:${uid}`, {
           method: 'POST',
         });
         if (response.ok) {
           const userData = await response.json();
-          return {
+          const processedUser = {
             ...userData,
             recommendationUID: recommendationUID,
             isReceived: isReceived
           };
+          console.log('Final processed user:', processedUser);
+          return processedUser;
         }
         return null;
       });
 
       const users = (await Promise.all(userPromises)).filter(Boolean);
-      console.log('Final processed users for awaiting:', users);
+      console.log('All final processed users for awaiting:', users);
       setter(users);
     } catch (error) {
       console.error('Error fetching users:', error);
@@ -174,88 +182,92 @@ const Awaiting = () => {
     navigate("/dashboard");
   };
 
-  const UserCard = ({ user }: { user: User }) => (
-    <Card className="group hover:shadow-2xl transition-all duration-500 cursor-pointer hover:scale-[1.02]">
-      <CardContent className="p-6" onClick={() => handleUserClick(user)}>
-        <div className="flex items-start space-x-4">
-          <div className="relative">
-            <Avatar className="w-16 h-16 ring-2 ring-white/20 group-hover:ring-white/40 transition-all duration-300">
-              <AvatarImage src={user.profilePicture} />
-              <AvatarFallback className="bg-gradient-to-r from-violet-500 to-purple-500 text-white font-semibold">
-                {user.name?.charAt(0) || <User className="w-6 h-6" />}
-              </AvatarFallback>
-            </Avatar>
-            <div className="absolute -inset-1 bg-gradient-to-r from-violet-400 to-purple-400 rounded-full blur opacity-0 group-hover:opacity-30 transition-opacity duration-300"></div>
+  const UserCard = ({ user }: { user: User }) => {
+    console.log('Rendering UserCard for user:', user.name, 'isReceived:', user.isReceived);
+    
+    return (
+      <Card className="group hover:shadow-2xl transition-all duration-500 cursor-pointer hover:scale-[1.02]">
+        <CardContent className="p-6" onClick={() => handleUserClick(user)}>
+          <div className="flex items-start space-x-4">
+            <div className="relative">
+              <Avatar className="w-16 h-16 ring-2 ring-white/20 group-hover:ring-white/40 transition-all duration-300">
+                <AvatarImage src={user.profilePicture} />
+                <AvatarFallback className="bg-gradient-to-r from-violet-500 to-purple-500 text-white font-semibold">
+                  {user.name?.charAt(0) || <User className="w-6 h-6" />}
+                </AvatarFallback>
+              </Avatar>
+              <div className="absolute -inset-1 bg-gradient-to-r from-violet-400 to-purple-400 rounded-full blur opacity-0 group-hover:opacity-30 transition-opacity duration-300"></div>
+            </div>
+            <div className="flex-1 min-w-0">
+              <h3 className="font-semibold text-lg text-white truncate group-hover:text-violet-200 transition-colors">
+                {user.name || 'Unknown User'}
+              </h3>
+              {user.city && user.country && (
+                <p className="text-sm text-white/60 truncate font-medium">
+                  📍 {user.city}, {user.country}
+                </p>
+              )}
+              {user.age && (
+                <p className="text-sm text-white/60 font-medium">
+                  🎂 {user.age} years old
+                </p>
+              )}
+              {user.hobbies && (
+                <div className="mt-3">
+                  <div className="flex flex-wrap gap-1.5">
+                    {user.hobbies.split(',').slice(0, 3).map((hobby, index) => (
+                      <Badge key={index} variant="secondary" className="text-xs bg-white/10 text-white/80 border-white/20 hover:bg-white/20">
+                        {hobby.trim()}
+                      </Badge>
+                    ))}
+                  </div>
+                </div>
+              )}
+            </div>
           </div>
-          <div className="flex-1 min-w-0">
-            <h3 className="font-semibold text-lg text-white truncate group-hover:text-violet-200 transition-colors">
-              {user.name || 'Unknown User'}
-            </h3>
-            {user.city && user.country && (
-              <p className="text-sm text-white/60 truncate font-medium">
-                📍 {user.city}, {user.country}
-              </p>
-            )}
-            {user.age && (
-              <p className="text-sm text-white/60 font-medium">
-                🎂 {user.age} years old
-              </p>
-            )}
-            {user.hobbies && (
-              <div className="mt-3">
-                <div className="flex flex-wrap gap-1.5">
-                  {user.hobbies.split(',').slice(0, 3).map((hobby, index) => (
-                    <Badge key={index} variant="secondary" className="text-xs bg-white/10 text-white/80 border-white/20 hover:bg-white/20">
-                      {hobby.trim()}
-                    </Badge>
-                  ))}
+          
+          {/* Action buttons at bottom of card */}
+          <div className="mt-4 pt-4 border-t border-white/10" onClick={(e) => e.stopPropagation()}>
+            {user.isReceived ? (
+              // Show align and skip buttons for received requests
+              <div className="flex justify-center items-center gap-4">
+                <div className="relative group">
+                  <Button
+                    onClick={() => handleAction('align', user)}
+                    variant="outline"
+                    size="sm"
+                    disabled={actionLoading === user.UID}
+                    className="relative w-12 h-12 rounded-full bg-white/5 backdrop-blur-xl border-2 border-white/10 hover:border-emerald-400/50 text-white/80 hover:text-emerald-300 transition-all duration-300 hover:scale-110 shadow-2xl hover:shadow-emerald-500/25 group-hover:bg-gradient-to-r group-hover:from-emerald-500/10 group-hover:to-green-500/10"
+                  >
+                    <Heart className="w-5 h-5 group-hover:scale-110 group-hover:fill-current transition-all duration-300" />
+                  </Button>
+                </div>
+                
+                <div className="relative group">
+                  <Button
+                    onClick={() => handleAction('skip', user)}
+                    variant="outline"
+                    size="sm"
+                    disabled={actionLoading === user.UID}
+                    className="relative w-12 h-12 rounded-full bg-white/5 backdrop-blur-xl border-2 border-white/10 hover:border-red-400/50 text-white/80 hover:text-red-300 transition-all duration-300 hover:scale-110 shadow-2xl hover:shadow-red-500/25 group-hover:bg-gradient-to-r group-hover:from-red-500/10 group-hover:to-pink-500/10"
+                  >
+                    <X className="w-5 h-5 group-hover:rotate-90 transition-transform duration-300" />
+                  </Button>
+                </div>
+              </div>
+            ) : (
+              // Show grey clock for sent requests (not clickable)
+              <div className="flex justify-center">
+                <div className="relative w-12 h-12 bg-white/5 backdrop-blur-xl border-2 border-white/10 rounded-full flex items-center justify-center">
+                  <Clock className="w-5 h-5 text-white/40" />
                 </div>
               </div>
             )}
           </div>
-        </div>
-        
-        {/* Action buttons at bottom of card */}
-        <div className="mt-4 pt-4 border-t border-white/10" onClick={(e) => e.stopPropagation()}>
-          {user.isReceived ? (
-            // Show align and skip buttons for received requests
-            <div className="flex justify-center items-center gap-4">
-              <div className="relative group">
-                <Button
-                  onClick={() => handleAction('align', user)}
-                  variant="outline"
-                  size="sm"
-                  disabled={actionLoading === user.UID}
-                  className="relative w-12 h-12 rounded-full bg-white/5 backdrop-blur-xl border-2 border-white/10 hover:border-emerald-400/50 text-white/80 hover:text-emerald-300 transition-all duration-300 hover:scale-110 shadow-2xl hover:shadow-emerald-500/25 group-hover:bg-gradient-to-r group-hover:from-emerald-500/10 group-hover:to-green-500/10"
-                >
-                  <Heart className="w-5 h-5 group-hover:scale-110 group-hover:fill-current transition-all duration-300" />
-                </Button>
-              </div>
-              
-              <div className="relative group">
-                <Button
-                  onClick={() => handleAction('skip', user)}
-                  variant="outline"
-                  size="sm"
-                  disabled={actionLoading === user.UID}
-                  className="relative w-12 h-12 rounded-full bg-white/5 backdrop-blur-xl border-2 border-white/10 hover:border-red-400/50 text-white/80 hover:text-red-300 transition-all duration-300 hover:scale-110 shadow-2xl hover:shadow-red-500/25 group-hover:bg-gradient-to-r group-hover:from-red-500/10 group-hover:to-pink-500/10"
-                >
-                  <X className="w-5 h-5 group-hover:rotate-90 transition-transform duration-300" />
-                </Button>
-              </div>
-            </div>
-          ) : (
-            // Show grey clock for sent requests (not clickable)
-            <div className="flex justify-center">
-              <div className="relative w-12 h-12 bg-white/5 backdrop-blur-xl border-2 border-white/10 rounded-full flex items-center justify-center">
-                <Clock className="w-5 h-5 text-white/40" />
-              </div>
-            </div>
-          )}
-        </div>
-      </CardContent>
-    </Card>
-  );
+        </CardContent>
+      </Card>
+    );
+  };
 
   const EmptyState = () => (
     <div className="text-center py-20">
