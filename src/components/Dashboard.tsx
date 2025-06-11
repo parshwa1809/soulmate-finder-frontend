@@ -19,7 +19,7 @@ interface User {
   country?: string;
   age?: number;
   gender?: string;
-  hobbies?: string;
+  hobbies?: string | string[];
   profilePicture?: string;
   bio?: string;
   images?: string[];
@@ -158,9 +158,12 @@ const Dashboard = ({ userUID, setIsLoggedIn, onLogout, cachedData, isLoadingData
   };
 
   const UserCard = ({ user, showActions = false }: { user: User; showActions?: boolean }) => {
+    console.log('UserCard user data:', user); // Debug log to see what data we have
+    
     // Helper function to safely get hobbies array
-    const getHobbiesArray = (hobbies: string | undefined): string[] => {
+    const getHobbiesArray = (hobbies: string | string[] | undefined): string[] => {
       if (!hobbies) return [];
+      if (Array.isArray(hobbies)) return hobbies;
       if (typeof hobbies === 'string') {
         return hobbies.split(',').map(hobby => hobby.trim()).filter(hobby => hobby.length > 0);
       }
@@ -200,10 +203,10 @@ const Dashboard = ({ userUID, setIsLoggedIn, onLogout, cachedData, isLoadingData
                   🎂 {user.age} years old
                 </p>
               )}
-              {user.kundliScore !== undefined && (
+              {user.kundliScore !== undefined && user.kundliScore !== null && (
                 <div className="flex items-center mb-2">
                   <Star className="w-4 h-4 text-yellow-400 mr-1" />
-                  <span className="text-sm text-white/70 font-medium">
+                  <span className="text-sm text-yellow-200 font-medium">
                     Compatibility: {user.kundliScore}/36
                   </span>
                 </div>
@@ -335,7 +338,7 @@ const Dashboard = ({ userUID, setIsLoggedIn, onLogout, cachedData, isLoadingData
                           </Avatar>
                           <div className="flex-1 min-w-0">
                             <p className="font-medium text-white truncate">{user.name}</p>
-                            {user.kundliScore !== undefined && (
+                            {user.kundliScore !== undefined && user.kundliScore !== null && (
                               <div className="flex items-center">
                                 <Star className="w-3 h-3 text-yellow-400 mr-1" />
                                 <span className="text-xs text-white/70">
@@ -416,7 +419,7 @@ const Dashboard = ({ userUID, setIsLoggedIn, onLogout, cachedData, isLoadingData
                           </Avatar>
                           <div className="flex-1 min-w-0">
                             <p className="font-medium text-white truncate">{user.name}</p>
-                            {user.kundliScore !== undefined && (
+                            {user.kundliScore !== undefined && user.kundliScore !== null && (
                               <div className="flex items-center">
                                 <Star className="w-3 h-3 text-yellow-400 mr-1" />
                                 <span className="text-xs text-white/70">

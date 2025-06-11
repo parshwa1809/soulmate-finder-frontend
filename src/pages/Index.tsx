@@ -25,6 +25,7 @@ interface ProfileData {
   hobbies?: string[];
   images?: string[];
   login?: string;
+  kundliScore?: number;
 }
 
 interface DashboardData {
@@ -341,20 +342,28 @@ const Index = () => {
         if (userProfile) {
           const transformedUser = transformUserData(userProfile);
           
+          // Add the kundliScore from the recommendation card
+          const userWithScore = {
+            ...transformedUser,
+            kundliScore: score !== undefined && score !== null ? score : undefined
+          };
+          
+          console.log(`User ${transformedUser.name} has score: ${score}`);
+          
           // Add to appropriate queue based on the queue field
           switch (queue) {
             case 'RECOMMENDATIONS':
-              dashboardData.recommendations.push(transformedUser);
+              dashboardData.recommendations.push(userWithScore);
               break;
             case 'MATCHED':
-              dashboardData.matches.push(transformedUser);
+              dashboardData.matches.push(userWithScore);
               break;
             case 'AWAITING':
-              dashboardData.awaiting.push(transformedUser);
+              dashboardData.awaiting.push(userWithScore);
               break;
             default:
               console.warn(`Unknown queue type: ${queue}`);
-              dashboardData.recommendations.push(transformedUser);
+              dashboardData.recommendations.push(userWithScore);
           }
         }
       } catch (error) {
