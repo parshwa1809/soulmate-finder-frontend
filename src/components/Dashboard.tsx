@@ -59,12 +59,13 @@ const Dashboard = ({ userUID, setIsLoggedIn, onLogout, cachedData, isLoadingData
   const [selectedUser, setSelectedUser] = useState<User | null>(null);
   const [isMatchesOpen, setIsMatchesOpen] = useState(false);
   const [isNotificationsOpen, setIsNotificationsOpen] = useState(false);
-  const [systemNotifications, setSystemNotifications] = useState<Notification[]>(notifications);
+  const [systemNotifications, setSystemNotifications] = useState<Notification[]>([]);
   const [hasNewNotifications, setHasNewNotifications] = useState(false);
 
   useEffect(() => {
     // Set system notifications from props if provided
     if (notifications && notifications.length > 0) {
+      console.log('Setting system notifications from props:', notifications);
       setSystemNotifications(notifications);
       setHasNewNotifications(true);
     }
@@ -187,6 +188,9 @@ const Dashboard = ({ userUID, setIsLoggedIn, onLogout, cachedData, isLoadingData
       return dateStr;
     }
   };
+
+  // Calculate total notification count
+  const totalNotificationCount = notificationUsers.length + messages.length + systemNotifications.length;
 
   const UserCard = ({ user, showActions = false }: { user: User; showActions?: boolean }) => {
     console.log('UserCard user data:', user); // Debug log to see what data we have
@@ -407,9 +411,9 @@ const Dashboard = ({ userUID, setIsLoggedIn, onLogout, cachedData, isLoadingData
                 >
                   <Bell className={`w-3 h-3 sm:w-4 sm:h-4 sm:mr-2 ${hasNewNotifications ? 'text-yellow-400 animate-pulse' : ''}`} />
                   <span className="hidden sm:inline">Notifications</span>
-                  {(notificationUsers.length > 0 || messages.length > 0 || systemNotifications.length > 0) && (
+                  {totalNotificationCount > 0 && (
                     <Badge className="ml-1 sm:ml-2 h-4 w-4 sm:h-5 sm:w-5 p-0 flex items-center justify-center bg-red-500 text-white text-xs">
-                      {notificationUsers.length + messages.length + systemNotifications.length}
+                      {totalNotificationCount}
                     </Badge>
                   )}
                   {hasNewNotifications && (
@@ -423,7 +427,7 @@ const Dashboard = ({ userUID, setIsLoggedIn, onLogout, cachedData, isLoadingData
                   <p className="text-white/60 text-sm">Recent activity updates</p>
                 </div>
                 <div className="max-h-96 overflow-y-auto p-4">
-                  {(messages.length > 0 || notificationUsers.length > 0 || systemNotifications.length > 0) ? (
+                  {totalNotificationCount > 0 ? (
                     <div className="space-y-3">
                       {/* Show system notifications first */}
                       {systemNotifications.map((notification, index) => (
@@ -649,3 +653,5 @@ const Dashboard = ({ userUID, setIsLoggedIn, onLogout, cachedData, isLoadingData
 };
 
 export default Dashboard;
+
+</initial_code>
