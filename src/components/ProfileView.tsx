@@ -1,3 +1,4 @@
+
 import { Card, CardContent } from "@/components/ui/card";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Badge } from "@/components/ui/badge";
@@ -13,7 +14,7 @@ interface User {
   country?: string;
   age?: number;
   gender?: string;
-  hobbies?: string;
+  hobbies?: string | string[];
   profilePicture?: string;
   bio?: string;
   images?: string[];
@@ -27,6 +28,18 @@ interface ProfileViewProps {
 }
 
 const ProfileView = ({ user, onBack, children }: ProfileViewProps) => {
+  // Helper function to safely get hobbies array
+  const getHobbiesArray = (hobbies: string | string[] | undefined): string[] => {
+    if (!hobbies) return [];
+    if (Array.isArray(hobbies)) return hobbies;
+    if (typeof hobbies === 'string') {
+      return hobbies.split(',').map(hobby => hobby.trim()).filter(hobby => hobby.length > 0);
+    }
+    return [];
+  };
+
+  const hobbiesArray = getHobbiesArray(user.hobbies);
+
   return (
     <div className="max-w-2xl mx-auto">
       <Button 
@@ -44,7 +57,7 @@ const ProfileView = ({ user, onBack, children }: ProfileViewProps) => {
             <div className="relative mx-auto mb-6">
               <div className="absolute -inset-2 bg-gradient-to-r from-violet-500 to-purple-500 rounded-full blur opacity-30"></div>
               <Avatar className="relative w-32 h-32 ring-4 ring-white/20 shadow-2xl">
-                <AvatarImage src={user.profilePicture} />
+                <AvatarImage src={user.profilePicture || (user.images && user.images.length > 0 ? user.images[0] : undefined)} />
                 <AvatarFallback className="bg-gradient-to-r from-violet-500 to-purple-500 text-white text-2xl font-bold">
                   {user.name?.charAt(0) || <User className="w-12 h-12" />}
                 </AvatarFallback>
@@ -88,13 +101,13 @@ const ProfileView = ({ user, onBack, children }: ProfileViewProps) => {
             </div>
           )}
 
-          {user.hobbies && (
+          {hobbiesArray.length > 0 && (
             <div className="mb-8">
               <h3 className="text-lg font-semibold text-white mb-4">Interests</h3>
               <div className="flex flex-wrap gap-2">
-                {user.hobbies.split(',').map((hobby, index) => (
-                  <Badge key={index} variant="secondary" className="bg-white/10 text-white/90 hover:bg-white/20 border border-white/20 px-3 py-1">
-                    {hobby.trim()}
+                {hobbiesArray.map((hobby, index) => (
+                  <Badge key={`hobby-${user.UID}-${index}`} variant="secondary" className="bg-white/10 text-white/90 hover:bg-white/20 border border-white/20 px-3 py-1">
+                    {hobby}
                   </Badge>
                 ))}
               </div>
@@ -111,7 +124,7 @@ const ProfileView = ({ user, onBack, children }: ProfileViewProps) => {
                 <Carousel className="w-full max-w-md mx-auto">
                   <CarouselContent>
                     {user.images.map((image, index) => (
-                      <CarouselItem key={index}>
+                      <CarouselItem key={`image-${user.UID}-${index}`}>
                         <div className="relative aspect-[3/4] overflow-hidden rounded-xl bg-white/5 backdrop-blur-xl border border-white/10">
                           <img
                             src={image}
