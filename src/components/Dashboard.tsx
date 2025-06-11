@@ -653,5 +653,3 @@ const Dashboard = ({ userUID, setIsLoggedIn, onLogout, cachedData, isLoadingData
 };
 
 export default Dashboard;
-
-</edits_to_apply>
