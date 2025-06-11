@@ -339,7 +339,7 @@ const Index = () => {
         
         const userProfile = await fetchUserProfile(recommendation_uid);
         if (userProfile) {
-          const transformedUser = transformUserData(userProfile, score);
+          const transformedUser = transformUserData(userProfile);
           
           // Add to appropriate queue based on the queue field
           switch (queue) {
