@@ -1,3 +1,4 @@
+
 import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { Button } from "@/components/ui/button";
@@ -54,31 +55,70 @@ const Dashboard = ({ userUID, setIsLoggedIn, onLogout, cachedData, isLoadingData
   const [isNotificationsOpen, setIsNotificationsOpen] = useState(false);
 
   useEffect(() => {
-    if (cachedData) {
-      loadCachedData();
-    } else {
-      loadUserData();
-    }
-  }, [cachedData]);
-
-  const loadCachedData = () => {
-    if (cachedData) {
-      console.log('Loading cached dashboard data:', cachedData);
-      
-      if (cachedData.recommendations) {
-        setRecommendations(cachedData.recommendations);
-      }
-      if (cachedData.matches) {
-        setMatches(cachedData.matches);
-      }
-      if (cachedData.awaiting) {
-        setAwaiting(cachedData.awaiting);
-      }
-      if (cachedData.notifications) {
-        setNotifications(cachedData.notifications);
-      }
+    if (cachedData && cachedData.recommendationCards) {
+      loadRecommendationCards(cachedData.recommendationCards);
     }
     setIsLoading(false);
+  }, [cachedData]);
+
+  const loadRecommendationCards = async (recommendationCards: any[]) => {
+    console.log('Loading recommendation cards:', recommendationCards);
+    
+    // Group cards by queue type first
+    const cardsByQueue = {
+      RECOMMENDATIONS: [] as any[],
+      MATCHED: [] as any[],
+      AWAITING: [] as any[]
+    };
+
+    recommendationCards.forEach(card => {
+      const queue = card.queue;
+      if (cardsByQueue[queue as keyof typeof cardsByQueue]) {
+        cardsByQueue[queue as keyof typeof cardsByQueue].push(card);
+      }
+    });
+
+    // Load users for each queue progressively
+    if (cardsByQueue.RECOMMENDATIONS.length > 0) {
+      loadUsersForQueue(cardsByQueue.RECOMMENDATIONS, setRecommendations, 'RECOMMENDATIONS');
+    }
+    if (cardsByQueue.MATCHED.length > 0) {
+      loadUsersForQueue(cardsByQueue.MATCHED, setMatches, 'MATCHED');
+    }
+    if (cardsByQueue.AWAITING.length > 0) {
+      loadUsersForQueue(cardsByQueue.AWAITING, setAwaiting, 'AWAITING');
+    }
+  };
+
+  const loadUsersForQueue = async (cards: any[], setter: (users: User[]) => void, queueName: string) => {
+    console.log(`Loading users for queue ${queueName}:`, cards);
+    
+    const userPromises = cards.map(async (card) => {
+      try {
+        const response = await fetch(`${config.URL}${config.ENDPOINTS.GET_PROFILE}/${card.recommendation_uid}`, {
+          method: 'GET',
+          mode: 'cors',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+        });
+        
+        if (response.ok) {
+          const userData = await response.json();
+          console.log(`Successfully fetched user data for ${card.recommendation_uid}:`, userData);
+          return transformUserData(userData, card.score);
+        } else {
+          console.error(`Failed to fetch user ${card.recommendation_uid}, status: ${response.status}`);
+        }
+      } catch (error) {
+        console.error(`Error fetching user ${card.recommendation_uid}:`, error);
+      }
+      return null;
+    });
+
+    const users = (await Promise.all(userPromises)).filter(Boolean);
+    console.log(`Final processed users for ${queueName}:`, users.map(u => ({ UID: u?.UID, name: u?.name, kundliScore: u?.kundliScore })));
+    setter(users);
   };
 
   const transformUserData = (apiData: any, kundliScore?: number): User => {
@@ -161,87 +201,6 @@ const Dashboard = ({ userUID, setIsLoggedIn, onLogout, cachedData, isLoadingData
     console.log(`Transformed user ${apiData.UID} with kundliScore:`, kundliScore, userData);
     
     return userData;
-  };
-
-  const loadUserData = async () => {
-    try {
-      const userData = localStorage.getItem('userData');
-      if (userData) {
-        const parsedData = JSON.parse(userData);
-        console.log('=== LOADING USER DATA FROM LOCALSTORAGE ===');
-        console.log('Full parsed data:', parsedData);
-        
-        // Process the data arrays from the API response
-        if (parsedData.recommendations && Array.isArray(parsedData.recommendations)) {
-          console.log('Raw recommendations array:', parsedData.recommendations);
-          await loadUsersForCategory(parsedData.recommendations, setRecommendations, 'recommendations');
-        }
-        
-        if (parsedData.matches && Array.isArray(parsedData.matches)) {
-          console.log('Raw matches array:', parsedData.matches);
-          await loadUsersForCategory(parsedData.matches, setMatches, 'matches');
-        }
-        
-        if (parsedData.notifications && Array.isArray(parsedData.notifications)) {
-          console.log('Raw notifications array:', parsedData.notifications);
-          await loadUsersForCategory(parsedData.notifications, setNotifications, 'notifications');
-        }
-        
-        if (parsedData.awaiting && Array.isArray(parsedData.awaiting)) {
-          console.log('Raw awaiting array:', parsedData.awaiting);
-          await loadUsersForCategory(parsedData.awaiting, setAwaiting, 'awaiting');
-        }
-      }
-    } catch (error) {
-      console.error('Error loading user data:', error);
-    } finally {
-      setIsLoading(false);
-    }
-  };
-
-  const loadUsersForCategory = async (userList: any[], setter: (users: User[]) => void, categoryName: string) => {
-    try {
-      console.log(`=== LOADING USERS FOR CATEGORY: ${categoryName.toUpperCase()} ===`);
-      console.log(`User list for ${categoryName}:`, userList);
-      
-      const userPromises = userList.map(async (item, index) => {
-        // Handle both array format [UID, score, date, ...] and object format
-        const uid = Array.isArray(item) ? item[0] : (item.UID || item);
-        const kundliScore = Array.isArray(item) && item.length > 1 ? item[1] : undefined;
-        
-        console.log(`${categoryName}[${index}]:`, {
-          rawItem: item,
-          extractedUID: uid,
-          extractedKundliScore: kundliScore,
-          isArray: Array.isArray(item),
-          itemLength: Array.isArray(item) ? item.length : 'not array'
-        });
-        
-        const response = await fetch(`${config.URL}${config.ENDPOINTS.GET_PROFILE}/${uid}`, {
-          method: 'GET',
-          mode: 'cors',
-          headers: {
-            'Content-Type': 'application/json',
-          },
-        });
-        
-        if (response.ok) {
-          const userData = await response.json();
-          console.log(`Successfully fetched user data for ${uid}:`, userData);
-          return transformUserData(userData, kundliScore);
-        } else {
-          console.error(`Failed to fetch user ${uid}, status: ${response.status}`);
-        }
-        return null;
-      });
-
-      const users = (await Promise.all(userPromises)).filter(Boolean);
-      console.log(`Final processed users for ${categoryName}:`, users.map(u => ({ UID: u.UID, name: u.name, kundliScore: u.kundliScore })));
-      setter(users);
-    } catch (error) {
-      console.error(`Error fetching users for ${categoryName}:`, error);
-      setter([]);
-    }
   };
 
   const addMessage = (text: string, userName?: string) => {
@@ -751,5 +710,3 @@ const Dashboard = ({ userUID, setIsLoggedIn, onLogout, cachedData, isLoadingData
 };
 
 export default Dashboard;
-
-}
