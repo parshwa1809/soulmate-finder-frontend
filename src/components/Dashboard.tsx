@@ -10,6 +10,7 @@ import { Heart, Bell, Clock, Users, User, LogOut, Star } from "lucide-react";
 import { config } from "../config/api";
 import UserActions from "./UserActions";
 import ProfileView from "./ProfileView";
+import { formatDistanceToNow } from "date-fns";
 
 interface User {
   UID: string;
@@ -33,25 +34,41 @@ interface DashboardMessage {
   userName?: string;
 }
 
+interface Notification {
+  message: string;
+  updated: string;
+}
+
 interface DashboardProps {
   userUID: string | null;
   setIsLoggedIn: (value: boolean) => void;
   onLogout?: () => void;
   cachedData?: any;
   isLoadingData?: boolean;
+  notifications?: Notification[];
 }
 
-const Dashboard = ({ userUID, setIsLoggedIn, onLogout, cachedData, isLoadingData }: DashboardProps) => {
+const Dashboard = ({ userUID, setIsLoggedIn, onLogout, cachedData, isLoadingData, notifications = [] }: DashboardProps) => {
   const navigate = useNavigate();
   const [matches, setMatches] = useState<User[]>([]);
   const [recommendations, setRecommendations] = useState<User[]>([]);
-  const [notifications, setNotifications] = useState<User[]>([]);
+  const [notificationUsers, setNotificationUsers] = useState<User[]>([]);
   const [awaiting, setAwaiting] = useState<User[]>([]);
   const [messages, setMessages] = useState<DashboardMessage[]>([]);
   const [isLoading, setIsLoading] = useState(true);
   const [selectedUser, setSelectedUser] = useState<User | null>(null);
   const [isMatchesOpen, setIsMatchesOpen] = useState(false);
   const [isNotificationsOpen, setIsNotificationsOpen] = useState(false);
+  const [systemNotifications, setSystemNotifications] = useState<Notification[]>(notifications);
+  const [hasNewNotifications, setHasNewNotifications] = useState(false);
+
+  useEffect(() => {
+    // Set system notifications from props if provided
+    if (notifications && notifications.length > 0) {
+      setSystemNotifications(notifications);
+      setHasNewNotifications(true);
+    }
+  }, [notifications]);
 
   useEffect(() => {
     console.log('Dashboard useEffect - cachedData:', cachedData);
@@ -72,7 +89,7 @@ const Dashboard = ({ userUID, setIsLoggedIn, onLogout, cachedData, isLoadingData
       }
       if (cachedData.notifications) {
         console.log('Setting notifications from cache:', cachedData.notifications);
-        setNotifications(cachedData.notifications);
+        setNotificationUsers(cachedData.notifications);
       }
     }
     
@@ -87,7 +104,12 @@ const Dashboard = ({ userUID, setIsLoggedIn, onLogout, cachedData, isLoadingData
       userName
     };
     setMessages(prev => [newMessage, ...prev]);
+    setHasNewNotifications(true);
+  };
+
+  const handleNotificationsOpen = () => {
     setIsNotificationsOpen(true);
+    setHasNewNotifications(false); // Reset new notifications indicator when popover is opened
   };
 
   const handleLogout = () => {
@@ -155,6 +177,15 @@ const Dashboard = ({ userUID, setIsLoggedIn, onLogout, cachedData, isLoadingData
 
     // Close the profile view
     setSelectedUser(null);
+  };
+
+  const formatNotificationDate = (dateStr: string) => {
+    try {
+      const date = new Date(dateStr);
+      return formatDistanceToNow(date, { addSuffix: true });
+    } catch (error) {
+      return dateStr;
+    }
   };
 
   const UserCard = ({ user, showActions = false }: { user: User; showActions?: boolean }) => {
@@ -364,19 +395,25 @@ const Dashboard = ({ userUID, setIsLoggedIn, onLogout, cachedData, isLoadingData
             </div>
           </div>
           <div className="flex gap-2 sm:gap-3">
-            <Popover open={isNotificationsOpen} onOpenChange={setIsNotificationsOpen}>
+            <Popover open={isNotificationsOpen} onOpenChange={(open) => {
+              setIsNotificationsOpen(open);
+              if (open) setHasNewNotifications(false);
+            }}>
               <PopoverTrigger asChild>
                 <Button 
                   variant="outline"
                   size="sm"
-                  className="border-white/20 bg-white/5 backdrop-blur-xl text-white/90 hover:bg-white/10 hover:border-white/30 transition-all duration-300 font-medium text-xs sm:text-sm px-2 sm:px-4"
+                  className="relative border-white/20 bg-white/5 backdrop-blur-xl text-white/90 hover:bg-white/10 hover:border-white/30 transition-all duration-300 font-medium text-xs sm:text-sm px-2 sm:px-4"
                 >
-                  <Bell className="w-3 h-3 sm:w-4 sm:h-4 sm:mr-2" />
+                  <Bell className={`w-3 h-3 sm:w-4 sm:h-4 sm:mr-2 ${hasNewNotifications ? 'text-yellow-400 animate-pulse' : ''}`} />
                   <span className="hidden sm:inline">Notifications</span>
-                  {(notifications.length > 0 || messages.length > 0) && (
+                  {(notificationUsers.length > 0 || messages.length > 0 || systemNotifications.length > 0) && (
                     <Badge className="ml-1 sm:ml-2 h-4 w-4 sm:h-5 sm:w-5 p-0 flex items-center justify-center bg-red-500 text-white text-xs">
-                      {notifications.length + messages.length}
+                      {notificationUsers.length + messages.length + systemNotifications.length}
                     </Badge>
+                  )}
+                  {hasNewNotifications && (
+                    <span className="absolute top-0 right-0 h-2 w-2 bg-yellow-400 rounded-full animate-ping"></span>
                   )}
                 </Button>
               </PopoverTrigger>
@@ -386,9 +423,19 @@ const Dashboard = ({ userUID, setIsLoggedIn, onLogout, cachedData, isLoadingData
                   <p className="text-white/60 text-sm">Recent activity updates</p>
                 </div>
                 <div className="max-h-96 overflow-y-auto p-4">
-                  {(messages.length > 0 || notifications.length > 0) ? (
+                  {(messages.length > 0 || notificationUsers.length > 0 || systemNotifications.length > 0) ? (
                     <div className="space-y-3">
-                      {/* Show messages first */}
+                      {/* Show system notifications first */}
+                      {systemNotifications.map((notification, index) => (
+                        <div key={`system-${index}`} className="p-3 rounded-lg bg-gradient-to-r from-amber-500/10 to-orange-500/10 border border-white/10">
+                          <p className="text-white text-sm">{notification.message}</p>
+                          <p className="text-white/40 text-xs mt-1">
+                            {formatNotificationDate(notification.updated)}
+                          </p>
+                        </div>
+                      ))}
+                      
+                      {/* Show messages */}
                       {messages.map((message) => (
                         <div key={`message-${message.id}`} className="p-3 rounded-lg bg-white/5 border border-white/10">
                           <p className="text-white text-sm">{message.text}</p>
@@ -396,13 +443,13 @@ const Dashboard = ({ userUID, setIsLoggedIn, onLogout, cachedData, isLoadingData
                             <p className="text-white/60 text-xs mt-1">From: {message.userName}</p>
                           )}
                           <p className="text-white/40 text-xs mt-1">
-                            {message.timestamp.toLocaleString()}
+                            {formatDistanceToNow(message.timestamp, { addSuffix: true })}
                           </p>
                         </div>
                       ))}
                       
                       {/* Then show user notifications */}
-                      {notifications.map((user) => (
+                      {notificationUsers.map((user) => (
                         <div 
                           key={`notification-${user.UID}`}
                           className="flex items-center space-x-3 p-3 rounded-lg bg-white/5 hover:bg-white/10 cursor-pointer transition-colors"
@@ -602,3 +649,5 @@ const Dashboard = ({ userUID, setIsLoggedIn, onLogout, cachedData, isLoadingData
 };
 
 export default Dashboard;
+
+</edits_to_apply>

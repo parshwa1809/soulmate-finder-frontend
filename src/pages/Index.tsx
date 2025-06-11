@@ -9,6 +9,8 @@ import Notifications from "./Notifications";
 import Awaiting from "./Awaiting";
 import ProfilePage from "./Profile";
 import { config } from "../config/api";
+import { Toaster } from "@/components/ui/toaster";
+import NotificationHandler from "@/components/NotificationHandler";
 
 interface ProfileData {
   uid: string;
@@ -28,6 +30,11 @@ interface ProfileData {
   kundliScore?: number;
 }
 
+interface Notification {
+  message: string;
+  updated: string;
+}
+
 interface DashboardData {
   recommendations: any[];
   matches: any[];
@@ -43,6 +50,7 @@ const Index = () => {
   const [dashboardData, setDashboardData] = useState<DashboardData | null>(null);
   const [isLoadingProfile, setIsLoadingProfile] = useState(false);
   const [isLoadingDashboard, setIsLoadingDashboard] = useState(false);
+  const [systemNotifications, setSystemNotifications] = useState<Notification[]>([]);
 
   const fetchUserProfile = async (uid: string) => {
     try {
@@ -383,6 +391,12 @@ const Index = () => {
     localStorage.setItem('userUID', uid);
     
     if (loginData) {
+      // Process notifications if they exist in the login response
+      if (loginData.NOTIFICATIONS && Array.isArray(loginData.NOTIFICATIONS)) {
+        console.log('Notifications from login response:', loginData.NOTIFICATIONS);
+        setSystemNotifications(loginData.NOTIFICATIONS);
+      }
+
       // Transform and cache profile data from login response
       const transformedProfileData = transformLoginDataToProfile(loginData);
       setProfileData(transformedProfileData);
@@ -510,6 +524,9 @@ const Index = () => {
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-slate-900 via-purple-900 to-slate-900">
+      {/* Add NotificationHandler to manage notifications */}
+      <NotificationHandler notifications={systemNotifications} />
+      
       <Routes>
         <Route 
           path="/login" 
@@ -541,6 +558,7 @@ const Index = () => {
               onLogout={handleLogout}
               cachedData={dashboardData}
               isLoadingData={isLoadingDashboard}
+              notifications={systemNotifications}
             /> : 
             <Navigate to="/login" />
           } 
@@ -594,6 +612,9 @@ const Index = () => {
           element={<Navigate to={isLoggedIn ? "/dashboard" : "/login"} />} 
         />
       </Routes>
+      
+      {/* Add Toaster component for displaying notifications */}
+      <Toaster />
     </div>
   );
 };
