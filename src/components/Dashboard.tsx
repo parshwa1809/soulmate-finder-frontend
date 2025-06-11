@@ -1,4 +1,3 @@
-
 import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { Button } from "@/components/ui/button";
@@ -55,9 +54,28 @@ const Dashboard = ({ userUID, setIsLoggedIn, onLogout, cachedData, isLoadingData
   const [isNotificationsOpen, setIsNotificationsOpen] = useState(false);
 
   useEffect(() => {
-    if (cachedData && cachedData.recommendationCards) {
-      loadRecommendationCards(cachedData.recommendationCards);
+    console.log('Dashboard useEffect - cachedData:', cachedData);
+    
+    if (cachedData) {
+      // Use the data structure from Index.tsx which has already processed the recommendation cards
+      if (cachedData.recommendations) {
+        console.log('Setting recommendations from cache:', cachedData.recommendations);
+        setRecommendations(cachedData.recommendations);
+      }
+      if (cachedData.matches) {
+        console.log('Setting matches from cache:', cachedData.matches);
+        setMatches(cachedData.matches);
+      }
+      if (cachedData.awaiting) {
+        console.log('Setting awaiting from cache:', cachedData.awaiting);
+        setAwaiting(cachedData.awaiting);
+      }
+      if (cachedData.notifications) {
+        console.log('Setting notifications from cache:', cachedData.notifications);
+        setNotifications(cachedData.notifications);
+      }
     }
+    
     setIsLoading(false);
   }, [cachedData]);
 
