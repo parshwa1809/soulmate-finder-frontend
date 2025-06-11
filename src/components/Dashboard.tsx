@@ -64,12 +64,17 @@ const Dashboard = ({ userUID, setIsLoggedIn, onLogout, cachedData, isLoadingData
 
   useEffect(() => {
     // Set system notifications from props if provided
+    console.log('Dashboard useEffect - notifications prop:', notifications);
+    console.log('Dashboard useEffect - notifications length:', notifications.length);
+    console.log('Dashboard useEffect - notifications content:', JSON.stringify(notifications, null, 2));
+    
     if (notifications && notifications.length > 0) {
       console.log('Setting system notifications from props:', notifications);
       setSystemNotifications(notifications);
       setHasNewNotifications(true);
     } else {
-      console.log('No notifications received in props:', notifications);
+      console.log('No notifications received in props or empty array');
+      setSystemNotifications([]);
     }
   }, [notifications]);
 
@@ -194,9 +199,10 @@ const Dashboard = ({ userUID, setIsLoggedIn, onLogout, cachedData, isLoadingData
   // Calculate total notification count - only system notifications and messages, not user notifications
   const totalNotificationCount = messages.length + systemNotifications.length;
 
-  console.log('Current systemNotifications:', systemNotifications);
-  console.log('Current messages:', messages);
-  console.log('Total notification count:', totalNotificationCount);
+  console.log('Dashboard render - Current systemNotifications:', systemNotifications);
+  console.log('Dashboard render - Current systemNotifications length:', systemNotifications.length);
+  console.log('Dashboard render - Current messages:', messages);
+  console.log('Dashboard render - Total notification count:', totalNotificationCount);
 
   const UserCard = ({ user, showActions = false }: { user: User; showActions?: boolean }) => {
     console.log('UserCard user data:', user); // Debug log to see what data we have
@@ -434,20 +440,28 @@ const Dashboard = ({ userUID, setIsLoggedIn, onLogout, cachedData, isLoadingData
                 </div>
                 <div className="max-h-96 overflow-y-auto p-4">
                   <div className="space-y-3">
-                    {/* Debug info */}
-                    <div className="text-xs text-white/50 mb-2">
-                      Debug: System notifications: {systemNotifications.length}, Messages: {messages.length}
+                    {/* Debug info - more detailed */}
+                    <div className="text-xs text-white/50 mb-2 p-2 bg-white/5 rounded">
+                      <div>Debug Info:</div>
+                      <div>• System notifications count: {systemNotifications.length}</div>
+                      <div>• Messages count: {messages.length}</div>
+                      <div>• Total count: {totalNotificationCount}</div>
+                      <div>• Props notifications: {JSON.stringify(notifications)}</div>
+                      <div>• State systemNotifications: {JSON.stringify(systemNotifications)}</div>
                     </div>
                     
                     {/* Show system notifications from login response */}
-                    {systemNotifications.length > 0 && systemNotifications.map((notification, index) => (
-                      <div key={`system-${index}`} className="p-3 rounded-lg bg-gradient-to-r from-amber-500/10 to-orange-500/10 border border-white/10">
-                        <p className="text-white text-sm">{notification.message}</p>
-                        <p className="text-white/40 text-xs mt-1">
-                          {formatNotificationDate(notification.updated)}
-                        </p>
-                      </div>
-                    ))}
+                    {systemNotifications.length > 0 && systemNotifications.map((notification, index) => {
+                      console.log('Rendering system notification:', notification);
+                      return (
+                        <div key={`system-${index}`} className="p-3 rounded-lg bg-gradient-to-r from-amber-500/10 to-orange-500/10 border border-white/10">
+                          <p className="text-white text-sm">{notification.message}</p>
+                          <p className="text-white/40 text-xs mt-1">
+                            {formatNotificationDate(notification.updated)}
+                          </p>
+                        </div>
+                      );
+                    })}
                     
                     {/* Show messages from user actions */}
                     {messages.length > 0 && messages.map((message) => (
@@ -466,7 +480,8 @@ const Dashboard = ({ userUID, setIsLoggedIn, onLogout, cachedData, isLoadingData
                     {systemNotifications.length === 0 && messages.length === 0 && (
                       <div className="text-center py-8">
                         <Bell className="w-8 h-8 text-white/40 mx-auto mb-2" />
-                        <p className="text-white/60 text-sm">No notifications</p>
+                        <p className="text-white/60 text-sm">No notifications yet</p>
+                        <p className="text-white/40 text-xs mt-1">System updates will appear here</p>
                       </div>
                     )}
                   </div>
