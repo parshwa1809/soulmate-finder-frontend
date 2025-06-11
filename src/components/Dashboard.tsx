@@ -355,7 +355,7 @@ const Dashboard = ({ userUID, setIsLoggedIn, onLogout, cachedData, isLoadingData
                   <div className="flex flex-wrap gap-1.5">
                     {hobbiesArray.slice(0, 3).map((hobby, index) => (
                       <Badge 
-                        key={index} 
+                        key={`hobby-${user.UID}-${index}`}
                         variant="secondary" 
                         className="text-xs bg-white/10 text-white/80 border-white/20 hover:bg-white/20 transition-colors px-2 py-1"
                       >
@@ -462,7 +462,7 @@ const Dashboard = ({ userUID, setIsLoggedIn, onLogout, cachedData, isLoadingData
                     <div className="space-y-3">
                       {matches.map((user) => (
                         <div 
-                          key={user.UID} 
+                          key={`match-${user.UID}`}
                           className="flex items-center space-x-3 p-3 rounded-lg bg-white/5 hover:bg-white/10 cursor-pointer transition-colors"
                           onClick={() => {
                             handleUserClick(user);
@@ -529,7 +529,7 @@ const Dashboard = ({ userUID, setIsLoggedIn, onLogout, cachedData, isLoadingData
                     <div className="space-y-3">
                       {/* Show messages first */}
                       {messages.map((message) => (
-                        <div key={message.id} className="p-3 rounded-lg bg-white/5 border border-white/10">
+                        <div key={`message-${message.id}`} className="p-3 rounded-lg bg-white/5 border border-white/10">
                           <p className="text-white text-sm">{message.text}</p>
                           {message.userName && (
                             <p className="text-white/60 text-xs mt-1">From: {message.userName}</p>
@@ -543,7 +543,7 @@ const Dashboard = ({ userUID, setIsLoggedIn, onLogout, cachedData, isLoadingData
                       {/* Then show user notifications */}
                       {notifications.map((user) => (
                         <div 
-                          key={user.UID} 
+                          key={`notification-${user.UID}`}
                           className="flex items-center space-x-3 p-3 rounded-lg bg-white/5 hover:bg-white/10 cursor-pointer transition-colors"
                           onClick={() => {
                             handleUserClick(user);
@@ -649,7 +649,7 @@ const Dashboard = ({ userUID, setIsLoggedIn, onLogout, cachedData, isLoadingData
                 {recommendations.length > 0 ? (
                   <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
                     {recommendations.map((user) => (
-                      <UserCard key={user.UID} user={user} showActions={true} />
+                      <UserCard key={`recommendation-${user.UID}`} user={user} showActions={true} />
                     ))}
                   </div>
                 ) : (
@@ -685,7 +685,7 @@ const Dashboard = ({ userUID, setIsLoggedIn, onLogout, cachedData, isLoadingData
                 {awaiting.length > 0 ? (
                   <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
                     {awaiting.map((user) => (
-                      <UserCard key={user.UID} user={user} />
+                      <UserCard key={`awaiting-${user.UID}`} user={user} />
                     ))}
                   </div>
                 ) : (
@@ -721,7 +721,7 @@ const Dashboard = ({ userUID, setIsLoggedIn, onLogout, cachedData, isLoadingData
                 {matches.length > 0 ? (
                   <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
                     {matches.map((user) => (
-                      <UserCard key={user.UID} user={user} />
+                      <UserCard key={`matches-${user.UID}`} user={user} />
                     ))}
                   </div>
                 ) : (
@@ -741,3 +741,5 @@ const Dashboard = ({ userUID, setIsLoggedIn, onLogout, cachedData, isLoadingData
 };
 
 export default Dashboard;
+
+}
