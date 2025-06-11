@@ -299,74 +299,87 @@ const Dashboard = ({ userUID, setIsLoggedIn, onLogout, cachedData, isLoadingData
     setSelectedUser(null);
   };
 
-  const UserCard = ({ user, showActions = false }: { user: User; showActions?: boolean }) => (
-    <Card className="group relative overflow-hidden bg-white/5 backdrop-blur-xl border border-white/10 hover:border-white/20 transition-all duration-500 hover:scale-[1.02] shadow-xl hover:shadow-2xl cursor-pointer">
-      <div className="absolute inset-0 bg-gradient-to-br from-white/5 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-500"></div>
-      <CardContent className="p-6 relative z-10" onClick={() => handleUserClick(user)}>
-        <div className="flex items-start space-x-4">
-          <div className="relative">
-            <Avatar className="w-24 h-24 ring-2 ring-white/20 group-hover:ring-white/40 transition-all duration-300">
-              <AvatarImage 
-                src={user.profilePicture} 
-                className="object-cover w-full h-full"
-              />
-              <AvatarFallback className="bg-gradient-to-br from-violet-500 to-purple-500 text-white font-semibold text-xl">
-                {user.name?.charAt(0) || <User className="w-10 h-10" />}
-              </AvatarFallback>
-            </Avatar>
-            <div className="absolute -inset-1 bg-gradient-to-br from-violet-400 to-purple-400 rounded-full blur opacity-0 group-hover:opacity-30 transition-opacity duration-300"></div>
-          </div>
-          <div className="flex-1 min-w-0">
-            <h3 className="font-semibold text-lg text-white/90 truncate group-hover:text-white transition-colors mb-1">
-              {user.name || 'Unknown User'}
-            </h3>
-            {user.city && user.country && (
-              <p className="text-sm text-white/60 truncate mb-1">
-                📍 {user.city}, {user.country}
-              </p>
-            )}
-            {user.age && (
-              <p className="text-sm text-white/60 mb-1">
-                🎂 {user.age} years old
-              </p>
-            )}
-            {user.kundliScore !== undefined && (
-              <div className="flex items-center mb-2">
-                <Star className="w-4 h-4 text-yellow-400 mr-1" />
-                <span className="text-sm text-white/70 font-medium">
-                  Compatibility: {user.kundliScore}/36
-                </span>
-              </div>
-            )}
-            {user.hobbies && (
-              <div className="space-y-2">
-                <div className="flex flex-wrap gap-1.5">
-                  {user.hobbies.split(',').slice(0, 3).map((hobby, index) => (
-                    <Badge 
-                      key={index} 
-                      variant="secondary" 
-                      className="text-xs bg-white/10 text-white/80 border-white/20 hover:bg-white/20 transition-colors px-2 py-1"
-                    >
-                      {hobby.trim()}
-                    </Badge>
-                  ))}
+  const UserCard = ({ user, showActions = false }: { user: User; showActions?: boolean }) => {
+    // Helper function to safely get hobbies array
+    const getHobbiesArray = (hobbies: string | undefined): string[] => {
+      if (!hobbies) return [];
+      if (typeof hobbies === 'string') {
+        return hobbies.split(',').map(hobby => hobby.trim()).filter(hobby => hobby.length > 0);
+      }
+      return [];
+    };
+
+    const hobbiesArray = getHobbiesArray(user.hobbies);
+
+    return (
+      <Card className="group relative overflow-hidden bg-white/5 backdrop-blur-xl border border-white/10 hover:border-white/20 transition-all duration-500 hover:scale-[1.02] shadow-xl hover:shadow-2xl cursor-pointer">
+        <div className="absolute inset-0 bg-gradient-to-br from-white/5 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-500"></div>
+        <CardContent className="p-6 relative z-10" onClick={() => handleUserClick(user)}>
+          <div className="flex items-start space-x-4">
+            <div className="relative">
+              <Avatar className="w-24 h-24 ring-2 ring-white/20 group-hover:ring-white/40 transition-all duration-300">
+                <AvatarImage 
+                  src={user.profilePicture} 
+                  className="object-cover w-full h-full"
+                />
+                <AvatarFallback className="bg-gradient-to-br from-violet-500 to-purple-500 text-white font-semibold text-xl">
+                  {user.name?.charAt(0) || <User className="w-10 h-10" />}
+                </AvatarFallback>
+              </Avatar>
+              <div className="absolute -inset-1 bg-gradient-to-br from-violet-400 to-purple-400 rounded-full blur opacity-0 group-hover:opacity-30 transition-opacity duration-300"></div>
+            </div>
+            <div className="flex-1 min-w-0">
+              <h3 className="font-semibold text-lg text-white/90 truncate group-hover:text-white transition-colors mb-1">
+                {user.name || 'Unknown User'}
+              </h3>
+              {user.city && user.country && (
+                <p className="text-sm text-white/60 truncate mb-1">
+                  📍 {user.city}, {user.country}
+                </p>
+              )}
+              {user.age && (
+                <p className="text-sm text-white/60 mb-1">
+                  🎂 {user.age} years old
+                </p>
+              )}
+              {user.kundliScore !== undefined && (
+                <div className="flex items-center mb-2">
+                  <Star className="w-4 h-4 text-yellow-400 mr-1" />
+                  <span className="text-sm text-white/70 font-medium">
+                    Compatibility: {user.kundliScore}/36
+                  </span>
                 </div>
-              </div>
-            )}
+              )}
+              {hobbiesArray.length > 0 && (
+                <div className="space-y-2">
+                  <div className="flex flex-wrap gap-1.5">
+                    {hobbiesArray.slice(0, 3).map((hobby, index) => (
+                      <Badge 
+                        key={index} 
+                        variant="secondary" 
+                        className="text-xs bg-white/10 text-white/80 border-white/20 hover:bg-white/20 transition-colors px-2 py-1"
+                      >
+                        {hobby}
+                      </Badge>
+                    ))}
+                  </div>
+                </div>
+              )}
+            </div>
           </div>
-        </div>
-        {showActions && (
-          <div onClick={(e) => e.stopPropagation()} className="mt-4">
-            <UserActions 
-              userUID={user.UID} 
-              currentUserUID={userUID}
-              onActionComplete={handleActionComplete}
-            />
-          </div>
-        )}
-      </CardContent>
-    </Card>
-  );
+          {showActions && (
+            <div onClick={(e) => e.stopPropagation()} className="mt-4">
+              <UserActions 
+                userUID={user.UID} 
+                currentUserUID={userUID}
+                onActionComplete={handleActionComplete}
+              />
+            </div>
+          )}
+        </CardContent>
+      </Card>
+    );
+  };
 
   const EmptyState = ({ icon: Icon, title, description }: { 
     icon: any; 
@@ -728,3 +741,5 @@ const Dashboard = ({ userUID, setIsLoggedIn, onLogout, cachedData, isLoadingData
 };
 
 export default Dashboard;
+
+}
