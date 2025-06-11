@@ -79,148 +79,6 @@ const Dashboard = ({ userUID, setIsLoggedIn, onLogout, cachedData, isLoadingData
     setIsLoading(false);
   }, [cachedData]);
 
-  const loadRecommendationCards = async (recommendationCards: any[]) => {
-    console.log('Loading recommendation cards:', recommendationCards);
-    
-    // Group cards by queue type first
-    const cardsByQueue = {
-      RECOMMENDATIONS: [] as any[],
-      MATCHED: [] as any[],
-      AWAITING: [] as any[]
-    };
-
-    recommendationCards.forEach(card => {
-      const queue = card.queue;
-      if (cardsByQueue[queue as keyof typeof cardsByQueue]) {
-        cardsByQueue[queue as keyof typeof cardsByQueue].push(card);
-      }
-    });
-
-    // Load users for each queue progressively
-    if (cardsByQueue.RECOMMENDATIONS.length > 0) {
-      loadUsersForQueue(cardsByQueue.RECOMMENDATIONS, setRecommendations, 'RECOMMENDATIONS');
-    }
-    if (cardsByQueue.MATCHED.length > 0) {
-      loadUsersForQueue(cardsByQueue.MATCHED, setMatches, 'MATCHED');
-    }
-    if (cardsByQueue.AWAITING.length > 0) {
-      loadUsersForQueue(cardsByQueue.AWAITING, setAwaiting, 'AWAITING');
-    }
-  };
-
-  const loadUsersForQueue = async (cards: any[], setter: (users: User[]) => void, queueName: string) => {
-    console.log(`Loading users for queue ${queueName}:`, cards);
-    
-    const userPromises = cards.map(async (card) => {
-      try {
-        const response = await fetch(`${config.URL}${config.ENDPOINTS.GET_PROFILE}/${card.recommendation_uid}`, {
-          method: 'GET',
-          mode: 'cors',
-          headers: {
-            'Content-Type': 'application/json',
-          },
-        });
-        
-        if (response.ok) {
-          const userData = await response.json();
-          console.log(`Successfully fetched user data for ${card.recommendation_uid}:`, userData);
-          return transformUserData(userData, card.score);
-        } else {
-          console.error(`Failed to fetch user ${card.recommendation_uid}, status: ${response.status}`);
-        }
-      } catch (error) {
-        console.error(`Error fetching user ${card.recommendation_uid}:`, error);
-      }
-      return null;
-    });
-
-    const users = (await Promise.all(userPromises)).filter(Boolean);
-    console.log(`Final processed users for ${queueName}:`, users.map(u => ({ UID: u?.UID, name: u?.name, kundliScore: u?.kundliScore })));
-    setter(users);
-  };
-
-  const transformUserData = (apiData: any, kundliScore?: number): User => {
-    // Parse hobbies if it's a JSON string
-    let hobbies = '';
-    if (apiData.HOBBIES) {
-      try {
-        const hobbiesArray = JSON.parse(apiData.HOBBIES);
-        hobbies = Array.isArray(hobbiesArray) ? hobbiesArray.join(', ') : apiData.HOBBIES;
-      } catch {
-        hobbies = apiData.HOBBIES;
-      }
-    }
-
-    // Parse images from API response
-    let images: string[] = [];
-    let profilePicture = '';
-    
-    if (apiData.IMAGES) {
-      try {
-        // Check if IMAGES is already an object/array or a JSON string
-        let parsedImages;
-        if (typeof apiData.IMAGES === 'string') {
-          parsedImages = JSON.parse(apiData.IMAGES);
-        } else {
-          parsedImages = apiData.IMAGES;
-        }
-        
-        if (Array.isArray(parsedImages) && parsedImages.length > 0) {
-          // Process all images, not just the first one
-          images = parsedImages
-            .filter(img => img && img.data) // Only include images with data
-            .map(img => `data:image/jpeg;base64,${img.data}`);
-          
-          // Set the first image as profile picture
-          if (images.length > 0) {
-            profilePicture = images[0];
-            console.log(`Successfully processed ${images.length} images for user:`, apiData.UID);
-          }
-        }
-      } catch (error) {
-        console.error('Failed to parse images for user:', apiData.UID, error);
-        console.log('Raw IMAGES data:', apiData.IMAGES);
-      }
-    }
-
-    // Calculate age from DOB if available
-    let age = undefined;
-    if (apiData.DOB) {
-      try {
-        const dobData = JSON.parse(apiData.DOB);
-        const birthDate = new Date(dobData.year, dobData.month - 1, dobData.day);
-        const today = new Date();
-        age = today.getFullYear() - birthDate.getFullYear();
-        const monthDiff = today.getMonth() - birthDate.getMonth();
-        if (monthDiff < 0 || (monthDiff === 0 && today.getDate() < birthDate.getDate())) {
-          age--;
-        }
-      } catch {
-        // If DOB parsing fails, leave age undefined
-      }
-    }
-
-    const userData = {
-      UID: apiData.UID,
-      name: apiData.NAME || 'Unknown User',
-      email: apiData.EMAIL,
-      city: apiData.CITY,
-      country: apiData.COUNTRY,
-      age: age,
-      gender: apiData.GENDER,
-      hobbies: hobbies,
-      profilePicture: profilePicture,
-      bio: apiData.BIO || apiData.bio,
-      images: images,
-      kundliScore: kundliScore
-    };
-
-    // Log the transformed user data with kundliScore
-    console.log(`Transformed user ${apiData.UID} with kundliScore:`, kundliScore, userData);
-    
-    return userData;
-  };
-
   const addMessage = (text: string, userName?: string) => {
     const newMessage: DashboardMessage = {
       id: Date.now().toString(),
@@ -319,7 +177,7 @@ const Dashboard = ({ userUID, setIsLoggedIn, onLogout, cachedData, isLoadingData
             <div className="relative">
               <Avatar className="w-24 h-24 ring-2 ring-white/20 group-hover:ring-white/40 transition-all duration-300">
                 <AvatarImage 
-                  src={user.profilePicture} 
+                  src={user.profilePicture || (user.images && user.images.length > 0 ? user.images[0] : undefined)} 
                   className="object-cover w-full h-full"
                 />
                 <AvatarFallback className="bg-gradient-to-br from-violet-500 to-purple-500 text-white font-semibold text-xl">
@@ -470,7 +328,7 @@ const Dashboard = ({ userUID, setIsLoggedIn, onLogout, cachedData, isLoadingData
                           }}
                         >
                           <Avatar className="w-12 h-12">
-                            <AvatarImage src={user.profilePicture} />
+                            <AvatarImage src={user.profilePicture || (user.images && user.images.length > 0 ? user.images[0] : undefined)} />
                             <AvatarFallback className="bg-gradient-to-br from-violet-500 to-purple-500 text-white">
                               {user.name?.charAt(0) || <User className="w-6 h-6" />}
                             </AvatarFallback>
@@ -551,7 +409,7 @@ const Dashboard = ({ userUID, setIsLoggedIn, onLogout, cachedData, isLoadingData
                           }}
                         >
                           <Avatar className="w-12 h-12">
-                            <AvatarImage src={user.profilePicture} />
+                            <AvatarImage src={user.profilePicture || (user.images && user.images.length > 0 ? user.images[0] : undefined)} />
                             <AvatarFallback className="bg-gradient-to-br from-blue-500 to-cyan-500 text-white">
                               {user.name?.charAt(0) || <User className="w-6 h-6" />}
                             </AvatarFallback>
