@@ -1,3 +1,4 @@
+
 import { Routes, Route, Navigate } from "react-router-dom";
 import { useState, useEffect } from "react";
 import Login from "../components/Login";
@@ -383,7 +384,7 @@ const Index = () => {
   };
 
   const handleSuccessfulLogin = async (uid: string, loginData?: any) => {
-    console.log('Handling successful login for UID:', uid, 'with data:', loginData);
+    console.log('Index handleSuccessfulLogin - UID:', uid, 'loginData:', loginData);
     setUserUID(uid);
     setIsLoggedIn(true);
     
@@ -392,9 +393,13 @@ const Index = () => {
     
     if (loginData) {
       // Process notifications if they exist in the login response
+      console.log('Index handleSuccessfulLogin - Processing loginData.NOTIFICATIONS:', loginData.NOTIFICATIONS);
       if (loginData.NOTIFICATIONS && Array.isArray(loginData.NOTIFICATIONS)) {
-        console.log('Notifications from login response:', loginData.NOTIFICATIONS);
+        console.log('Index handleSuccessfulLogin - Setting systemNotifications:', loginData.NOTIFICATIONS);
         setSystemNotifications(loginData.NOTIFICATIONS);
+      } else {
+        console.log('Index handleSuccessfulLogin - No NOTIFICATIONS in loginData or not an array');
+        setSystemNotifications([]);
       }
 
       // Transform and cache profile data from login response
@@ -505,6 +510,9 @@ const Index = () => {
     }
     setIsLoading(false);
   }, []);
+
+  console.log('Index render - systemNotifications state:', systemNotifications);
+  console.log('Index render - systemNotifications length:', systemNotifications.length);
 
   if (isLoading) {
     return (
