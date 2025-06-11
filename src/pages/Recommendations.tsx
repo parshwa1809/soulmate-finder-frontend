@@ -1,13 +1,11 @@
+
 import { useState, useEffect } from "react";
-import { Card, CardContent } from "@/components/ui/card";
+import { useNavigate } from "react-router-dom";
+import { Button } from "@/components/ui/button";
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Badge } from "@/components/ui/badge";
-import { Button } from "@/components/ui/button";
-import { Users, User, ArrowLeft } from "lucide-react";
-import { useNavigate } from "react-router-dom";
-import { config } from "../config/api";
-import ProfileView from "../components/ProfileView";
-import UserActions from "../components/UserActions";
+import { ArrowLeft, Users, User, Star } from "lucide-react";
 
 interface User {
   UID: string;
@@ -20,137 +18,76 @@ interface User {
   hobbies?: string;
   profilePicture?: string;
   bio?: string;
+  images?: string[];
+  kundliScore?: number;
 }
 
-const Recommendations = () => {
+interface RecommendationsProps {
+  cachedData?: User[];
+}
+
+const Recommendations = ({ cachedData }: RecommendationsProps) => {
   const navigate = useNavigate();
   const [recommendations, setRecommendations] = useState<User[]>([]);
-  const [isLoading, setIsLoading] = useState(true);
-  const [selectedUser, setSelectedUser] = useState<User | null>(null);
-  const [userUID, setUserUID] = useState<string | null>(null);
 
   useEffect(() => {
-    const uid = localStorage.getItem('userUID');
-    setUserUID(uid);
-    loadRecommendations();
-  }, []);
-
-  const loadRecommendations = async () => {
-    try {
-      const userData = localStorage.getItem('userData');
-      if (userData) {
-        const parsedData = JSON.parse(userData);
-        await loadUsersForCategory(parsedData.recommendations || [], setRecommendations);
-      }
-    } catch (error) {
-      console.error('Error loading recommendations:', error);
-    } finally {
-      setIsLoading(false);
+    if (cachedData) {
+      setRecommendations(cachedData);
     }
-  };
+  }, [cachedData]);
 
-  const loadUsersForCategory = async (userList: any[], setter: (users: User[]) => void) => {
-    try {
-      const userPromises = userList.map(async (item) => {
-        const uid = item.UID || item;
-        const response = await fetch(`${config.URL}/get:${uid}`, {
-          method: 'POST',
-        });
-        if (response.ok) {
-          return await response.json();
-        }
-        return null;
-      });
-
-      const users = (await Promise.all(userPromises)).filter(Boolean);
-      setter(users);
-    } catch (error) {
-      console.error('Error fetching users:', error);
-      setter([]);
-    }
-  };
-
-  const handleUserClick = (user: User) => {
-    setSelectedUser(user);
-  };
-
-  const handleBackToList = () => {
-    setSelectedUser(null);
-  };
-
-  const handleActionComplete = (action: 'skip' | 'align', queue?: string, message?: string) => {
-    if (!selectedUser) return;
-
-    console.log('Action completed:', { action, queue, message, userUID: selectedUser.UID });
-
-    // Remove user from recommendations
-    const userUID = selectedUser.UID;
-    setRecommendations(prev => prev.filter(user => user.UID !== userUID));
-
-    // Add user to the appropriate queue based on the API response
-    if (queue && queue !== 'None') {
-      const userData = localStorage.getItem('userData');
-      if (userData) {
-        try {
-          const parsedData = JSON.parse(userData);
-          
-          // Add user to the specified queue
-          if (queue === 'AWAITING') {
-            const currentAwaiting = parsedData.awaiting || [];
-            parsedData.awaiting = [...currentAwaiting, selectedUser.UID];
-            console.log('Added user to awaiting queue:', selectedUser.UID);
-          } else if (queue === 'MATCHED') {
-            const currentMatches = parsedData.matches || [];
-            parsedData.matches = [...currentMatches, selectedUser.UID];
-            console.log('Added user to matches queue:', selectedUser.UID);
-          }
-          
-          // Update localStorage with the new queue data
-          localStorage.setItem('userData', JSON.stringify(parsedData));
-          console.log('Updated localStorage with new queue data');
-        } catch (error) {
-          console.error('Error updating queue data:', error);
-        }
-      }
-    }
-
-    // Close the profile view
-    setSelectedUser(null);
-  };
-
-  const handleBackToDashboard = () => {
+  const handleBack = () => {
     navigate("/dashboard");
   };
 
   const UserCard = ({ user }: { user: User }) => (
-    <Card className="group hover:shadow-lg transition-all duration-300 cursor-pointer hover:border-white/40">
-      <CardContent className="p-6" onClick={() => handleUserClick(user)}>
+    <Card className="group relative overflow-hidden bg-white/5 backdrop-blur-xl border border-white/10 hover:border-white/20 transition-all duration-500 hover:scale-[1.02] shadow-xl hover:shadow-2xl">
+      <div className="absolute inset-0 bg-gradient-to-br from-white/5 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-500"></div>
+      <CardContent className="p-6 relative z-10">
         <div className="flex items-start space-x-4">
-          <Avatar className="w-16 h-16 ring-2 ring-white/20 group-hover:ring-white/40 transition-all">
-            <AvatarImage src={user.profilePicture} />
-            <AvatarFallback className="bg-gradient-to-r from-violet-500 to-purple-500 text-white">
-              {user.name?.charAt(0) || <User className="w-6 h-6" />}
-            </AvatarFallback>
-          </Avatar>
+          <div className="relative">
+            <Avatar className="w-24 h-24 ring-2 ring-white/20 group-hover:ring-white/40 transition-all duration-300">
+              <AvatarImage 
+                src={user.profilePicture} 
+                className="object-cover w-full h-full"
+              />
+              <AvatarFallback className="bg-gradient-to-br from-violet-500 to-purple-500 text-white font-semibold text-xl">
+                {user.name?.charAt(0) || <User className="w-10 h-10" />}
+              </AvatarFallback>
+            </Avatar>
+            <div className="absolute -inset-1 bg-gradient-to-br from-violet-400 to-purple-400 rounded-full blur opacity-0 group-hover:opacity-30 transition-opacity duration-300"></div>
+          </div>
           <div className="flex-1 min-w-0">
-            <h3 className="font-semibold text-lg text-white truncate group-hover:text-violet-200 transition-colors">
+            <h3 className="font-semibold text-lg text-white/90 truncate group-hover:text-white transition-colors mb-1">
               {user.name || 'Unknown User'}
             </h3>
             {user.city && user.country && (
-              <p className="text-sm text-white/70 truncate">
-                {user.city}, {user.country}
+              <p className="text-sm text-white/60 truncate mb-1">
+                📍 {user.city}, {user.country}
               </p>
             )}
             {user.age && (
-              <p className="text-sm text-white/70">
-                {user.age} years old
+              <p className="text-sm text-white/60 mb-1">
+                🎂 {user.age} years old
               </p>
             )}
+            {user.kundliScore !== undefined && (
+              <div className="flex items-center mb-2">
+                <Star className="w-4 h-4 text-yellow-400 mr-1" />
+                <span className="text-sm text-white/70 font-medium">
+                  Compatibility: {user.kundliScore}/36
+                </span>
+              </div>
+            )}
             {user.hobbies && (
-              <div className="mt-3">
-                <div className="flex flex-wrap gap-1">
+              <div className="space-y-2">
+                <div className="flex flex-wrap gap-1.5">
                   {user.hobbies.split(',').slice(0, 3).map((hobby, index) => (
-                    <Badge key={index} variant="secondary" className="text-xs bg-white/20 text-white/80">
+                    <Badge 
+                      key={index} 
+                      variant="secondary" 
+                      className="text-xs bg-white/10 text-white/80 border-white/20 hover:bg-white/20 transition-colors px-2 py-1"
+                    >
                       {hobby.trim()}
                     </Badge>
                   ))}
@@ -164,82 +101,73 @@ const Recommendations = () => {
   );
 
   const EmptyState = () => (
-    <div className="text-center py-16">
-      <div className="w-16 h-16 mx-auto mb-6 bg-white/10 backdrop-blur-sm rounded-full flex items-center justify-center">
-        <Users className="w-8 h-8 text-white/70" />
+    <div className="text-center py-20">
+      <div className="relative mx-auto mb-6 w-20 h-20">
+        <div className="absolute inset-0 bg-gradient-to-br from-violet-500/20 to-purple-500/20 rounded-full blur-xl"></div>
+        <div className="relative w-20 h-20 bg-white/10 backdrop-blur-xl rounded-full flex items-center justify-center border border-white/20">
+          <Users className="w-8 h-8 text-white/60" />
+        </div>
       </div>
-      <h3 className="text-xl font-semibold text-white mb-2">No recommendations</h3>
-      <p className="text-white/70 max-w-md mx-auto">We're finding the perfect people for you! Check back soon for new recommendations.</p>
+      <h3 className="text-xl font-semibold text-white/90 mb-3">No new discoveries</h3>
+      <p className="text-white/60 max-w-md mx-auto leading-relaxed">We're finding amazing people for you to connect with!</p>
     </div>
   );
 
-  if (selectedUser) {
-    return (
-      <div className="min-h-screen bg-gradient-to-br from-purple-600 via-violet-600 to-purple-800">
-        <div className="max-w-4xl mx-auto px-6 py-8">
-          <ProfileView user={selectedUser} onBack={handleBackToList}>
-            <UserActions 
-              userUID={selectedUser.UID} 
-              currentUserUID={userUID}
-              onActionComplete={handleActionComplete}
-            />
-          </ProfileView>
-        </div>
-      </div>
-    );
-  }
-
-  if (isLoading) {
-    return (
-      <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-purple-600 via-violet-600 to-purple-800">
-        <div className="text-center">
-          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-white mx-auto"></div>
-          <p className="mt-4 text-white/70">Loading recommendations...</p>
-        </div>
-      </div>
-    );
-  }
-
   return (
-    <div className="min-h-screen bg-gradient-to-br from-purple-600 via-violet-600 to-purple-800">
+    <div className="min-h-screen bg-gradient-to-br from-slate-900 via-purple-900 to-slate-900">
+      <div className="absolute inset-0 bg-[radial-gradient(circle_at_50%_50%,rgba(139,92,246,0.1),transparent_50%)]"></div>
+      
       {/* Header */}
-      <div className="border-b border-white/20 bg-white/10 backdrop-blur-md sticky top-0 z-50">
-        <div className="max-w-7xl mx-auto px-6 py-4 flex items-center justify-between">
+      <div className="relative z-10 border-b border-white/10 bg-white/5 backdrop-blur-2xl sticky top-0">
+        <div className="max-w-7xl mx-auto px-6 py-6 flex items-center justify-between">
           <Button 
-            onClick={handleBackToDashboard}
+            onClick={handleBack}
             variant="ghost" 
-            className="text-white hover:bg-white/10"
+            className="text-white/80 hover:text-white hover:bg-white/10"
           >
             <ArrowLeft className="w-4 h-4 mr-2" />
             Back to Dashboard
           </Button>
           
-          <h1 className="text-xl font-semibold text-white">Discover</h1>
+          <h1 className="text-xl font-semibold text-white amazon-font">
+            Recommendations
+          </h1>
+          
           <div className="w-24"></div>
         </div>
       </div>
 
       {/* Content */}
-      <div className="max-w-7xl mx-auto px-6 py-8">
-        <div className="mb-8">
-          <div className="flex items-center gap-3 mb-2">
-            <div className="w-8 h-8 bg-white/10 backdrop-blur-sm rounded-lg flex items-center justify-center">
-              <Users className="w-4 h-4 text-violet-300" />
+      <div className="relative z-10 max-w-7xl mx-auto px-6 py-8">
+        <Card className="bg-white/5 backdrop-blur-xl border border-white/10 shadow-2xl overflow-hidden">
+          <CardHeader className="pb-6 bg-gradient-to-r from-violet-500/10 to-purple-500/10">
+            <div className="flex items-center gap-4">
+              <div className="relative">
+                <div className="absolute -inset-1 bg-gradient-to-r from-violet-500 to-purple-500 rounded-xl blur opacity-30"></div>
+                <div className="relative w-12 h-12 bg-white/10 backdrop-blur-xl rounded-xl border border-white/20 flex items-center justify-center">
+                  <Users className="w-6 h-6 text-violet-300" />
+                </div>
+              </div>
+              <div>
+                <CardTitle className="text-white text-xl font-bold">Discover New People</CardTitle>
+                <CardDescription className="text-white/60 font-medium mt-1">
+                  Curated profiles that match your cosmic compatibility
+                </CardDescription>
+              </div>
             </div>
-            <h2 className="text-2xl font-bold text-white">Discover New People</h2>
-          </div>
-          <p className="text-white/70">Profiles our algorithm thinks you'll love</p>
-        </div>
-
-        {recommendations.length > 0 ? (
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
-            {recommendations.map((user) => (
-              <UserCard key={user.UID} user={user} />
-            ))}
-          </div>
-        ) : (
-          <EmptyState />
-        )}
+          </CardHeader>
+          <CardContent className="p-6">
+            {recommendations.length > 0 ? (
+              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                {recommendations.map((user) => (
+                  <UserCard key={user.UID} user={user} />
+                ))}
+              </div>
+            ) : (
+              <EmptyState />
+            )}
+          </CardContent>
+        </Card>
       </div>
     </div>
   );

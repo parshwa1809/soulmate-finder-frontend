@@ -1,4 +1,3 @@
-
 import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { Button } from "@/components/ui/button";
@@ -37,9 +36,12 @@ interface DashboardMessage {
 interface DashboardProps {
   userUID: string | null;
   setIsLoggedIn: (value: boolean) => void;
+  onLogout?: () => void;
+  cachedData?: any;
+  isLoadingData?: boolean;
 }
 
-const Dashboard = ({ userUID, setIsLoggedIn }: DashboardProps) => {
+const Dashboard = ({ userUID, setIsLoggedIn, onLogout, cachedData, isLoadingData }: DashboardProps) => {
   const navigate = useNavigate();
   const [matches, setMatches] = useState<User[]>([]);
   const [recommendations, setRecommendations] = useState<User[]>([]);
@@ -52,8 +54,32 @@ const Dashboard = ({ userUID, setIsLoggedIn }: DashboardProps) => {
   const [isNotificationsOpen, setIsNotificationsOpen] = useState(false);
 
   useEffect(() => {
-    loadUserData();
-  }, []);
+    if (cachedData) {
+      loadCachedData();
+    } else {
+      loadUserData();
+    }
+  }, [cachedData]);
+
+  const loadCachedData = () => {
+    if (cachedData) {
+      console.log('Loading cached dashboard data:', cachedData);
+      
+      if (cachedData.recommendations) {
+        setRecommendations(cachedData.recommendations);
+      }
+      if (cachedData.matches) {
+        setMatches(cachedData.matches);
+      }
+      if (cachedData.awaiting) {
+        setAwaiting(cachedData.awaiting);
+      }
+      if (cachedData.notifications) {
+        setNotifications(cachedData.notifications);
+      }
+    }
+    setIsLoading(false);
+  };
 
   const transformUserData = (apiData: any, kundliScore?: number): User => {
     // Parse hobbies if it's a JSON string
@@ -230,9 +256,16 @@ const Dashboard = ({ userUID, setIsLoggedIn }: DashboardProps) => {
   };
 
   const handleLogout = () => {
-    localStorage.removeItem('userUID');
-    localStorage.removeItem('userData');
-    setIsLoggedIn(false);
+    if (onLogout) {
+      onLogout();
+    } else {
+      // Fallback to old behavior
+      localStorage.removeItem('userUID');
+      localStorage.removeItem('userData');
+      localStorage.removeItem('profileData');
+      localStorage.removeItem('dashboardData');
+      setIsLoggedIn(false);
+    }
   };
 
   const handleViewProfile = () => {
@@ -391,7 +424,7 @@ const Dashboard = ({ userUID, setIsLoggedIn }: DashboardProps) => {
     );
   }
 
-  if (isLoading) {
+  if (isLoadingData && (!cachedData || Object.keys(cachedData).length === 0)) {
     return (
       <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-slate-900 via-purple-900 to-slate-900">
         <div className="text-center">
@@ -718,3 +751,5 @@ const Dashboard = ({ userUID, setIsLoggedIn }: DashboardProps) => {
 };
 
 export default Dashboard;
+
+}

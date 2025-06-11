@@ -1,4 +1,3 @@
-
 import { Routes, Route, Navigate } from "react-router-dom";
 import { useState, useEffect } from "react";
 import Login from "../components/Login";
@@ -213,41 +212,225 @@ const Index = () => {
     };
   };
 
-  const handleSuccessfulLogin = async (uid: string) => {
-    console.log('Handling successful login for UID:', uid);
+  const transformLoginDataToProfile = (loginData: any): ProfileData => {
+    console.log('Transforming login data to profile:', loginData);
+    
+    let hobbies: string[] = [];
+    if (loginData.hobbies) {
+      try {
+        const hobbiesArray = typeof loginData.hobbies === 'string' ? JSON.parse(loginData.hobbies) : loginData.hobbies;
+        hobbies = Array.isArray(hobbiesArray) ? hobbiesArray : loginData.hobbies.split(',').map((h: string) => h.trim());
+      } catch {
+        hobbies = typeof loginData.hobbies === 'string' 
+          ? loginData.hobbies.split(',').map((h: string) => h.trim()) 
+          : [];
+      }
+    }
+
+    let dob = '';
+    if (loginData.dob) {
+      try {
+        const dobData = loginData.dob;
+        if (typeof dobData === 'string' && dobData.includes('{')) {
+          const dobObj = JSON.parse(dobData);
+          dob = `${dobObj.year}-${String(dobObj.month).padStart(2, '0')}-${String(dobObj.day).padStart(2, '0')}`;
+        } else {
+          dob = dobData;
+        }
+      } catch {
+        dob = loginData.dob || '';
+      }
+    }
+
+    const convertBase64ToDataUrl = (base64Data: any): string => {
+      if (!base64Data) return '';
+
+      let base64String = '';
+      if (typeof base64Data === 'object') {
+        base64String = base64Data.data || base64Data.base64 || base64Data.content || base64Data.image || '';
+      } else {
+        base64String = String(base64Data);
+      }
+
+      base64String = base64String.trim();
+      
+      if (base64String.startsWith('data:')) return base64String;
+      if (base64String.startsWith('http://') || base64String.startsWith('https://')) return base64String;
+      if (base64String.length > 20 && /^[A-Za-z0-9+/=]+$/.test(base64String)) {
+        return `data:image/jpeg;base64,${base64String}`;
+      }
+      
+      return '';
+    };
+
+    let images: string[] = [];
+    if (loginData.images) {
+      try {
+        const imagesData = loginData.images;
+        
+        if (typeof imagesData === 'string') {
+          try {
+            const parsedImages = JSON.parse(imagesData);
+            if (Array.isArray(parsedImages)) {
+              images = parsedImages
+                .map(img => convertBase64ToDataUrl(img))
+                .filter(url => url && url.length > 0);
+            } else {
+              const converted = convertBase64ToDataUrl(imagesData);
+              if (converted) images = [converted];
+            }
+          } catch {
+            if (imagesData.includes(',')) {
+              images = imagesData.split(',')
+                .map((img: string) => convertBase64ToDataUrl(img.trim()))
+                .filter(url => url && url.length > 0);
+            } else {
+              const converted = convertBase64ToDataUrl(imagesData);
+              if (converted) images = [converted];
+            }
+          }
+        } else if (Array.isArray(imagesData)) {
+          images = imagesData
+            .map(img => convertBase64ToDataUrl(img))
+            .filter(url => url && url.length > 0);
+        } else if (typeof imagesData === 'object' && imagesData !== null) {
+          images = Object.values(imagesData)
+            .map(img => convertBase64ToDataUrl(img as string))
+            .filter(url => url && url.length > 0);
+        }
+      } catch (error) {
+        console.error('Error parsing images from login data:', error);
+      }
+    }
+
+    return {
+      uid: loginData.uid || '',
+      name: loginData.name || 'Unknown User',
+      email: loginData.email || '',
+      city: loginData.city || '',
+      country: loginData.country || '',
+      birth_city: '',
+      birth_country: '',
+      gender: loginData.gender || '',
+      profession: loginData.profession || '',
+      dob: dob,
+      tob: '',
+      hobbies: hobbies,
+      images: images,
+      login: 'SUCCESSFUL'
+    };
+  };
+
+  const loadRecommendationCards = async (recommendationCards: any[]): Promise<DashboardData> => {
+    console.log('Loading recommendation cards:', recommendationCards);
+    
+    const dashboardData: DashboardData = {
+      recommendations: [],
+      matches: [],
+      awaiting: [],
+      notifications: []
+    };
+
+    // Process cards progressively
+    for (const card of recommendationCards) {
+      try {
+        const { recommendation_uid, score, queue } = card;
+        console.log(`Loading profile for ${recommendation_uid} in queue ${queue} with score ${score}`);
+        
+        const userProfile = await fetchUserProfile(recommendation_uid);
+        if (userProfile) {
+          const transformedUser = transformUserData(userProfile, score);
+          
+          // Add to appropriate queue based on the queue field
+          switch (queue) {
+            case 'RECOMMENDATIONS':
+              dashboardData.recommendations.push(transformedUser);
+              break;
+            case 'MATCHED':
+              dashboardData.matches.push(transformedUser);
+              break;
+            case 'AWAITING':
+              dashboardData.awaiting.push(transformedUser);
+              break;
+            default:
+              console.warn(`Unknown queue type: ${queue}`);
+              dashboardData.recommendations.push(transformedUser);
+          }
+        }
+      } catch (error) {
+        console.error('Error loading recommendation card:', card, error);
+      }
+    }
+
+    return dashboardData;
+  };
+
+  const handleSuccessfulLogin = async (uid: string, loginData?: any) => {
+    console.log('Handling successful login for UID:', uid, 'with data:', loginData);
     setUserUID(uid);
     setIsLoggedIn(true);
     
     // Cache the login data immediately
     localStorage.setItem('userUID', uid);
     
-    // Start loading profile and dashboard data in parallel
-    setIsLoadingProfile(true);
-    setIsLoadingDashboard(true);
-    
-    try {
-      const [freshProfileData, freshDashboardData] = await Promise.all([
-        fetchUserProfile(uid),
-        fetchDashboardData(uid)
-      ]);
+    if (loginData) {
+      // Transform and cache profile data from login response
+      const transformedProfileData = transformLoginDataToProfile(loginData);
+      setProfileData(transformedProfileData);
+      localStorage.setItem('profileData', JSON.stringify(transformedProfileData));
+      console.log('Profile data cached from login response');
       
-      if (freshProfileData) {
-        const transformedProfileData = transformUserData(freshProfileData);
-        setProfileData(transformedProfileData);
-        localStorage.setItem('profileData', JSON.stringify(transformedProfileData));
-        console.log('Profile data cached for session');
+      // Start loading recommendation cards progressively
+      if (loginData.recommendationCards && loginData.recommendationCards.length > 0) {
+        setIsLoadingDashboard(true);
+        try {
+          const dashboardData = await loadRecommendationCards(loginData.recommendationCards);
+          setDashboardData(dashboardData);
+          localStorage.setItem('dashboardData', JSON.stringify(dashboardData));
+          console.log('Dashboard data loaded and cached');
+        } catch (error) {
+          console.error('Error loading recommendation cards:', error);
+        } finally {
+          setIsLoadingDashboard(false);
+        }
+      } else {
+        // No recommendation cards, set empty dashboard data
+        const emptyDashboardData: DashboardData = {
+          recommendations: [],
+          matches: [],
+          awaiting: [],
+          notifications: []
+        };
+        setDashboardData(emptyDashboardData);
+        localStorage.setItem('dashboardData', JSON.stringify(emptyDashboardData));
       }
+    } else {
+      // Fallback to old behavior if no login data provided
+      setIsLoadingProfile(true);
+      setIsLoadingDashboard(true);
       
-      if (freshDashboardData) {
-        setDashboardData(freshDashboardData);
-        localStorage.setItem('dashboardData', JSON.stringify(freshDashboardData));
-        console.log('Dashboard data cached for session');
+      try {
+        const [freshProfileData, freshDashboardData] = await Promise.all([
+          fetchUserProfile(uid),
+          fetchDashboardData(uid)
+        ]);
+        
+        if (freshProfileData) {
+          const transformedProfileData = transformUserData(freshProfileData);
+          setProfileData(transformedProfileData);
+          localStorage.setItem('profileData', JSON.stringify(transformedProfileData));
+        }
+        
+        if (freshDashboardData) {
+          setDashboardData(freshDashboardData);
+          localStorage.setItem('dashboardData', JSON.stringify(freshDashboardData));
+        }
+      } catch (error) {
+        console.error('Error loading session data:', error);
+      } finally {
+        setIsLoadingProfile(false);
+        setIsLoadingDashboard(false);
       }
-    } catch (error) {
-      console.error('Error loading session data:', error);
-    } finally {
-      setIsLoadingProfile(false);
-      setIsLoadingDashboard(false);
     }
   };
 

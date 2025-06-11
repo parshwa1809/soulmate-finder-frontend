@@ -11,7 +11,7 @@ import { useToast } from "@/components/ui/use-toast";
 interface LoginProps {
   setIsLoggedIn: (value: boolean) => void;
   setUserUID: (uid: string) => void;
-  onSuccessfulLogin: (uid: string) => Promise<void>;
+  onSuccessfulLogin: (uid: string, loginData: any) => Promise<void>;
 }
 
 const Login = ({ setIsLoggedIn, setUserUID, onSuccessfulLogin }: LoginProps) => {
@@ -86,8 +86,27 @@ const Login = ({ setIsLoggedIn, setUserUID, onSuccessfulLogin }: LoginProps) => 
       if (response.ok && data.LOGIN === "SUCCESSFUL") {
         console.log('Login successful for UID:', data.UID);
         
-        // Use the new onSuccessfulLogin handler
-        await onSuccessfulLogin(data.UID);
+        // Store the complete login response data including profile and recommendation cards
+        const loginData = {
+          uid: data.UID,
+          name: data.NAME,
+          dob: data.DOB,
+          city: data.CITY,
+          country: data.COUNTRY,
+          images: data.IMAGES,
+          hobbies: data.HOBBIES,
+          profession: data.PROFESSION,
+          gender: data.GENDER,
+          email: email,
+          recommendationCards: data.RECOMMENDATION_CARDS || [],
+          notifications: data.NOTIFICATIONS || [],
+          message: data.MESSAGE
+        };
+        
+        console.log('Storing complete login data:', loginData);
+        
+        // Use the new onSuccessfulLogin handler with the complete data
+        await onSuccessfulLogin(data.UID, loginData);
         
         toast({
           title: "Login Successful",
