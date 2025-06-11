@@ -370,24 +370,27 @@ const Index = () => {
     setUserUID(uid);
     setIsLoggedIn(true);
     
-    // Cache the login data immediately
+    // Cache only essential session data (UID and profile data) - NO dashboard data caching
     localStorage.setItem('userUID', uid);
     
     if (loginData) {
       // Transform and cache profile data from login response
       const transformedProfileData = transformLoginDataToProfile(loginData);
       setProfileData(transformedProfileData);
-      localStorage.setItem('profileData', JSON.stringify(transformedProfileData));
-      console.log('Profile data cached from login response');
+      try {
+        localStorage.setItem('profileData', JSON.stringify(transformedProfileData));
+        console.log('Profile data cached from login response');
+      } catch (error) {
+        console.warn('Could not cache profile data:', error);
+      }
       
-      // Start loading recommendation cards progressively
+      // Start loading recommendation cards progressively without caching
       if (loginData.recommendationCards && loginData.recommendationCards.length > 0) {
         setIsLoadingDashboard(true);
         try {
           const dashboardData = await loadRecommendationCards(loginData.recommendationCards);
           setDashboardData(dashboardData);
-          localStorage.setItem('dashboardData', JSON.stringify(dashboardData));
-          console.log('Dashboard data loaded and cached');
+          console.log('Dashboard data loaded (not cached due to size)');
         } catch (error) {
           console.error('Error loading recommendation cards:', error);
         } finally {
@@ -402,7 +405,6 @@ const Index = () => {
           notifications: []
         };
         setDashboardData(emptyDashboardData);
-        localStorage.setItem('dashboardData', JSON.stringify(emptyDashboardData));
       }
     } else {
       // Fallback to old behavior if no login data provided
@@ -418,12 +420,16 @@ const Index = () => {
         if (freshProfileData) {
           const transformedProfileData = transformUserData(freshProfileData);
           setProfileData(transformedProfileData);
-          localStorage.setItem('profileData', JSON.stringify(transformedProfileData));
+          try {
+            localStorage.setItem('profileData', JSON.stringify(transformedProfileData));
+          } catch (error) {
+            console.warn('Could not cache profile data:', error);
+          }
         }
         
         if (freshDashboardData) {
           setDashboardData(freshDashboardData);
-          localStorage.setItem('dashboardData', JSON.stringify(freshDashboardData));
+          // Don't cache dashboard data to avoid quota exceeded error
         }
       } catch (error) {
         console.error('Error loading session data:', error);
@@ -439,7 +445,7 @@ const Index = () => {
     localStorage.removeItem('userUID');
     localStorage.removeItem('userData');
     localStorage.removeItem('profileData');
-    localStorage.removeItem('dashboardData');
+    // Note: dashboardData is no longer cached so no need to remove it
     
     // Reset all state
     setIsLoggedIn(false);
@@ -454,13 +460,13 @@ const Index = () => {
     // Check for existing login state on app load
     const storedUID = localStorage.getItem('userUID');
     const storedProfileData = localStorage.getItem('profileData');
-    const storedDashboardData = localStorage.getItem('dashboardData');
+    // Note: dashboardData is no longer cached
     
     if (storedUID) {
       setUserUID(storedUID);
       setIsLoggedIn(true);
       
-      // Load cached data if available
+      // Load cached profile data if available
       if (storedProfileData) {
         try {
           const parsedProfileData = JSON.parse(storedProfileData);
@@ -471,15 +477,8 @@ const Index = () => {
         }
       }
       
-      if (storedDashboardData) {
-        try {
-          const parsedDashboardData = JSON.parse(storedDashboardData);
-          setDashboardData(parsedDashboardData);
-          console.log('Dashboard data loaded from cache');
-        } catch (error) {
-          console.error('Error parsing cached dashboard data:', error);
-        }
-      }
+      // Dashboard data will be loaded fresh when needed
+      console.log('Dashboard data will be loaded fresh on demand');
     }
     setIsLoading(false);
   }, []);
