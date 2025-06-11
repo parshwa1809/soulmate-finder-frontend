@@ -189,8 +189,8 @@ const Dashboard = ({ userUID, setIsLoggedIn, onLogout, cachedData, isLoadingData
     }
   };
 
-  // Calculate total notification count
-  const totalNotificationCount = notificationUsers.length + messages.length + systemNotifications.length;
+  // Calculate total notification count - only system notifications and messages, not user notifications
+  const totalNotificationCount = messages.length + systemNotifications.length;
 
   const UserCard = ({ user, showActions = false }: { user: User; showActions?: boolean }) => {
     console.log('UserCard user data:', user); // Debug log to see what data we have
@@ -424,12 +424,12 @@ const Dashboard = ({ userUID, setIsLoggedIn, onLogout, cachedData, isLoadingData
               <PopoverContent className="w-80 p-0 bg-white/5 backdrop-blur-xl border border-white/10" align="end">
                 <div className="p-4 border-b border-white/10">
                   <h3 className="font-semibold text-white text-lg">Notifications</h3>
-                  <p className="text-white/60 text-sm">Recent activity updates</p>
+                  <p className="text-white/60 text-sm">Recent system updates</p>
                 </div>
                 <div className="max-h-96 overflow-y-auto p-4">
                   {totalNotificationCount > 0 ? (
                     <div className="space-y-3">
-                      {/* Show system notifications first */}
+                      {/* Show system notifications from login response */}
                       {systemNotifications.map((notification, index) => (
                         <div key={`system-${index}`} className="p-3 rounded-lg bg-gradient-to-r from-amber-500/10 to-orange-500/10 border border-white/10">
                           <p className="text-white text-sm">{notification.message}</p>
@@ -439,7 +439,7 @@ const Dashboard = ({ userUID, setIsLoggedIn, onLogout, cachedData, isLoadingData
                         </div>
                       ))}
                       
-                      {/* Show messages */}
+                      {/* Show messages from user actions */}
                       {messages.map((message) => (
                         <div key={`message-${message.id}`} className="p-3 rounded-lg bg-white/5 border border-white/10">
                           <p className="text-white text-sm">{message.text}</p>
@@ -449,36 +449,6 @@ const Dashboard = ({ userUID, setIsLoggedIn, onLogout, cachedData, isLoadingData
                           <p className="text-white/40 text-xs mt-1">
                             {formatDistanceToNow(message.timestamp, { addSuffix: true })}
                           </p>
-                        </div>
-                      ))}
-                      
-                      {/* Then show user notifications */}
-                      {notificationUsers.map((user) => (
-                        <div 
-                          key={`notification-${user.UID}`}
-                          className="flex items-center space-x-3 p-3 rounded-lg bg-white/5 hover:bg-white/10 cursor-pointer transition-colors"
-                          onClick={() => {
-                            handleUserClick(user);
-                            setIsNotificationsOpen(false);
-                          }}
-                        >
-                          <Avatar className="w-12 h-12">
-                            <AvatarImage src={user.profilePicture || (user.images && user.images.length > 0 ? user.images[0] : undefined)} />
-                            <AvatarFallback className="bg-gradient-to-br from-blue-500 to-cyan-500 text-white">
-                              {user.name?.charAt(0) || <User className="w-6 h-6" />}
-                            </AvatarFallback>
-                          </Avatar>
-                          <div className="flex-1 min-w-0">
-                            <p className="font-medium text-white truncate">{user.name}</p>
-                            {user.kundliScore !== undefined && user.kundliScore !== null && (
-                              <div className="flex items-center">
-                                <Star className="w-3 h-3 text-yellow-400 mr-1" />
-                                <span className="text-xs text-white/70">
-                                  {user.kundliScore}/36
-                                </span>
-                              </div>
-                            )}
-                          </div>
                         </div>
                       ))}
                     </div>
