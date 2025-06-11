@@ -144,7 +144,7 @@ const Dashboard = ({ userUID, setIsLoggedIn, onLogout, cachedData, isLoadingData
     const userUID = selectedUser.UID;
     setRecommendations(prev => prev.filter(user => user.UID !== userUID));
     setMatches(prev => prev.filter(user => user.UID !== userUID));
-    setNotifications(prev => prev.filter(user => user.UID !== userUID));
+    setNotificationUsers(prev => prev.filter(user => user.UID !== userUID));
     setAwaiting(prev => prev.filter(user => user.UID !== userUID));
 
     // Add message to notifications if present
@@ -649,5 +649,3 @@ const Dashboard = ({ userUID, setIsLoggedIn, onLogout, cachedData, isLoadingData
 };
 
 export default Dashboard;
-
-</edits_to_apply>
